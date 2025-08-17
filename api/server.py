@@ -128,6 +128,13 @@ async def web_interface(request: Request):
     return web_templates.TemplateResponse("index.html", {"request": request})
 
 
+@app.get("/favicon.ico")
+async def get_favicon():
+    """Serve favicon"""
+    from fastapi.responses import FileResponse
+    return FileResponse("web/static/favicon.ico")
+
+
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
