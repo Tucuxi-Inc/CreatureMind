@@ -20,10 +20,19 @@ class CreatureMindApp {
         // Navigation
         document.getElementById('getStartedBtn').addEventListener('click', () => this.showCreationForm());
         document.getElementById('newCreatureBtn').addEventListener('click', () => this.showCreationForm());
+        document.getElementById('createTemplateBtn').addEventListener('click', () => this.showTemplateForm());
         document.getElementById('cancelCreation').addEventListener('click', () => this.showWelcomeScreen());
+        document.getElementById('cancelTemplate').addEventListener('click', () => this.showWelcomeScreen());
 
         // Form submission
         document.getElementById('creatureForm').addEventListener('submit', (e) => this.handleCreatureCreation(e));
+        document.getElementById('customTemplateForm').addEventListener('submit', (e) => this.handleTemplateCreation(e));
+
+        // Template builder event listeners
+        document.getElementById('addTrait').addEventListener('click', () => this.addTraitInput());
+        document.getElementById('addStat').addEventListener('click', () => this.addStatConfig());
+        document.getElementById('addEmotion').addEventListener('click', () => this.addEmotionSound());
+        document.getElementById('addCondition').addEventListener('click', () => this.addTranslationCondition());
 
         // Chat
         document.getElementById('messageInput').addEventListener('keypress', (e) => {
@@ -418,6 +427,7 @@ class CreatureMindApp {
     hideAllScreens() {
         document.getElementById('welcomeScreen').classList.add('hidden');
         document.getElementById('creationForm').classList.add('hidden');
+        document.getElementById('templateForm').classList.add('hidden');
         document.getElementById('creatureInterface').classList.add('hidden');
     }
 
@@ -437,6 +447,248 @@ class CreatureMindApp {
 
     hideError() {
         document.getElementById('errorModal').classList.add('hidden');
+    }
+
+    // Template Creation Methods
+    showTemplateForm() {
+        this.hideAllScreens();
+        document.getElementById('templateForm').classList.remove('hidden');
+        document.getElementById('templateName').focus();
+        this.initializeTemplateForm();
+    }
+
+    initializeTemplateForm() {
+        // Initialize with some default values
+        this.updateConditionStatOptions();
+    }
+
+    addTraitInput() {
+        const traitInputs = document.getElementById('traitInputs');
+        const div = document.createElement('div');
+        div.className = 'trait-input';
+        div.innerHTML = `
+            <input type="text" placeholder="e.g., brave, curious, magical" name="trait">
+            <button type="button" class="remove-trait">×</button>
+        `;
+        traitInputs.appendChild(div);
+        
+        // Add remove event listener
+        div.querySelector('.remove-trait').addEventListener('click', () => {
+            div.remove();
+        });
+    }
+
+    addStatConfig() {
+        const statConfigs = document.getElementById('statConfigs');
+        const div = document.createElement('div');
+        div.className = 'stat-config';
+        div.innerHTML = `
+            <div class="stat-config-header">
+                <input type="text" placeholder="Stat name (e.g., happiness)" name="stat_name" required>
+                <button type="button" class="remove-stat">×</button>
+            </div>
+            <div class="stat-config-body">
+                <div class="stat-inputs">
+                    <label>Default Start:</label>
+                    <input type="number" min="0" max="100" value="75" name="default_start">
+                    <label>Max Value:</label>
+                    <input type="number" min="1" value="100" name="max_value">
+                    <label>Decay Rate:</label>
+                    <input type="number" step="0.01" min="0" max="1" value="0.1" name="decay_rate">
+                </div>
+            </div>
+        `;
+        statConfigs.appendChild(div);
+        
+        // Add remove event listener
+        div.querySelector('.remove-stat').addEventListener('click', () => {
+            div.remove();
+            this.updateConditionStatOptions();
+        });
+
+        // Add change listener to update translation conditions
+        div.querySelector('input[name="stat_name"]').addEventListener('input', () => {
+            this.updateConditionStatOptions();
+        });
+    }
+
+    addEmotionSound() {
+        const emotionSounds = document.getElementById('emotionSounds');
+        const div = document.createElement('div');
+        div.className = 'emotion-sound';
+        div.innerHTML = `
+            <div class="emotion-header">
+                <input type="text" placeholder="Emotion (e.g., happy, sad)" name="emotion" required>
+                <button type="button" class="remove-emotion">×</button>
+            </div>
+            <div class="sounds-list">
+                <input type="text" placeholder="Sound 1 (e.g., *purr*)" name="sound">
+                <input type="text" placeholder="Sound 2 (e.g., *content chirp*)" name="sound">
+                <input type="text" placeholder="Sound 3 (e.g., *gentle nuzzle*)" name="sound">
+            </div>
+        `;
+        emotionSounds.appendChild(div);
+        
+        // Add remove event listener
+        div.querySelector('.remove-emotion').addEventListener('click', () => {
+            div.remove();
+        });
+    }
+
+    addTranslationCondition() {
+        const translationConditions = document.getElementById('translationConditions');
+        const div = document.createElement('div');
+        div.className = 'translation-condition';
+        div.innerHTML = `
+            <select name="condition_stat" required>
+                <option value="">Select stat...</option>
+            </select>
+            <select name="condition_operator" required>
+                <option value="> ">Greater than</option>
+                <option value="< ">Less than</option>
+                <option value="= ">Equal to</option>
+            </select>
+            <input type="number" name="condition_value" placeholder="Value" required>
+            <button type="button" class="remove-condition">×</button>
+        `;
+        translationConditions.appendChild(div);
+        
+        // Populate stat options
+        this.populateConditionStatOptions(div.querySelector('select[name="condition_stat"]'));
+        
+        // Add remove event listener
+        div.querySelector('.remove-condition').addEventListener('click', () => {
+            div.remove();
+        });
+    }
+
+    updateConditionStatOptions() {
+        // Update all condition stat dropdowns
+        document.querySelectorAll('select[name="condition_stat"]').forEach(select => {
+            this.populateConditionStatOptions(select);
+        });
+    }
+
+    populateConditionStatOptions(select) {
+        const currentValue = select.value;
+        select.innerHTML = '<option value="">Select stat...</option>';
+        
+        // Get all stat names
+        document.querySelectorAll('input[name="stat_name"]').forEach(input => {
+            if (input.value.trim()) {
+                const option = document.createElement('option');
+                option.value = input.value.trim();
+                option.textContent = input.value.trim();
+                select.appendChild(option);
+            }
+        });
+        
+        // Restore previous value if it still exists
+        if (currentValue) {
+            select.value = currentValue;
+        }
+    }
+
+    async handleTemplateCreation(e) {
+        e.preventDefault();
+        
+        this.showLoading('Creating custom template...');
+
+        try {
+            const templateData = this.collectTemplateData(e.target);
+            
+            const response = await fetch('/templates', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(templateData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            this.hideLoading();
+            
+            // Reload templates to include the new one
+            await this.loadTemplates();
+            
+            // Show success message and go back to welcome screen
+            alert(`Template "${result.name}" created successfully! You can now use it to create creatures.`);
+            this.showWelcomeScreen();
+            
+        } catch (error) {
+            this.hideLoading();
+            console.error('Template creation failed:', error);
+            this.showError(`Failed to create template: ${error.message}`);
+        }
+    }
+
+    collectTemplateData(form) {
+        const formData = new FormData(form);
+        
+        // Collect basic info
+        const templateData = {
+            name: formData.get('name'),
+            species: formData.get('species'),
+            description: formData.get('description'),
+            personality_traits: [],
+            stat_configs: {},
+            language_sounds: {},
+            translation_conditions: {}
+        };
+
+        // Collect personality traits
+        form.querySelectorAll('input[name="trait"]').forEach(input => {
+            if (input.value.trim()) {
+                templateData.personality_traits.push(input.value.trim());
+            }
+        });
+
+        // Collect stat configurations
+        form.querySelectorAll('.stat-config').forEach(statConfig => {
+            const statName = statConfig.querySelector('input[name="stat_name"]').value.trim();
+            if (statName) {
+                templateData.stat_configs[statName] = {
+                    min_value: 0,
+                    max_value: parseInt(statConfig.querySelector('input[name="max_value"]').value) || 100,
+                    decay_rate: parseFloat(statConfig.querySelector('input[name="decay_rate"]').value) || 0.1,
+                    default_start: parseInt(statConfig.querySelector('input[name="default_start"]').value) || 75
+                };
+            }
+        });
+
+        // Collect language sounds
+        form.querySelectorAll('.emotion-sound').forEach(emotionSound => {
+            const emotion = emotionSound.querySelector('input[name="emotion"]').value.trim();
+            if (emotion) {
+                const sounds = [];
+                emotionSound.querySelectorAll('input[name="sound"]').forEach(soundInput => {
+                    if (soundInput.value.trim()) {
+                        sounds.push(soundInput.value.trim());
+                    }
+                });
+                if (sounds.length > 0) {
+                    templateData.language_sounds[emotion] = sounds;
+                }
+            }
+        });
+
+        // Collect translation conditions
+        form.querySelectorAll('.translation-condition').forEach(condition => {
+            const stat = condition.querySelector('select[name="condition_stat"]').value;
+            const operator = condition.querySelector('select[name="condition_operator"]').value;
+            const value = condition.querySelector('input[name="condition_value"]').value;
+            
+            if (stat && operator && value) {
+                templateData.translation_conditions[stat] = `${operator}${value}`;
+            }
+        });
+
+        return templateData;
     }
 }
 

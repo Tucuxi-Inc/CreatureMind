@@ -7,7 +7,7 @@ interacting with creature minds.
 
 import os
 import json
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from uuid import UUID
 from datetime import datetime
 
@@ -40,6 +40,17 @@ class MessageRequest(BaseModel):
 class ActivityRequest(BaseModel):
     activity: str
     parameters: Optional[Dict[str, Any]] = None
+
+
+class CreateTemplateRequest(BaseModel):
+    name: str
+    species: str
+    description: str
+    personality_traits: List[str]
+    stat_configs: Dict[str, Dict[str, Any]]
+    language_sounds: Dict[str, List[str]]
+    translation_conditions: Dict[str, str]
+    activities: Optional[List[Dict[str, Any]]] = None
 
 
 class CreatureResponse(BaseModel):
@@ -247,6 +258,58 @@ async def list_creatures():
             }
             for creature in creatures.values()
         ]
+    }
+
+
+@app.post("/templates")
+async def create_custom_template(request: CreateTemplateRequest):
+    """Create a custom creature template"""
+    from core.models.creature_template import CreatureTemplate, LanguageConfig, ActivityConfig
+    
+    # Generate a unique template ID
+    template_id = f"custom_{request.species}_{len(templates) + 1}"
+    
+    # Create language configuration
+    language_config = LanguageConfig(
+        sounds=request.language_sounds,
+        translation_conditions=request.translation_conditions,
+        behavioral_patterns=[]
+    )
+    
+    # Create activity configurations
+    activity_configs = []
+    if request.activities:
+        for activity_data in request.activities:
+            activity_config = ActivityConfig(
+                name=activity_data["name"],
+                stat_effects=activity_data.get("stat_effects", {}),
+                energy_cost=activity_data.get("energy_cost", 0),
+                description=activity_data.get("description", ""),
+                required_stats=activity_data.get("required_stats", {})
+            )
+            activity_configs.append(activity_config)
+    
+    # Create the template
+    template = CreatureTemplate(
+        id=template_id,
+        name=request.name,
+        species=request.species,
+        description=request.description,
+        default_personality_traits=request.personality_traits,
+        stat_configs=request.stat_configs,
+        language=language_config,
+        activities=activity_configs
+    )
+    
+    # Store the template
+    templates[template_id] = template
+    
+    return {
+        "template_id": template_id,
+        "name": template.name,
+        "species": template.species,
+        "description": template.description,
+        "message": "Custom template created successfully!"
     }
 
 

@@ -22,6 +22,9 @@
                         <button id="newCreatureBtn" class="btn btn-primary">
                             <i class="fas fa-plus"></i> New Creature
                         </button>
+                        <button id="createTemplateBtn" class="btn btn-secondary">
+                            <i class="fas fa-cog"></i> Create Template
+                        </button>
                     </nav>
                 </div>
             </div>
@@ -97,6 +100,117 @@
                                 <button type="button" id="cancelCreation" class="btn btn-secondary">Cancel</button>
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-magic"></i> Bring to Life
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Template Creation Form -->
+                <div id="templateForm" class="creation-form hidden">
+                    <div class="form-container">
+                        <h2><i class="fas fa-cog"></i> Create Custom Creature Template</h2>
+                        
+                        <form id="customTemplateForm">
+                            <div class="form-group">
+                                <label for="templateName">Template Name</label>
+                                <input type="text" id="templateName" name="name" placeholder="e.g., 'Mystical Phoenix'" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="templateSpecies">Species</label>
+                                <input type="text" id="templateSpecies" name="species" placeholder="e.g., 'phoenix', 'unicorn', 'robot'" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="templateDescription">Description</label>
+                                <textarea id="templateDescription" name="description" 
+                                         placeholder="Describe what makes this creature special..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Personality Traits</label>
+                                <div class="trait-builder">
+                                    <div class="trait-inputs" id="traitInputs">
+                                        <div class="trait-input">
+                                            <input type="text" placeholder="e.g., brave, curious, magical" name="trait">
+                                            <button type="button" class="remove-trait">×</button>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="addTrait" class="btn btn-sm">+ Add Trait</button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Stats Configuration</label>
+                                <div class="stats-builder">
+                                    <div class="stat-configs" id="statConfigs">
+                                        <div class="stat-config">
+                                            <div class="stat-config-header">
+                                                <input type="text" placeholder="Stat name (e.g., happiness)" name="stat_name" required>
+                                                <button type="button" class="remove-stat">×</button>
+                                            </div>
+                                            <div class="stat-config-body">
+                                                <div class="stat-inputs">
+                                                    <label>Default Start:</label>
+                                                    <input type="number" min="0" max="100" value="75" name="default_start">
+                                                    <label>Max Value:</label>
+                                                    <input type="number" min="1" value="100" name="max_value">
+                                                    <label>Decay Rate:</label>
+                                                    <input type="number" step="0.01" min="0" max="1" value="0.1" name="decay_rate">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="addStat" class="btn btn-sm">+ Add Stat</button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Language Sounds</label>
+                                <div class="language-builder">
+                                    <div class="emotion-sounds" id="emotionSounds">
+                                        <div class="emotion-sound">
+                                            <div class="emotion-header">
+                                                <input type="text" placeholder="Emotion (e.g., happy, sad)" name="emotion" required>
+                                                <button type="button" class="remove-emotion">×</button>
+                                            </div>
+                                            <div class="sounds-list">
+                                                <input type="text" placeholder="Sound 1 (e.g., *purr*)" name="sound">
+                                                <input type="text" placeholder="Sound 2 (e.g., *content chirp*)" name="sound">
+                                                <input type="text" placeholder="Sound 3 (e.g., *gentle nuzzle*)" name="sound">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="addEmotion" class="btn btn-sm">+ Add Emotion</button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Translation Conditions</label>
+                                <div class="translation-builder">
+                                    <div class="translation-conditions" id="translationConditions">
+                                        <div class="translation-condition">
+                                            <select name="condition_stat" required>
+                                                <option value="">Select stat...</option>
+                                            </select>
+                                            <select name="condition_operator" required>
+                                                <option value="> ">Greater than</option>
+                                                <option value="< ">Less than</option>
+                                                <option value="= ">Equal to</option>
+                                            </select>
+                                            <input type="number" name="condition_value" placeholder="Value" required>
+                                            <button type="button" class="remove-condition">×</button>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="addCondition" class="btn btn-sm">+ Add Condition</button>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" id="cancelTemplate" class="btn btn-secondary">Cancel</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Create Template
                                 </button>
                             </div>
                         </form>

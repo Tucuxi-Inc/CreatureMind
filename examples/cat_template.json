@@ -1,0 +1,129 @@
+{
+  "id": "independent_cat",
+  "name": "Independent Cat",
+  "species": "cat",
+  "category": "mammal",
+  "description": "A graceful feline companion with an independent spirit and mysterious charm",
+  "default_personality_traits": ["independent", "curious", "elegant", "mysterious"],
+  "temperament_options": ["aloof", "affectionate", "playful", "regal"],
+  
+  "stat_configs": {
+    "happiness": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.08,
+      "default_start": 70
+    },
+    "energy": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.15,
+      "default_start": 85
+    },
+    "hunger": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.25,
+      "default_start": 45
+    }
+  },
+  
+  "language": {
+    "sounds": {
+      "happy": ["*purr*", "*content mrow*", "*gentle head bump*"],
+      "excited": ["*chirp*", "*playful pounce*", "*zoomies*"],
+      "tired": ["*yawn*", "*slow blink*", "*curl up*"],
+      "hungry": ["*meow*", "*demanding mrow*", "*stare intensely*"],
+      "sad": ["*soft mew*", "*hide*", "*droopy whiskers*"],
+      "loving": ["*head bonk*", "*kneading paws*", "*slow blink*"],
+      "neutral": ["*flick tail*", "*ear twitch*", "*alert gaze*"],
+      "annoyed": ["*hiss*", "*swish tail*", "*narrow eyes*"]
+    },
+    "cultural_sounds": {
+      "en": {
+        "meow": "meow",
+        "purr": "purr",
+        "hiss": "hiss"
+      },
+      "ja": {
+        "meow": "ニャー",
+        "purr": "ゴロゴロ",
+        "hiss": "シャー"
+      },
+      "fr": {
+        "meow": "miaou",
+        "purr": "ronronnement",
+        "hiss": "sifflement"
+      }
+    },
+    "translation_conditions": {
+      "happiness": "> 40",
+      "energy": "> 20"
+    },
+    "behavioral_patterns": [
+      "independent_streak",
+      "curiosity_driven",
+      "territorial_behavior",
+      "hunting_instincts",
+      "affection_on_own_terms"
+    ]
+  },
+  
+  "activities": [
+    {
+      "name": "feed",
+      "stat_effects": {
+        "hunger": 35,
+        "happiness": 8
+      },
+      "energy_cost": 0,
+      "description": "offering the cat food",
+      "required_stats": {}
+    },
+    {
+      "name": "play",
+      "stat_effects": {
+        "happiness": 20,
+        "energy": -12
+      },
+      "energy_cost": 8,
+      "description": "playing with cat toys",
+      "required_stats": {
+        "energy": 20
+      }
+    },
+    {
+      "name": "pet",
+      "stat_effects": {
+        "happiness": 5,
+        "energy": 3
+      },
+      "energy_cost": 0,
+      "description": "gently petting the cat",
+      "required_stats": {}
+    },
+    {
+      "name": "brush",
+      "stat_effects": {
+        "happiness": 15,
+        "energy": -5
+      },
+      "energy_cost": 0,
+      "description": "brushing the cat's fur",
+      "required_stats": {}
+    }
+  ],
+  
+  "learnable_abilities": ["come", "sit", "stay", "high_five", "shake"],
+  "ability_difficulty": {
+    "come": 2,
+    "sit": 3,
+    "stay": 4,
+    "high_five": 2,
+    "shake": 3
+  },
+  
+  "perception_prompt_additions": "Cats are highly independent and observe carefully before responding. They value personal space and respond to respect.",
+  "emotion_prompt_additions": "Cats show affection subtly and on their own terms. They are sensitive to environment changes and value routine.",
+  "decision_prompt_additions": "Cats often act with dignity and grace. They prefer to initiate contact rather than being forced into interactions."
+}

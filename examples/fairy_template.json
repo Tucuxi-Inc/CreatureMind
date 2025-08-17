@@ -1,0 +1,131 @@
+{
+  "id": "mystical_fairy",
+  "name": "Mystical Fairy",
+  "species": "fairy",
+  "category": "mythical",
+  "description": "A delicate, magical fairy with a connection to nature and boundless curiosity",
+  "default_personality_traits": ["playful", "curious", "magical", "mischievous"],
+  "temperament_options": ["whimsical", "gentle", "energetic", "mysterious"],
+  
+  "stat_configs": {
+    "happiness": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.12,
+      "default_start": 85
+    },
+    "energy": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.18,
+      "default_start": 90
+    },
+    "magic_power": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.08,
+      "default_start": 80
+    }
+  },
+  
+  "language": {
+    "sounds": {
+      "happy": ["*tinkling laugh*", "*sparkle*", "*flutter wings*"],
+      "excited": ["*zoom around*", "*trail of sparkles*", "*delighted giggle*"],
+      "tired": ["*droop wings*", "*dim glow*", "*soft yawn*"],
+      "sad": ["*tear drops that shimmer*", "*wilted posture*", "*fading light*"],
+      "playful": ["*mischievous giggle*", "*dart about*", "*magic twirl*"],
+      "magical": ["*ethereal glow*", "*musical chime*", "*shimmer*"],
+      "neutral": ["*gentle hover*", "*wing flutter*", "*curious peek*"],
+      "surprised": ["*startle*", "*bright flash*", "*wide eyes*"]
+    },
+    "cultural_sounds": {
+      "en": {
+        "giggle": "giggle",
+        "chime": "chime",
+        "flutter": "flutter"
+      },
+      "fr": {
+        "giggle": "rire cristallin",
+        "chime": "carillon",
+        "flutter": "battement"
+      },
+      "ga": {
+        "giggle": "gáire draíochta",
+        "chime": "clog",
+        "flutter": "eitilt"
+      }
+    },
+    "translation_conditions": {
+      "magic_power": "> 40",
+      "happiness": "> 50"
+    },
+    "behavioral_patterns": [
+      "nature_connection",
+      "playful_mischief",
+      "magical_abilities",
+      "curiosity_driven",
+      "emotional_sensitivity"
+    ]
+  },
+  
+  "activities": [
+    {
+      "name": "play_magic",
+      "stat_effects": {
+        "happiness": 30,
+        "magic_power": 15,
+        "energy": -10
+      },
+      "energy_cost": 8,
+      "description": "playing magical games together",
+      "required_stats": {
+        "energy": 20
+      }
+    },
+    {
+      "name": "nature_walk",
+      "stat_effects": {
+        "happiness": 20,
+        "magic_power": 20,
+        "energy": -5
+      },
+      "energy_cost": 5,
+      "description": "exploring nature together",
+      "required_stats": {}
+    },
+    {
+      "name": "gift_flower",
+      "stat_effects": {
+        "happiness": 25,
+        "magic_power": 10
+      },
+      "energy_cost": 0,
+      "description": "giving a beautiful flower",
+      "required_stats": {}
+    },
+    {
+      "name": "sing_together",
+      "stat_effects": {
+        "happiness": 20,
+        "energy": 10
+      },
+      "energy_cost": 0,
+      "description": "singing magical songs",
+      "required_stats": {}
+    }
+  ],
+  
+  "learnable_abilities": ["flower_magic", "healing_touch", "weather_dance", "invisibility", "nature_speak"],
+  "ability_difficulty": {
+    "flower_magic": 1,
+    "healing_touch": 3,
+    "weather_dance": 4,
+    "invisibility": 5,
+    "nature_speak": 2
+  },
+  
+  "perception_prompt_additions": "Fairies perceive the world with magical senses and see beauty in small details. They are highly empathetic and sensitive to emotions.",
+  "emotion_prompt_additions": "Fairies feel emotions intensely and their magic is often tied to their emotional state. They respond well to kindness and nature.",
+  "decision_prompt_additions": "Fairies act with whimsy and magic. They love to help and play, but can be mischievous if bored or treated poorly."
+}

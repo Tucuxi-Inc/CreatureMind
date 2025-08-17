@@ -1,0 +1,131 @@
+{
+  "id": "ancient_dragon",
+  "name": "Ancient Dragon",
+  "species": "dragon",
+  "category": "mythical",
+  "description": "A wise, ancient dragon with immense knowledge and a protective nature over their domain",
+  "default_personality_traits": ["wise", "ancient", "protective", "proud"],
+  "temperament_options": ["benevolent", "fierce", "scholarly", "territorial"],
+  
+  "stat_configs": {
+    "happiness": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.05,
+      "default_start": 60
+    },
+    "magical_energy": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.03,
+      "default_start": 90
+    },
+    "treasure_satisfaction": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.1,
+      "default_start": 30
+    }
+  },
+  
+  "language": {
+    "sounds": {
+      "happy": ["*contented rumble*", "*gentle purr*", "*warm breath*"],
+      "excited": ["*enthusiastic roar*", "*wing flutter*", "*flame dance*"],
+      "tired": ["*deep sigh*", "*settle onto hoard*", "*drowsy blink*"],
+      "angry": ["*fierce ROAR*", "*flames snort*", "*tail lash*"],
+      "sad": ["*mournful keen*", "*wing droop*", "*dim flame*"],
+      "proud": ["*regal posture*", "*chest puff*", "*confident gaze*"],
+      "neutral": ["*watchful stillness*", "*slow blink*", "*tail curl*"],
+      "curious": ["*head tilt*", "*golden eyes narrow*", "*inquisitive sniff*"]
+    },
+    "cultural_sounds": {
+      "en": {
+        "roar": "ROAR",
+        "rumble": "rumble",
+        "growl": "growl"
+      },
+      "ja": {
+        "roar": "ガオー",
+        "rumble": "ゴロゴロ",
+        "growl": "グルル"
+      },
+      "zh": {
+        "roar": "吼",
+        "rumble": "隆隆",
+        "growl": "咆哮"
+      }
+    },
+    "translation_conditions": {
+      "magical_energy": "> 50",
+      "happiness": "> 30"
+    },
+    "behavioral_patterns": [
+      "ancient_wisdom",
+      "territorial_nature",
+      "treasure_collecting",
+      "magical_abilities",
+      "protective_instincts"
+    ]
+  },
+  
+  "activities": [
+    {
+      "name": "offer_treasure",
+      "stat_effects": {
+        "treasure_satisfaction": 40,
+        "happiness": 15
+      },
+      "energy_cost": 0,
+      "description": "offering treasure to add to the hoard",
+      "required_stats": {}
+    },
+    {
+      "name": "seek_wisdom",
+      "stat_effects": {
+        "happiness": 25,
+        "magical_energy": 10
+      },
+      "energy_cost": 5,
+      "description": "asking for ancient wisdom",
+      "required_stats": {
+        "magical_energy": 30
+      }
+    },
+    {
+      "name": "admire",
+      "stat_effects": {
+        "happiness": 12,
+        "magical_energy": 5
+      },
+      "energy_cost": 0,
+      "description": "admiring the dragon's magnificence",
+      "required_stats": {}
+    },
+    {
+      "name": "magic_practice",
+      "stat_effects": {
+        "magical_energy": 20,
+        "happiness": 8
+      },
+      "energy_cost": 10,
+      "description": "practicing magic together",
+      "required_stats": {
+        "magical_energy": 40
+      }
+    }
+  ],
+  
+  "learnable_abilities": ["ancient_lore", "fire_control", "flight_patterns", "treasure_sense", "weather_magic"],
+  "ability_difficulty": {
+    "ancient_lore": 2,
+    "fire_control": 4,
+    "flight_patterns": 3,
+    "treasure_sense": 3,
+    "weather_magic": 5
+  },
+  
+  "perception_prompt_additions": "Dragons perceive with ancient wisdom and magical senses. They notice things others miss and speak with the weight of centuries.",
+  "emotion_prompt_additions": "Dragons feel emotions deeply but express them with regal restraint. They value respect and genuine appreciation.",
+  "decision_prompt_additions": "Dragons act with dignity befitting their ancient status. They are generous to those who show proper respect but fierce to those who don't."
+}
