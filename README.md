@@ -106,8 +106,17 @@ INFO: Uvicorn running on http://0.0.0.0:8000
 
 ## 🐕 Create Your First Creature
 
-### Option 1: Use the Web Interface (Coming Soon)
-Visit `http://localhost:8000` in your browser
+### Option 1: Use the Web Interface (Recommended) 
+1. **Open your browser** and go to: `http://localhost:8000`
+2. **Click "Create Your First Creature"**
+3. **Fill out the form**:
+   - Enter a name for your creature
+   - Choose a creature type (like "Loyal Dog")
+   - Pick personality traits (optional)
+   - Add custom description (optional)
+4. **Click "Bring to Life"** and start chatting!
+
+**🎉 That's it! You now have a beautiful web interface to interact with your creature!**
 
 ### Option 2: Use Simple Commands
 

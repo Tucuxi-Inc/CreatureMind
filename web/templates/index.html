@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreatureMind - Your AI Companion</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <i class="fas fa-brain"></i>
+                        <span>CreatureMind</span>
+                    </div>
+                    <nav class="nav">
+                        <button id="newCreatureBtn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> New Creature
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+                <!-- Welcome Screen -->
+                <div id="welcomeScreen" class="welcome-screen">
+                    <div class="welcome-content">
+                        <h1>Welcome to CreatureMind 🧠</h1>
+                        <p>Create your own AI companion with authentic personality, emotions, and their own unique language.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature">
+                                <i class="fas fa-heart"></i>
+                                <h3>Emotional Intelligence</h3>
+                                <p>Your creature has real emotions and builds relationships with you over time.</p>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-comments"></i>
+                                <h3>Unique Language</h3>
+                                <p>Each creature speaks in their own way - barks, roars, chirps - and only translates when they trust you.</p>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-memory"></i>
+                                <h3>Persistent Memory</h3>
+                                <p>Your creature remembers every interaction and grows closer to you.</p>
+                            </div>
+                        </div>
+
+                        <button id="getStartedBtn" class="btn btn-large btn-primary">
+                            <i class="fas fa-magic"></i> Create Your First Creature
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Creature Creation Form -->
+                <div id="creationForm" class="creation-form hidden">
+                    <div class="form-container">
+                        <h2><i class="fas fa-star"></i> Create Your Creature</h2>
+                        
+                        <form id="creatureForm">
+                            <div class="form-group">
+                                <label for="creatureName">Creature Name</label>
+                                <input type="text" id="creatureName" name="name" placeholder="What would you like to call your creature?" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="creatureTemplate">Creature Type</label>
+                                <select id="creatureTemplate" name="template_id" required>
+                                    <option value="">Choose a creature type...</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="personalityTraits">Personality Traits (Optional)</label>
+                                <div class="trait-selector">
+                                    <div class="trait-options" id="traitOptions">
+                                        <!-- Populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="customPersonality">Custom Personality Description (Optional)</label>
+                                <textarea id="customPersonality" name="custom_personality" 
+                                         placeholder="Describe any special personality traits or background for your creature..."></textarea>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" id="cancelCreation" class="btn btn-secondary">Cancel</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-magic"></i> Bring to Life
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Creature Interface -->
+                <div id="creatureInterface" class="creature-interface hidden">
+                    <!-- Creature Status Panel -->
+                    <div class="creature-status">
+                        <div class="creature-info">
+                            <h2 id="creatureName-display">
+                                <span id="creature-emoji">🐕</span>
+                                <span id="creature-name-text">Loading...</span>
+                            </h2>
+                            <p id="creature-species" class="creature-species">Dog</p>
+                        </div>
+
+                        <div class="stats-container">
+                            <div class="stat" id="stat-happiness">
+                                <i class="fas fa-heart"></i>
+                                <div class="stat-info">
+                                    <span class="stat-name">Happiness</span>
+                                    <div class="stat-bar">
+                                        <div class="stat-fill" style="width: 75%"></div>
+                                    </div>
+                                    <span class="stat-value">75</span>
+                                </div>
+                            </div>
+                            <div class="stat" id="stat-energy">
+                                <i class="fas fa-bolt"></i>
+                                <div class="stat-info">
+                                    <span class="stat-name">Energy</span>
+                                    <div class="stat-bar">
+                                        <div class="stat-fill" style="width: 80%"></div>
+                                    </div>
+                                    <span class="stat-value">80</span>
+                                </div>
+                            </div>
+                            <div class="stat" id="stat-hunger">
+                                <i class="fas fa-utensils"></i>
+                                <div class="stat-info">
+                                    <span class="stat-name">Hunger</span>
+                                    <div class="stat-bar">
+                                        <div class="stat-fill" style="width: 40%"></div>
+                                    </div>
+                                    <span class="stat-value">40</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mood-indicator">
+                            <span id="mood-text">Happy</span>
+                            <div id="mood-emoji">😊</div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Buttons -->
+                    <div class="activity-panel">
+                        <h3>Activities</h3>
+                        <div class="activity-buttons">
+                            <button class="activity-btn" data-activity="feed">
+                                <i class="fas fa-utensils"></i>
+                                <span>Feed</span>
+                            </button>
+                            <button class="activity-btn" data-activity="play">
+                                <i class="fas fa-gamepad"></i>
+                                <span>Play</span>
+                            </button>
+                            <button class="activity-btn" data-activity="pet">
+                                <i class="fas fa-hand-holding-heart"></i>
+                                <span>Pet</span>
+                            </button>
+                            <button class="activity-btn" data-activity="walk">
+                                <i class="fas fa-walking"></i>
+                                <span>Walk</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Chat Interface -->
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <h3><i class="fas fa-comments"></i> Chat with Your Creature</h3>
+                            <div class="translation-status" id="translationStatus">
+                                <i class="fas fa-language"></i>
+                                <span>Translation Available</span>
+                            </div>
+                        </div>
+
+                        <div class="chat-messages" id="chatMessages">
+                            <!-- Messages appear here -->
+                        </div>
+
+                        <div class="chat-input">
+                            <div class="input-container">
+                                <input type="text" id="messageInput" placeholder="Say something to your creature...">
+                                <button id="sendButton" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay hidden">
+            <div class="loading-spinner">
+                <i class="fas fa-brain fa-spin"></i>
+                <p id="loadingText">Creating your creature...</p>
+            </div>
+        </div>
+
+        <!-- Error Modal -->
+        <div id="errorModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Something went wrong</h3>
+                    <button id="closeError" class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="errorMessage">An error occurred. Please try again.</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="errorOkBtn" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

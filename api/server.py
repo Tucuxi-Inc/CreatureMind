@@ -11,8 +11,11 @@ from typing import Dict, Any, Optional
 from uuid import UUID
 from datetime import datetime
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
 from core.models.creature import Creature
@@ -69,6 +72,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount static files and templates
+app.mount("/static", StaticFiles(directory="web/static"), name="static")
+web_templates = Jinja2Templates(directory="web/templates")
+
 
 @app.on_event("startup")
 async def startup_event():
@@ -102,6 +109,12 @@ async def load_templates():
                 print(f"Loaded template: {template.id}")
         except Exception as e:
             print(f"Error loading template {file_path}: {e}")
+
+
+@app.get("/", response_class=HTMLResponse)
+async def web_interface(request: Request):
+    """Serve the web interface"""
+    return web_templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/health")
