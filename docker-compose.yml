@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  creaturemind:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data  # For persistent creature data
+    restart: unless-stopped
+    
+  # Optional: Redis for distributed state management
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  redis_data:

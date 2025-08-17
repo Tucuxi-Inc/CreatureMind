@@ -1,0 +1,131 @@
+{
+  "id": "loyal_dog",
+  "name": "Loyal Dog",
+  "species": "dog", 
+  "category": "mammal",
+  "description": "A faithful canine companion with boundless energy and loyalty",
+  "default_personality_traits": ["loyal", "energetic", "food_motivated", "social"],
+  "temperament_options": ["playful", "calm", "protective", "friendly"],
+  
+  "stat_configs": {
+    "happiness": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.1,
+      "default_start": 75
+    },
+    "energy": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.2, 
+      "default_start": 80
+    },
+    "hunger": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.3,
+      "default_start": 40
+    }
+  },
+  
+  "language": {
+    "sounds": {
+      "happy": ["*woof*", "*yip yip*", "*excited panting*"],
+      "excited": ["*bark bark*", "*play bow*", "*zoomies*"],
+      "tired": ["*yawn*", "*heavy sigh*", "*slow tail wag*"],
+      "hungry": ["*whine*", "*pawing at bowl*", "*hopeful stare*"],
+      "sad": ["*whimper*", "*low whine*", "*droopy ears*"],
+      "loving": ["*gentle nuzzle*", "*content sigh*", "*tail wagging*"],
+      "neutral": ["*sniff*", "*ear perk*", "*head tilt*"],
+      "confused": ["*confused whimper*", "*head tilt*", "*questioning look*"]
+    },
+    "cultural_sounds": {
+      "en": {
+        "bark": "woof",
+        "small_bark": "yip", 
+        "excited_bark": "woof woof"
+      },
+      "ja": {
+        "bark": "ワン",
+        "small_bark": "キャン",
+        "excited_bark": "ワンワン"
+      },
+      "es": {
+        "bark": "guau",
+        "small_bark": "yip",
+        "excited_bark": "guau guau"
+      }
+    },
+    "translation_conditions": {
+      "happiness": "> 50",
+      "energy": "> 30"
+    },
+    "behavioral_patterns": [
+      "tail_wagging_when_happy",
+      "food_motivated_behavior", 
+      "pack_loyalty",
+      "play_bow_invitation",
+      "protective_of_family"
+    ]
+  },
+  
+  "activities": [
+    {
+      "name": "feed",
+      "stat_effects": {
+        "hunger": 30,
+        "happiness": 10
+      },
+      "energy_cost": 0,
+      "description": "giving the dog food",
+      "required_stats": {}
+    },
+    {
+      "name": "walk", 
+      "stat_effects": {
+        "happiness": 20,
+        "energy": -15
+      },
+      "energy_cost": 10,
+      "description": "taking the dog for a walk",
+      "required_stats": {
+        "energy": 20
+      }
+    },
+    {
+      "name": "play",
+      "stat_effects": {
+        "happiness": 25,
+        "energy": -10
+      }, 
+      "energy_cost": 15,
+      "description": "playing with the dog",
+      "required_stats": {
+        "energy": 25
+      }
+    },
+    {
+      "name": "pet",
+      "stat_effects": {
+        "happiness": 8,
+        "energy": 5
+      },
+      "energy_cost": 0,
+      "description": "petting and giving affection",
+      "required_stats": {}
+    }
+  ],
+  
+  "learnable_abilities": ["sit", "stay", "fetch", "roll_over", "high_five"],
+  "ability_difficulty": {
+    "sit": 1,
+    "stay": 2, 
+    "fetch": 3,
+    "roll_over": 4,
+    "high_five": 2
+  },
+  
+  "perception_prompt_additions": "Dogs are highly social and attuned to human emotions. They respond strongly to tone of voice and body language.",
+  "emotion_prompt_additions": "Dogs form strong emotional bonds with humans and are motivated by food, play, and social approval.",
+  "decision_prompt_additions": "Dogs are eager to please and will often prioritize their human's happiness over their own comfort."
+}
