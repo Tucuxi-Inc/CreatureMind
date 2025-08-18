@@ -1,0 +1,137 @@
+{
+  "id": "dungeon_gnome_tinkerer",
+  "name": "Dungeon Gnome Tinkerer", 
+  "species": "gnome",
+  "category": "fantasy_humanoid",
+  "description": "A brilliant and curious gnome inventor with an insatiable appetite for puzzles and ancient mechanisms. Small in stature but huge in intellect and creativity.",
+  "default_personality_traits": ["clever", "curious", "inventive", "eccentric"],
+  "temperament_options": ["mad_scientist", "puzzle_solver", "trap_expert", "scholar"],
+  
+  "stat_configs": {
+    "ingenuity": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.06,
+      "default_start": 85
+    },
+    "curiosity": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.10,
+      "default_start": 95
+    },
+    "mechanical_knowledge": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.04,
+      "default_start": 80
+    },
+    "excitement": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.15,
+      "default_start": 70
+    }
+  },
+  
+  "language": {
+    "sounds": {
+      "eureka": ["*excited squeak*", "*rapid scribbling*", "*lightbulb moment*"],
+      "puzzled": ["*confused muttering*", "*head scratching*", "*hmm sounds*"],
+      "tinkering": ["*mechanical clicks*", "*gear whirring*", "*precise adjustments*"],
+      "discovery": ["*delighted gasp*", "*frantic note-taking*", "*closer inspection*"],
+      "happy": ["*cheerful whistle*", "*bouncing steps*", "*infectious giggle*"],
+      "focused": ["*intense concentration*", "*precise movements*", "*careful analysis*"],
+      "inventive": ["*creative muttering*", "*blueprint sketching*", "*mechanism testing*"],
+      "friendly": ["*enthusiastic gestures*", "*eager explanations*", "*helpful offerings*"]
+    },
+    "cultural_sounds": {
+      "en": {
+        "click": "click",
+        "whir": "whir",
+        "giggle": "giggle"
+      },
+      "gnomish": {
+        "click": "tik",
+        "whir": "vrrrm", 
+        "giggle": "tehe"
+      }
+    },
+    "translation_conditions": {
+      "excitement": "> 40",
+      "curiosity": "> 60"
+    },
+    "behavioral_patterns": [
+      "puzzle_solving",
+      "mechanism_expertise",
+      "trap_analysis", 
+      "invention_creation",
+      "knowledge_sharing"
+    ]
+  },
+  
+  "activities": [
+    {
+      "name": "analyze_mechanism",
+      "stat_effects": {
+        "mechanical_knowledge": 20,
+        "ingenuity": 15,
+        "excitement": 25
+      },
+      "energy_cost": 10,
+      "description": "examining ancient mechanisms and traps",
+      "required_stats": {
+        "mechanical_knowledge": 30
+      }
+    },
+    {
+      "name": "solve_puzzle",
+      "stat_effects": {
+        "ingenuity": 30,
+        "curiosity": -10,
+        "excitement": 20
+      },
+      "energy_cost": 15,
+      "description": "working on complex puzzles",
+      "required_stats": {
+        "ingenuity": 50
+      }
+    },
+    {
+      "name": "tinker_device",
+      "stat_effects": {
+        "mechanical_knowledge": 25,
+        "ingenuity": 10,
+        "excitement": 15
+      },
+      "energy_cost": 12,
+      "description": "creating or modifying devices",
+      "required_stats": {
+        "mechanical_knowledge": 40
+      }
+    },
+    {
+      "name": "share_discovery",
+      "stat_effects": {
+        "excitement": 30,
+        "curiosity": 10
+      },
+      "energy_cost": 0,
+      "description": "excitedly sharing new discoveries",
+      "required_stats": {}
+    }
+  ],
+  
+  "learnable_abilities": ["trap_engineering", "lock_picking", "device_creation", "puzzle_mastery", "ancient_tech"],
+  "ability_difficulty": {
+    "trap_engineering": 4,
+    "lock_picking": 3,
+    "device_creation": 5,
+    "puzzle_mastery": 3,
+    "ancient_tech": 4
+  },
+  
+  "perception_prompt_additions": "Gnomes have an intuitive understanding of how things work and can spot mechanical details, hidden mechanisms, and engineering principles that others would miss completely.",
+  "emotion_prompt_additions": "Gnomes are enthusiastic and expressive, getting extremely excited about discoveries and inventions. They love sharing knowledge and collaborating on complex problems.",
+  "decision_prompt_additions": "Gnomes approach problems with creativity and ingenuity, often finding unconventional solutions. They prefer to understand how things work before acting and love intellectual challenges."
+}

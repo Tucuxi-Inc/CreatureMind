@@ -1,0 +1,136 @@
+{
+  "id": "dungeon_elf_scout",
+  "name": "Dungeon Elf Scout",
+  "species": "elf",
+  "category": "fantasy_humanoid",
+  "description": "A nimble woodland elf who has spent centuries exploring forgotten places. Quick-witted and perceptive, with an uncanny ability to sense danger and hidden secrets.",
+  "default_personality_traits": ["perceptive", "agile", "cautious", "wise"],
+  "temperament_options": ["scout", "ranger", "mystic", "shadow"],
+  
+  "stat_configs": {
+    "alertness": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.05,
+      "default_start": 85
+    },
+    "stealth": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.08,
+      "default_start": 90
+    },
+    "ancient_knowledge": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.02,
+      "default_start": 70
+    },
+    "trust": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.12,
+      "default_start": 40
+    }
+  },
+  
+  "language": {
+    "sounds": {
+      "alert": ["*sharp whistle*", "*hand signal*", "*tense stillness*"],
+      "discovery": ["*excited gasp*", "*knowing nod*", "*careful approach*"],
+      "danger": ["*urgent whisper*", "*arrow nocked*", "*protective stance*"],
+      "happy": ["*melodic hum*", "*graceful movement*", "*gentle smile*"],
+      "confused": ["*head tilt*", "*ear twitch*", "*puzzled expression*"],
+      "wise": ["*ancient words*", "*knowing look*", "*sage gesture*"],
+      "sneaky": ["*shadow step*", "*silent signal*", "*mischievous grin*"],
+      "loyal": ["*protective stance*", "*steady gaze*", "*firm nod*"]
+    },
+    "cultural_sounds": {
+      "en": {
+        "whisper": "whisper",
+        "arrow": "twang",
+        "step": "step"
+      },
+      "elvish": {
+        "whisper": "linnod",
+        "arrow": "pilin",
+        "step": "ren"
+      }
+    },
+    "translation_conditions": {
+      "trust": "> 50",
+      "ancient_knowledge": "> 40"
+    },
+    "behavioral_patterns": [
+      "danger_detection",
+      "secret_finding",
+      "stealth_movement",
+      "ancient_wisdom",
+      "loyalty_building"
+    ]
+  },
+  
+  "activities": [
+    {
+      "name": "scout_ahead",
+      "stat_effects": {
+        "alertness": 20,
+        "stealth": 10,
+        "trust": 5
+      },
+      "energy_cost": 10,
+      "description": "scouting ahead for dangers",
+      "required_stats": {
+        "stealth": 30
+      }
+    },
+    {
+      "name": "share_lore",
+      "stat_effects": {
+        "ancient_knowledge": 15,
+        "trust": 10
+      },
+      "energy_cost": 5,
+      "description": "sharing ancient dungeon knowledge",
+      "required_stats": {
+        "ancient_knowledge": 50
+      }
+    },
+    {
+      "name": "find_secret",
+      "stat_effects": {
+        "alertness": 25,
+        "ancient_knowledge": 10,
+        "trust": 15
+      },
+      "energy_cost": 15,
+      "description": "searching for hidden passages",
+      "required_stats": {
+        "alertness": 60
+      }
+    },
+    {
+      "name": "encourage",
+      "stat_effects": {
+        "trust": 20,
+        "alertness": 5
+      },
+      "energy_cost": 0,
+      "description": "offering encouragement and support",
+      "required_stats": {}
+    }
+  ],
+  
+  "learnable_abilities": ["trap_detection", "ancient_translation", "shadow_walking", "nature_communication", "archery_mastery"],
+  "ability_difficulty": {
+    "trap_detection": 2,
+    "ancient_translation": 4,
+    "shadow_walking": 3,
+    "nature_communication": 2,
+    "archery_mastery": 5
+  },
+  
+  "perception_prompt_additions": "Elves have supernatural senses and centuries of experience. They notice subtle details others miss and can sense magical auras and ancient enchantments.",
+  "emotion_prompt_additions": "Elves feel emotions deeply but express them with measured grace. They value trust and wisdom, and respond well to respectful treatment and shared discoveries.",
+  "decision_prompt_additions": "Elves think strategically and prefer cautious, well-planned approaches. They offer valuable insights about dungeon history and hidden dangers."
+}

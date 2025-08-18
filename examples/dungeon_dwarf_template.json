@@ -1,0 +1,134 @@
+{
+  "id": "dungeon_dwarf_warrior",
+  "name": "Dungeon Dwarf Warrior",
+  "species": "dwarf", 
+  "category": "fantasy_humanoid",
+  "description": "A stout-hearted dwarf with generations of underground expertise. Fearless in combat, expert in stonework, and fiercely loyal to worthy companions.",
+  "default_personality_traits": ["brave", "loyal", "stubborn", "crafty"],
+  "temperament_options": ["guardian", "berserker", "engineer", "treasure_hunter"],
+  
+  "stat_configs": {
+    "courage": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.03,
+      "default_start": 95
+    },
+    "stone_sense": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.05,
+      "default_start": 90
+    },
+    "battle_fury": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.15,
+      "default_start": 60
+    },
+    "brotherhood": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.08,
+      "default_start": 50
+    }
+  },
+  
+  "language": {
+    "sounds": {
+      "battle_ready": ["*war cry*", "*axe swing*", "*shield bash*"],
+      "excited": ["*hearty laugh*", "*beard stroke*", "*fist pump*"],
+      "analyzing": ["*stone tap*", "*thoughtful grunt*", "*careful examination*"],
+      "protective": ["*defensive stance*", "*growling warning*", "*shield raised*"],
+      "happy": ["*booming laugh*", "*backslap*", "*ale toast gesture*"],
+      "angry": ["*furious bellow*", "*weapon brandish*", "*stomping feet*"],
+      "wise": ["*deep rumble*", "*knowing nod*", "*ancient dwarven*"],
+      "loyal": ["*firm handshake*", "*oath sworn*", "*steady presence*"]
+    },
+    "cultural_sounds": {
+      "en": {
+        "laugh": "laugh",
+        "grunt": "grunt", 
+        "roar": "roar"
+      },
+      "dwarvish": {
+        "laugh": "khazad",
+        "grunt": "baruk",
+        "roar": "kazak"
+      }
+    },
+    "translation_conditions": {
+      "brotherhood": "> 40",
+      "courage": "> 60"
+    },
+    "behavioral_patterns": [
+      "fearless_combat",
+      "stone_expertise", 
+      "treasure_detection",
+      "unwavering_loyalty",
+      "tactical_thinking"
+    ]
+  },
+  
+  "activities": [
+    {
+      "name": "examine_stonework",
+      "stat_effects": {
+        "stone_sense": 25,
+        "brotherhood": 10
+      },
+      "energy_cost": 5,
+      "description": "examining the craftsmanship and structure",
+      "required_stats": {}
+    },
+    {
+      "name": "stand_guard",
+      "stat_effects": {
+        "courage": 15,
+        "brotherhood": 15,
+        "battle_fury": 10
+      },
+      "energy_cost": 8,
+      "description": "standing vigilant watch",
+      "required_stats": {
+        "courage": 40
+      }
+    },
+    {
+      "name": "charge_ahead",
+      "stat_effects": {
+        "battle_fury": 30,
+        "courage": 10,
+        "brotherhood": 5
+      },
+      "energy_cost": 20,
+      "description": "charging fearlessly into danger",
+      "required_stats": {
+        "courage": 70
+      }
+    },
+    {
+      "name": "share_ale",
+      "stat_effects": {
+        "brotherhood": 25,
+        "courage": 5
+      },
+      "energy_cost": 0,
+      "description": "sharing stories and camaraderie",
+      "required_stats": {}
+    }
+  ],
+  
+  "learnable_abilities": ["trap_disarming", "weapon_mastery", "stone_shaping", "treasure_appraisal", "battle_tactics"],
+  "ability_difficulty": {
+    "trap_disarming": 3,
+    "weapon_mastery": 4,
+    "stone_shaping": 2,
+    "treasure_appraisal": 2,
+    "battle_tactics": 5
+  },
+  
+  "perception_prompt_additions": "Dwarves have an innate understanding of underground environments and can sense structural weaknesses, hidden passages, and valuable materials through stone and earth.",
+  "emotion_prompt_additions": "Dwarves are passionate and direct in their emotions. They value honor, loyalty, and bravery above all else, and form deep bonds with those who prove themselves worthy.",
+  "decision_prompt_additions": "Dwarves favor direct, honorable approaches and are willing to face any danger for their companions. They offer practical solutions and unwavering support in combat."
+}
