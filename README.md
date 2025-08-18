@@ -107,6 +107,105 @@ INFO: Uvicorn running on http://0.0.0.0:8000
 
 ---
 
+## 🐳 Docker Setup (Alternative Method)
+
+### Option A: Quick Start with Docker Compose (Recommended)
+
+**Prerequisites**: Docker and Docker Compose installed
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Tucuxi-Inc/CreatureMind.git
+   cd CreatureMind
+   ```
+
+2. **Set up environment:**
+   ```bash
+   echo "OPENAI_API_KEY=your-api-key-here" > .env
+   ```
+
+3. **Start with Docker Compose:**
+   ```bash
+   docker-compose up -d
+   ```
+
+4. **Open your browser:** `http://localhost:8000`
+
+**🎉 CreatureMind is now running in Docker!**
+
+### Option B: Docker Build and Run
+
+1. **Build the image:**
+   ```bash
+   docker build -t creaturemind .
+   ```
+
+2. **Run the container:**
+   ```bash
+   docker run -d \
+     --name creaturemind \
+     -p 8000:8000 \
+     -e OPENAI_API_KEY="your-api-key-here" \
+     creaturemind
+   ```
+
+3. **Open your browser:** `http://localhost:8000`
+
+### 🌐 Cloud Deployment Options
+
+**Deploy to any cloud platform that supports Docker:**
+
+**🚀 Railway (Easiest):**
+1. Fork this repository on GitHub
+2. Connect Railway to your GitHub account
+3. Deploy with one click from your forked repo
+4. Add `OPENAI_API_KEY` environment variable in Railway dashboard
+
+**☁️ Google Cloud Run:**
+```bash
+# Build and push to Google Container Registry
+gcloud builds submit --tag gcr.io/[PROJECT-ID]/creaturemind
+
+# Deploy to Cloud Run
+gcloud run deploy --image gcr.io/[PROJECT-ID]/creaturemind --platform managed
+```
+
+**🔷 Azure Container Instances:**
+```bash
+# Build and push to Azure Container Registry
+az acr build --registry [REGISTRY-NAME] --image creaturemind .
+
+# Deploy to Container Instances
+az container create --resource-group [RESOURCE-GROUP] \
+  --name creaturemind --image [REGISTRY].azurecr.io/creaturemind:latest
+```
+
+**🟠 AWS ECS/Fargate:**
+1. Push image to Amazon ECR
+2. Create ECS task definition
+3. Deploy to Fargate cluster
+
+### Docker Management Commands
+
+```bash
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Restart with updates
+docker-compose down && docker-compose up -d
+
+# View running containers
+docker ps
+
+# Access container shell
+docker exec -it creaturemind bash
+```
+
+---
+
 ## 🐕 Create Your First Creature
 
 ### Option 1: Use the Web Interface (Recommended) 
@@ -163,10 +262,18 @@ This automatically creates a creature and has a conversation!
 ## 🐲 Create Any Creature Type You Can Imagine
 
 ### Built-in Templates:
+
+**🏠 Companion Creatures:**
 - **`loyal_dog`** - Faithful canine companion with hunger/energy needs
 - **`independent_cat`** - Graceful feline with independent spirit
 - **`ancient_dragon`** - Wise, territorial dragon with treasure satisfaction
 - **`mystical_fairy`** - Magical forest dweller with nature connection
+
+**🏰 Dungeon Exploration Specialists** *(Perfect for RPG games like "Forgotten")*:
+- **🧝‍♀️ `dungeon_elf_scout`** - Perceptive guide with stealth and ancient knowledge
+- **🪓 `dungeon_dwarf_warrior`** - Fearless protector with stone expertise and battle courage
+- **🔧 `dungeon_gnome_tinkerer`** - Brilliant inventor and puzzle-solving master
+- **✨ `dungeon_sprite_guide`** - Magical being with dungeon secrets and mystical powers
 
 ### 🎨 **NEW: Web-Based Custom Template Creator**
 
@@ -188,6 +295,41 @@ This automatically creates a creature and has a conversation!
 - 🐉 **Baby Dragon** - With growth potential and fire breath stats
 - 🌟 **Star Being** - With cosmic energy and telepathy power
 - 🧚‍♀️ **Garden Sprite** - With nature bond and seasonal mood cycles
+
+### 🎮 **Game Developer Spotlight: Dungeon Companions**
+
+**Perfect for RPG and adventure games!** Our dungeon exploration specialists were designed for the game "Forgotten" and showcase how CreatureMind can enhance gaming experiences:
+
+**🧝‍♀️ Elf Scout** - *The Strategic Guide*
+- **Game Role**: Reconnaissance and lore keeper
+- **Key Features**: Detects traps, finds secrets, shares ancient knowledge
+- **Dynamic Stats**: `alertness`, `stealth`, `ancient_knowledge`, `trust`
+- **Player Benefit**: Evolves based on exploration success and player trust
+
+**🪓 Dwarf Warrior** - *The Fearless Protector*
+- **Game Role**: Combat support and structural expert  
+- **Key Features**: Fearless in battle, understands dungeon architecture
+- **Dynamic Stats**: `courage`, `stone_sense`, `battle_fury`, `brotherhood`
+- **Player Benefit**: Becomes more protective as relationship deepens
+
+**🔧 Gnome Tinkerer** - *The Puzzle Master*
+- **Game Role**: Mechanism expert and inventor
+- **Key Features**: Solves complex puzzles, disarms traps, creates gadgets
+- **Dynamic Stats**: `ingenuity`, `curiosity`, `mechanical_knowledge`, `excitement`
+- **Player Benefit**: Gets more excited and helpful with each discovery
+
+**✨ Sprite Guide** - *The Magical Secret-Keeper*
+- **Game Role**: Mystical assistance and hidden knowledge
+- **Key Features**: Magical powers, reveals secrets, knows every corner
+- **Dynamic Stats**: `magic_essence`, `dungeon_secrets`, `playfulness`, `trust_level`
+- **Player Benefit**: Shares more secrets as trust builds over time
+
+**🎯 Why This Matters for Game Developers:**
+- **Authentic Personalities**: Each companion feels genuinely different
+- **Dynamic Relationships**: Companions evolve based on player behavior
+- **Gameplay Enhancement**: Different companions enable different strategies
+- **Infinite Replayability**: Relationships develop differently each playthrough
+- **Easy Integration**: REST API makes integration simple for any game engine
 
 ### Advanced Custom Creation (File-Based):
 
