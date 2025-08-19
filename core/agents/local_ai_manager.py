@@ -24,13 +24,13 @@ class LocalAIConfig:
     """Configuration for local AI inference"""
     server_port: int = 8081
     host: str = "127.0.0.1"
-    ctx_size: int = 128000  # Larger context size for gemma-3-4b model
+    ctx_size: int = 32768   # Context size for gemma-3-270m model
     threads: int = 8       # Optimized for Apple Silicon
     gpu_layers: int = 99   # Use Metal GPU acceleration
     batch_size: int = 512  # Optimized batch size
     temperature: float = 0.7
     timeout: int = 600     # 10 minute timeout
-    model_name: str = "gemma-3-4b-it-Q4_0.gguf"  # Default model - more capable 4B parameter model
+    model_name: str = "gemma-3-270m-it-F16.gguf"  # Default model - lightweight 270M parameter model
 
 
 class LocalAIManager:
@@ -132,16 +132,16 @@ class LocalAIManager:
     def _select_default_model(self) -> str:
         """Select the best available model as default"""
         if not self.available_models:
-            return "gemma-3-4b-it-Q4_0.gguf"  # Fallback to 4B model
+            return "gemma-3-270m-it-F16.gguf"  # Fallback to 270M model
         
-        # Priority order: try to find gemma-3-4b first (more capable)
-        for filename in self.available_models:
-            if "4b" in filename.lower():
-                return filename
-        
-        # Fallback to 270m model if 4B not available
+        # Priority order: try to find gemma-3-270m first (lightweight default)
         for filename in self.available_models:
             if "270m" in filename.lower():
+                return filename
+        
+        # Fallback to 4B model if 270M not available
+        for filename in self.available_models:
+            if "4b" in filename.lower():
                 return filename
         
         # If not found, return the first available model

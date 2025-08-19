@@ -568,11 +568,17 @@ CreatureMind now supports multiple Local AI models with seamless switching:
 - **Performance Information**: Clear model comparisons showing speed vs intelligence tradeoffs
 - **Custom Model Support**: Add any GGUF model to the models folder for automatic detection
 
-#### 🎯 Enhanced User Experience
+#### 🎯 Enhanced User Experience & Defaults
+- **Optimized Default Model**: Now starts with lightweight 270M model for faster initial experience
 - **Smart Model Recommendations**: Interface guides users to appropriate model for their needs
 - **Real-time Model Status**: Live display of current model and server health
 - **Seamless Switching**: Models change without losing creature state or conversation history
 - **Repository Optimization**: Only includes lightweight 270M model, users download larger models as needed
+
+#### 🐛 Bug Fixes
+- **Fixed Default Model Priority**: System now correctly defaults to 270M model instead of 4B
+- **Verified Web Interface**: Model selection modal and switching functionality working perfectly
+- **Improved Startup Experience**: Faster initial load with lightweight model by default
 
 ### Version 1.6.0 - FREE Local AI Integration
 
