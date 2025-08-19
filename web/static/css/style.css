@@ -1280,3 +1280,52 @@ body {
         text-align: center;
     }
 }
+
+/* Activity feedback animations */
+.stat-updating {
+    animation: statPulse 0.5s ease-in-out;
+}
+
+.stat-changed {
+    animation: statChange 1s ease-in-out;
+    color: var(--accent-color) !important;
+    font-weight: 700 !important;
+}
+
+@keyframes statPulse {
+    0%, 100% {
+        transform: scaleY(1);
+    }
+    50% {
+        transform: scaleY(1.1);
+    }
+}
+
+@keyframes statChange {
+    0% {
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.15);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Translation hint styling */
+.translation {
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.translation:has-text("💡") {
+    background: rgba(16, 185, 129, 0.1);
+    border-left: 3px solid var(--accent-color);
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+}

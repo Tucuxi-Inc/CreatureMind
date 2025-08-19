@@ -170,7 +170,8 @@ class CreatureMindApp {
     async performActivity(activity) {
         if (!this.currentCreature) return;
 
-        this.addMessage('activity', `🎮 Performing activity: ${activity}`);
+        // Add activity initiation message
+        this.addMessage('activity', `🎮 ${activity.charAt(0).toUpperCase() + activity.slice(1)}ing your ${this.currentCreature.species}...`);
 
         try {
             const response = await fetch(`/creatures/${this.currentCreature.creature_id}/activity`, {
@@ -190,10 +191,8 @@ class CreatureMindApp {
             // Add creature response to activity
             this.addCreatureMessage(data);
             
-            // Update stats
-            if (data.stats_delta && Object.keys(data.stats_delta).length > 0) {
-                await this.updateCreatureStats();
-            }
+            // Always update stats after activities (activities should always affect stats)
+            await this.updateCreatureStats();
 
         } catch (error) {
             console.error('Failed to perform activity:', error);
@@ -238,7 +237,12 @@ class CreatureMindApp {
         } else if (!data.can_translate) {
             const unavailable = document.createElement('div');
             unavailable.className = 'translation';
-            unavailable.textContent = '🔒 Translation not available (creature needs to trust you more)';
+            // Use translation_hint if available, otherwise default message
+            if (data.translation_hint) {
+                unavailable.textContent = `💡 ${data.translation_hint}`;
+            } else {
+                unavailable.textContent = '🔒 Translation not available (creature needs to trust you more)';
+            }
             messageContainer.appendChild(unavailable);
         }
         
@@ -329,8 +333,25 @@ class CreatureMindApp {
                 const fill = statElement.querySelector('.stat-fill');
                 const valueElement = statElement.querySelector('.stat-value');
                 
-                if (fill) fill.style.width = `${value}%`;
-                if (valueElement) valueElement.textContent = Math.round(value);
+                if (fill) {
+                    // Add animation class for visual feedback
+                    fill.classList.add('stat-updating');
+                    setTimeout(() => fill.classList.remove('stat-updating'), 500);
+                    
+                    fill.style.width = `${value}%`;
+                }
+                if (valueElement) {
+                    // Show the change visually
+                    const oldValue = parseInt(valueElement.textContent) || 0;
+                    const newValue = Math.round(value);
+                    valueElement.textContent = newValue;
+                    
+                    // Add visual indicator for changes
+                    if (newValue !== oldValue) {
+                        valueElement.classList.add('stat-changed');
+                        setTimeout(() => valueElement.classList.remove('stat-changed'), 1000);
+                    }
+                }
                 
                 // Update color based on value
                 if (fill) {
