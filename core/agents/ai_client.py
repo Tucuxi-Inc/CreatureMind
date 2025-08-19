@@ -144,9 +144,22 @@ class MockAIClient(AIClient):
         temperature: float = 0.7,
         max_tokens: int = 500
     ) -> str:
-        """Return varied mock responses for testing"""
+        """Return varied mock responses for testing with chat history awareness"""
         
         self.call_count += 1
+        
+        # Analyze chat history for better responses (when available)
+        chat_context = ""
+        if chat_history and len(chat_history) > 0:
+            recent_messages = chat_history[-4:]  # Last 4 messages
+            chat_context = f" (continuing conversation with {len(recent_messages)} recent exchanges)"
+            
+            # Check for specific patterns in chat history
+            user_messages = [msg['content'] for msg in recent_messages if msg['role'] == 'user']
+            if any('treasure' in msg.lower() for msg in user_messages):
+                chat_context += " - user mentioned treasure"
+            if any('play' in msg.lower() for msg in user_messages):
+                chat_context += " - user suggested playing"
         
         # Select varied responses based on system prompt and call count
         if "Perception Agent" in system_prompt:
@@ -155,10 +168,17 @@ class MockAIClient(AIClient):
             responses = self.base_responses["emotion"]
         elif "Memory Agent" in system_prompt:
             responses = self.base_responses["memory"]
+            # Enhance memory responses with chat context
+            if chat_context:
+                base_response = responses[self.call_count % len(responses)]
+                return base_response.replace("user is friendly", f"user is friendly{chat_context}")
         elif "Decision" in system_prompt:
             responses = self.base_responses["decision"]
         elif "Translator" in system_prompt:
             responses = self.base_responses["translation"]
+            # Enhance translation with chat context awareness
+            if "treasure" in chat_context:
+                return "CREATURE_LANGUAGE: *excited yipping* *searching motions*\nHUMAN_TRANSLATION: A treasure hunt sounds exciting! I remember you mentioning that!\nDEBUG: Responding to previous treasure conversation"
         else:
             return "RESPONSE: *generic creature sound* *neutral behavior*"
         

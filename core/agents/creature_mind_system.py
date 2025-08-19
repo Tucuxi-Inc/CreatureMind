@@ -104,22 +104,24 @@ class CreatureMindSystem:
             response.emotional_state = emotion_result.get("primary_emotion", "neutral")
             response.debug_info["emotion"] = emotion_result
             
-            # 3. Memory Agent - Provide relevant past context
+            # 3. Memory Agent - Provide relevant past context (with chat history)
             memory_result = await self.memory_agent.analyze(
                 current_input=user_input,
                 perception_data=perception_result,
                 emotion_data=emotion_result,
-                creature_state=current_state
+                creature_state=current_state,
+                chat_history=self.chat_history
             )
             response.debug_info["memory"] = memory_result
             
-            # 4. Decision Agent - Form the core response
+            # 4. Decision Agent - Form the core response (with chat history for context)
             decision_result = await self.decision_agent.decide(
                 perception_data=perception_result,
                 emotion_data=emotion_result,
                 memory_data=memory_result,
                 creature_state=current_state,
-                template=self.template
+                template=self.template,
+                chat_history=self.chat_history
             )
             response.debug_info["decision"] = decision_result
             

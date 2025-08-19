@@ -5,7 +5,7 @@ Adapted from the decision making logic in WiddlePupper's AIAgentSystem.swift
 Enhanced with trait-based utility decision making.
 """
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 import numpy as np
 from ..models.creature import CreatureState
 from ..models.creature_template import CreatureTemplate
@@ -39,7 +39,8 @@ class DecisionAgent:
         emotion_data: Dict[str, Any],
         memory_data: Dict[str, Any],
         creature_state: CreatureState,
-        template: CreatureTemplate
+        template: CreatureTemplate,
+        chat_history: Optional[List[Dict[str, str]]] = None
     ) -> Dict[str, Any]:
         """
         Make the core decision about how the creature should respond
@@ -83,6 +84,7 @@ class DecisionAgent:
             response = await self.ai_client.generate_response(
                 system_prompt=system_prompt,
                 user_message=user_message,
+                chat_history=chat_history,
                 temperature=0.7
             )
             
@@ -136,12 +138,14 @@ Species-Specific Behaviors:
 
 {template.decision_prompt_additions}
 
-Based on all agent inputs, form a response that:
+Based on all agent inputs and the recent conversation history, form a response that:
 1. Reflects the determined emotional state
 2. Considers personality and species traits
-3. Incorporates relevant memories and context
-4. Maintains authentic creature behavior
-5. MOST IMPORTANTLY: Matches current physical state
+3. Incorporates relevant memories and conversation context
+4. References or builds upon recent topics/interactions when appropriate
+5. Maintains authentic creature behavior
+6. Shows awareness of ongoing relationship development
+7. MOST IMPORTANTLY: Matches current physical state
 
 Physical state constraints:
 - Low energy: avoid energetic actions, use tired behaviors
@@ -302,13 +306,15 @@ Species-Specific Behaviors:
 CRITICAL: Your response MUST align with the {action_style} action style. This means:
 {self._get_style_specific_guidance(action_style)}
 
-Based on all agent inputs, form a response that:
+Based on all agent inputs and the conversation history, form a response that:
 1. Reflects the determined emotional state
 2. STRONGLY emphasizes the selected action style ({action_style})
 3. Incorporates dominant personality traits: {', '.join([trait for trait, _ in dominant_traits[:3]])}
-4. Considers relevant memories and context  
-5. Maintains authentic creature behavior
-6. Matches current physical state and energy level
+4. Considers relevant memories and conversation context
+5. References or builds upon recent topics/interactions when appropriate
+6. Shows awareness of relationship development through conversation history
+7. Maintains authentic creature behavior
+8. Matches current physical state and energy level
 
 Physical state constraints:
 - Low energy: avoid energetic actions, use tired behaviors
