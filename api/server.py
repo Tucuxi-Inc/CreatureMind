@@ -110,6 +110,7 @@ class CreatureResponse(BaseModel):
     creature_language: str
     human_translation: Optional[str] = None
     can_translate: bool
+    translation_hint: Optional[str] = None  # Helpful hint when translation isn't available
     emotional_state: str
     stats_delta: Dict[str, float]
     debug_info: Optional[Dict[str, Any]] = None
@@ -269,6 +270,7 @@ async def send_message(creature_id: str, request: MessageRequest) -> CreatureRes
         creature_language=response.creature_language,
         human_translation=response.human_translation,
         can_translate=response.can_translate,
+        translation_hint=response.translation_hint,
         emotional_state=response.emotional_state,
         stats_delta=response.stats_delta,
         debug_info=response.debug_info
@@ -288,6 +290,7 @@ async def perform_activity(creature_id: str, request: ActivityRequest) -> Creatu
         creature_language=response.creature_language,
         human_translation=response.human_translation,
         can_translate=response.can_translate,
+        translation_hint=response.translation_hint,
         emotional_state=response.emotional_state,
         stats_delta=response.stats_delta,
         debug_info=response.debug_info

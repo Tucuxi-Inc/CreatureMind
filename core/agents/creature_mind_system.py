@@ -28,6 +28,7 @@ class CreatureMindResponse:
         self.creature_language: str = ""
         self.human_translation: Optional[str] = None
         self.can_translate: bool = False
+        self.translation_hint: Optional[str] = None  # Helpful hint when translation isn't available
         self.emotional_state: str = "neutral"
         self.stats_delta: Dict[str, float] = {}
         self.memory_created: Optional[Memory] = None
@@ -141,6 +142,9 @@ class CreatureMindSystem:
             response.can_translate = translation_result["can_translate"]
             if response.can_translate:
                 response.human_translation = translation_result["human_translation"]
+            else:
+                # Include helpful hint when translation isn't available
+                response.translation_hint = translation_result.get("translation_hint")
             
             response.debug_info["translation"] = translation_result
             

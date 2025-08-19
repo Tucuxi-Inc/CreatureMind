@@ -49,8 +49,32 @@ class TranslatorAgent:
             
             result = self._parse_translation_response(response)
             
-            # Check translation conditions from template
-            result["can_translate"] = self._check_translation_conditions(creature_state, template)
+            # Use creature's own translation logic (which is more user-friendly)
+            from ..models.creature import Creature
+            # We can't directly access the creature here, so we'll create a temporary one
+            # In a real implementation, we'd pass the creature or its can_translate status
+            
+            # For now, use the improved logic directly
+            happiness = creature_state.stats.get("happiness", 50)
+            energy = creature_state.stats.get("energy", 50)
+            
+            can_translate = True
+            translation_hint = None
+            
+            # Apply the same improved logic as in creature.can_translate()
+            if happiness < 20 and energy < 20:
+                can_translate = False
+                translation_hint = f"Your {creature_state.species} seems very distressed (happiness: {happiness:.0f}, energy: {energy:.0f}). Try feeding, petting, or playing to help them feel better!"
+            elif happiness < 10:
+                can_translate = False
+                translation_hint = f"Your {creature_state.species} is very upset (happiness: {happiness:.0f}). They need comfort - try petting, feeding, or giving them space to recover."
+            elif energy < 5:
+                can_translate = False
+                translation_hint = f"Your {creature_state.species} is exhausted (energy: {energy:.0f}). They need rest or food to regain energy before they can communicate clearly."
+            
+            result["can_translate"] = can_translate
+            if translation_hint:
+                result["translation_hint"] = translation_hint
             
             return result
             

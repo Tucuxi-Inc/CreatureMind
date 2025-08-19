@@ -152,15 +152,31 @@ class Creature(BaseModel):
         Determine if this creature is in a state to allow human language translation
         Based on creature template rules and current stats
         """
-        # Default logic - can be overridden by creature templates
-        # Generally requires creature to be in a positive state
+        # More user-friendly translation rules
+        # Creatures should generally be willing to communicate unless they're really upset
         
-        # Common stats that might affect translation ability
         happiness = self.stats.get_stat("happiness")
         energy = self.stats.get_stat("energy")
         
-        # Basic rule: creature must be reasonably happy and alert
-        return happiness >= 50 and energy >= 30
+        # Very restrictive conditions - only refuse translation if creature is in bad shape
+        # This creates a better user experience where creatures are generally communicative
+        
+        # Won't translate if BOTH happiness AND energy are very low (indicating serious distress)
+        if happiness < 20 and energy < 20:
+            return False
+            
+        # Won't translate if happiness is extremely low (creature is very upset/depressed)
+        if happiness < 10:
+            return False
+            
+        # Won't translate if energy is extremely low (creature is exhausted/unconscious)
+        if energy < 5:
+            return False
+            
+        # In all other cases, creature will try to communicate
+        # This includes when stats are moderate (30-50) - creature might be tired or a bit unhappy
+        # but still willing to communicate their needs
+        return True
     
     def get_mood_description(self) -> str:
         """Get a text description of the creature's current mood based on stats"""

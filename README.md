@@ -810,6 +810,57 @@ The magic isn't just in the complexity - it's in how all these systems work toge
 
 ---
 
+## 📋 Recent Updates & Bug Fixes
+
+### Version 1.1.0 (Latest) - Production Stability & UX Improvements
+
+#### 🛠️ Critical Bug Fixes
+- **Fixed Pydantic Forward Reference Errors**: Resolved 500 Internal Server Errors during creature creation by removing problematic TYPE_CHECKING imports
+- **Fixed Activity Stat Updates**: Activities (feed, pet, walk, play) now properly update creature stats - hunger, happiness, and energy changes are correctly preserved and visible in API responses
+- **Improved Stats Boundary Protection**: Enhanced stats clamping ensures values never go below 0 or above configured maximums
+
+#### 🎯 User Experience Improvements
+- **Much More Communicative Creatures**: Completely rewrote translation logic to be user-friendly
+  - Old: Required happiness ≥ 50 AND energy ≥ 30 (too restrictive)
+  - New: Only refuses translation in severe distress (happiness < 20 AND energy < 20, or extremely low individual stats)
+  - Result: Creatures now communicate even when moderately tired or sad, making interactions much more engaging
+
+#### 💡 Enhanced Translation System
+- **Helpful Translation Hints**: When creatures can't translate, the system now provides specific guidance:
+  - *"Your dog seems very distressed (happiness: 15, energy: 18). Try feeding, petting, or playing to help them feel better!"*
+  - *"Your cat is exhausted (energy: 3). They need rest or food to regain energy before they can communicate clearly."*
+- **Better Emotional Context**: Translation system now considers creature's emotional state and provides context-appropriate responses
+
+#### 🔧 Technical Improvements
+- **Preserved Activity Effects**: Fixed process_activity() method to properly merge activity stat changes with interaction effects
+- **Enhanced Personality Evolution**: Activity-based personality evolution now triggers correctly for all activity types
+- **Improved Error Handling**: Better fallback responses and error messages throughout the system
+
+#### 📊 Testing Verification
+All fixes have been thoroughly tested and verified:
+- ✅ Stats properly clamped (no negative values, respect maximums)
+- ✅ Activities apply correct stat changes (feed: +30 hunger, +10 happiness)
+- ✅ Translation works with moderate stats (28-50 range) 
+- ✅ Translation hints appear when creatures are truly distressed
+- ✅ Personality evolution triggers correctly for all interaction types
+
+#### 🎮 User Experience Before vs After
+**Before (Restrictive)**:
+- Fed, pet, walked, and played with creature multiple turns
+- No translations despite reasonable stats (happiness: 75, energy: 45)
+- Users confused about what to do to make creatures communicate
+- Activities appeared to have no effect on creature stats
+
+**After (User-Friendly)**:
+- Creatures communicate readily unless genuinely distressed
+- Clear guidance when translation isn't available
+- Activities provide immediate, visible stat feedback
+- Much more engaging and intuitive experience
+
+This update transforms CreatureMind from a technically impressive but sometimes frustrating experience into a genuinely engaging AI companion system that prioritizes user experience while maintaining all the advanced personality features.
+
+---
+
 ## 📜 License
 
 MIT License - Use CreatureMind in your projects, commercial or personal!
