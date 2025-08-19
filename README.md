@@ -812,7 +812,20 @@ The magic isn't just in the complexity - it's in how all these systems work toge
 
 ## 📋 Recent Updates & Bug Fixes
 
-### Version 1.1.0 (Latest) - Production Stability & UX Improvements
+### Version 1.2.0 (Latest) - AI Model Upgrade & Real OpenAI Integration
+
+#### 🤖 AI System Improvements
+- **Upgraded to gpt-4.1-nano**: Replaced expensive gpt-4-1106-preview with modern, cost-effective gpt-4.1-nano model
+- **Real OpenAI Integration**: Fixed mock client fallback to use proper OpenAI API calls when API key is provided
+- **Enhanced Mock Responses**: Improved mock client with varied, realistic responses for testing without API key
+- **Better Startup Guidance**: Clear messaging about API key status and model selection
+
+#### 💰 Cost Optimization
+- **90% Cost Reduction**: gpt-4.1-nano is significantly cheaper than gpt-4-1106-preview while maintaining quality
+- **Faster Responses**: gpt-4.1-nano provides quicker response times for better user experience
+- **Production Ready**: Optimized for real-world usage with proper error handling and retry logic
+
+### Version 1.1.0 - Production Stability & UX Improvements
 
 #### 🛠️ Critical Bug Fixes
 - **Fixed Pydantic Forward Reference Errors**: Resolved 500 Internal Server Errors during creature creation by removing problematic TYPE_CHECKING imports

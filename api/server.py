@@ -151,9 +151,12 @@ async def startup_event():
     # Create AI client
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        print("Warning: No OpenAI API key found. Using mock client.")
+        print("🚨 Warning: No OpenAI API key found. Using mock client.")
+        print("   Set OPENAI_API_KEY environment variable to enable real AI responses.")
+        print("   Mock responses are limited and not realistic.")
         client_type = "mock"
     else:
+        print("✅ OpenAI API key found. Using real AI client with gpt-4.1-nano model.")
         client_type = "openai"
     
     global ai_client
