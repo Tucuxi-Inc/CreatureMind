@@ -291,8 +291,13 @@ class CreatureMindApp {
             if (!response.ok) throw new Error('Failed to fetch stats');
             
             const status = await response.json();
+            
+            // Update the stored creature data with fresh stats
+            this.currentCreature.stats = status.stats;
+            
             this.updateStatsDisplay(status.stats);
             this.updateMoodDisplay(status.mood);
+            this.updateTranslationStatus(status.can_translate);
             
         } catch (error) {
             console.error('Failed to update stats:', error);

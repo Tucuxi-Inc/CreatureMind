@@ -106,7 +106,7 @@ class MockAIClient(AIClient):
             "emotion": "EMOTION: happy\nTRANSLATE: yes\nSTATE_CHANGES: happiness +5",
             "memory": "RELEVANT_MEMORIES: recent greeting\nPATTERNS: user is friendly",
             "decision": "ACTION: tail wag\nVOCALIZATION: happy bark\nINTENTION: show friendliness",
-            "translation": "BARK: *woof woof* *tail wagging*\nTRANSLATION: Hello there, friend!"
+            "translation": "CREATURE_LANGUAGE: *woof woof* *tail wagging*\nHUMAN_TRANSLATION: Hello there, friend!\nDEBUG: Mock translation for testing"
         }
     
     async def generate_response(
