@@ -9,13 +9,19 @@ Based on "Trait-driven Decision Model for LLM-Wrapped Agent Conversations"
 """
 
 import numpy as np
-from typing import Dict, List, Optional, Any, Union, TYPE_CHECKING
+from typing import Dict, List, Optional, Any, Union
 from pydantic import BaseModel, Field
 from enum import Enum
 
-if TYPE_CHECKING:
+# Import without TYPE_CHECKING to avoid forward reference issues
+try:
     from .personality_evolution import PersonalityShift, EmotionalState
     from .learning_adaptation import LearningMemory
+except ImportError:
+    # Fallback for cases where these modules are not available
+    PersonalityShift = None
+    EmotionalState = None
+    LearningMemory = None
 
 
 class PersonalityMode(str, Enum):
@@ -284,13 +290,13 @@ class EnhancedPersonality(BaseModel):
     recent_interactions_influence: float = 0.1  # How much recent interactions affect personality
     
     # Evolution and adaptation system
-    personality_shifts: List["PersonalityShift"] = Field(default_factory=list)
+    personality_shifts: List[Any] = Field(default_factory=list)  # PersonalityShift objects
     initial_trait_vector: Optional[List[float]] = None  # Baseline for measuring evolution
-    current_emotional_state: Optional["EmotionalState"] = None
+    current_emotional_state: Optional[Any] = None  # EmotionalState object
     evolution_enabled: bool = True  # Whether personality can evolve over time
     
     # Learning and adaptation system
-    learned_patterns: List["LearningMemory"] = Field(default_factory=list)
+    learned_patterns: List[Any] = Field(default_factory=list)  # LearningMemory objects
     learning_enabled: bool = True  # Whether creature can learn and adapt
     adaptation_rate: float = 0.1  # How quickly creature adapts to learned patterns
     
