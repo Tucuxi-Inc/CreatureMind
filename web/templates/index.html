@@ -20,6 +20,9 @@
                         <span>CreatureMind</span>
                     </div>
                     <nav class="nav">
+                        <button id="apiKeyBtn" class="btn btn-outline">
+                            <i class="fas fa-key"></i> API Key
+                        </button>
                         <button id="newCreatureBtn" class="btn btn-primary">
                             <i class="fas fa-plus"></i> New Creature
                         </button>
@@ -82,19 +85,163 @@
                                 </select>
                             </div>
 
+                            <!-- Personality Mode Selection -->
                             <div class="form-group">
-                                <label for="personalityTraits">Personality Traits (Optional)</label>
-                                <div class="trait-selector">
-                                    <div class="trait-options" id="traitOptions">
-                                        <!-- Populated by JavaScript -->
+                                <label for="personalityMode">Personality System</label>
+                                <div class="personality-mode-selector">
+                                    <div class="mode-option active" data-mode="simple">
+                                        <div class="mode-header">
+                                            <input type="radio" name="personality_mode" value="simple" id="modeSimple" checked>
+                                            <label for="modeSimple">
+                                                <i class="fas fa-star"></i>
+                                                <strong>Simple Personality</strong>
+                                            </label>
+                                        </div>
+                                        <p class="mode-description">Choose 3-5 key personality traits for quick setup</p>
+                                    </div>
+                                    <div class="mode-option" data-mode="complex">
+                                        <div class="mode-header">
+                                            <input type="radio" name="personality_mode" value="complex" id="modeComplex">
+                                            <label for="modeComplex">
+                                                <i class="fas fa-brain"></i>
+                                                <strong>Advanced Personality</strong>
+                                            </label>
+                                        </div>
+                                        <p class="mode-description">50-dimensional trait system with archetypes and detailed customization</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="customPersonality">Custom Personality Description (Optional)</label>
-                                <textarea id="customPersonality" name="custom_personality" 
-                                         placeholder="Describe any special personality traits or background for your creature..."></textarea>
+                            <!-- Simple Personality Options -->
+                            <div id="simplePersonalityPanel" class="personality-panel">
+                                <div class="form-group">
+                                    <label for="personalityTraits">Personality Traits</label>
+                                    <div class="trait-selector">
+                                        <div class="trait-options" id="traitOptions">
+                                            <!-- Populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="customPersonality">Custom Description (Optional)</label>
+                                    <textarea id="customPersonality" name="custom_personality" 
+                                             placeholder="Describe any special personality traits or background for your creature..."></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="baseTemperament">Base Temperament</label>
+                                    <select id="baseTemperament" name="base_temperament">
+                                        <option value="neutral">Neutral</option>
+                                        <option value="calm">Calm</option>
+                                        <option value="energetic">Energetic</option>
+                                        <option value="gentle">Gentle</option>
+                                        <option value="bold">Bold</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Advanced Personality Options -->
+                            <div id="complexPersonalityPanel" class="personality-panel hidden">
+                                <!-- Archetype Selection -->
+                                <div class="form-group">
+                                    <label for="personalityMethod">Configuration Method</label>
+                                    <div class="method-selector">
+                                        <div class="method-option active" data-method="archetype">
+                                            <input type="radio" name="personality_method" value="archetype" id="methodArchetype" checked>
+                                            <label for="methodArchetype">
+                                                <i class="fas fa-user-graduate"></i>
+                                                <strong>Famous Personality</strong>
+                                                <p>Start with a famous personality archetype</p>
+                                            </label>
+                                        </div>
+                                        <div class="method-option" data-method="custom">
+                                            <input type="radio" name="personality_method" value="custom" id="methodCustom">
+                                            <label for="methodCustom">
+                                                <i class="fas fa-sliders-h"></i>
+                                                <strong>Custom Traits</strong>
+                                                <p>Manually adjust individual personality traits</p>
+                                            </label>
+                                        </div>
+                                        <div class="method-option" data-method="blend">
+                                            <input type="radio" name="personality_method" value="blend" id="methodBlend">
+                                            <label for="methodBlend">
+                                                <i class="fas fa-magic"></i>
+                                                <strong>Personality Blend</strong>
+                                                <p>Combine multiple famous personalities</p>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Archetype Selection Panel -->
+                                <div id="archetypePanel" class="method-panel">
+                                    <div class="form-group">
+                                        <label for="archetypeSelect">Choose a Famous Personality</label>
+                                        <div class="archetype-grid" id="archetypeGrid">
+                                            <!-- Populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Custom Traits Panel -->
+                                <div id="customTraitsPanel" class="method-panel hidden">
+                                    <div class="form-group">
+                                        <label>Adjust Personality Traits</label>
+                                        <div class="trait-sliders" id="traitSliders">
+                                            <!-- Populated by JavaScript -->
+                                        </div>
+                                        <div class="slider-controls">
+                                            <button type="button" id="resetSliders" class="btn btn-sm btn-secondary">Reset to Neutral</button>
+                                            <button type="button" id="randomizeSliders" class="btn btn-sm">Randomize</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Blend Panel -->
+                                <div id="blendPanel" class="method-panel hidden">
+                                    <div class="form-group">
+                                        <label>Blend Personalities</label>
+                                        <div class="blend-controls" id="blendControls">
+                                            <!-- Populated by JavaScript -->
+                                        </div>
+                                        <button type="button" id="addBlendArchetype" class="btn btn-sm">+ Add Personality</button>
+                                    </div>
+                                </div>
+
+                                <!-- Trait Modifications -->
+                                <div class="form-group">
+                                    <label>Fine-tune Traits (Optional)</label>
+                                    <div class="trait-modifications" id="traitModifications">
+                                        <p class="help-text">Select specific traits to adjust from the base personality:</p>
+                                        <div class="modification-controls">
+                                            <select id="modifyTraitSelect">
+                                                <option value="">Select a trait to modify...</option>
+                                            </select>
+                                            <input type="range" id="modifyTraitSlider" min="0" max="1" step="0.01" value="0.5" disabled>
+                                            <span id="modifyTraitValue">0.50</span>
+                                            <button type="button" id="addModification" class="btn btn-sm" disabled>Add</button>
+                                        </div>
+                                        <div id="activeModifications" class="active-modifications">
+                                            <!-- Populated with active modifications -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Personality Preview -->
+                                <div class="form-group">
+                                    <label>Personality Preview</label>
+                                    <div class="personality-preview" id="personalityPreview">
+                                        <div class="preview-traits">
+                                            <h4>Top Traits:</h4>
+                                            <div id="previewTopTraits">Select a personality configuration to see preview</div>
+                                        </div>
+                                        <div class="preview-description">
+                                            <h4>Personality Summary:</h4>
+                                            <div id="previewDescription">This creature will have a unique personality based on your selections</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="form-actions">
@@ -339,6 +486,66 @@
                 </div>
                 <div class="modal-footer">
                     <button id="errorOkBtn" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Key Modal -->
+        <div id="apiKeyModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-key"></i> OpenAI API Key Settings</h3>
+                    <button id="closeApiKey" class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="api-key-status">
+                        <div id="apiKeyStatus" class="status-indicator">
+                            <i class="fas fa-circle-xmark"></i>
+                            <span>No API key set - using mock responses</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="apiKeyInput">OpenAI API Key:</label>
+                        <div class="input-group">
+                            <input type="password" id="apiKeyInput" placeholder="sk-..." class="form-control">
+                            <button id="toggleApiKeyVisibility" class="btn btn-icon" type="button">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <small class="form-hint">
+                            Your API key is stored locally and never sent to external servers.
+                            Get your key from <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a>
+                        </small>
+                    </div>
+                    
+                    <div class="api-key-info">
+                        <h4>What's the difference?</h4>
+                        <div class="comparison">
+                            <div class="comparison-item">
+                                <h5><i class="fas fa-robot"></i> Mock Responses (No API Key)</h5>
+                                <ul>
+                                    <li>Free to use</li>
+                                    <li>Limited, pre-written responses</li>
+                                    <li>Good for testing the interface</li>
+                                    <li>Species-aware but not fully intelligent</li>
+                                </ul>
+                            </div>
+                            <div class="comparison-item">
+                                <h5><i class="fas fa-brain"></i> Real AI (With API Key)</h5>
+                                <ul>
+                                    <li>Costs ~$0.01-0.05 per conversation</li>
+                                    <li>Fully intelligent, contextual responses</li>
+                                    <li>Unique personality expression</li>
+                                    <li>Truly lifelike creature behavior</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="clearApiKey" class="btn btn-outline">Clear Key</button>
+                    <button id="saveApiKey" class="btn btn-primary">Save Key</button>
                 </div>
             </div>
         </div>

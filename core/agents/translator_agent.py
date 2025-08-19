@@ -49,8 +49,32 @@ class TranslatorAgent:
             
             result = self._parse_translation_response(response)
             
-            # Check translation conditions from template
-            result["can_translate"] = self._check_translation_conditions(creature_state, template)
+            # Use creature's own translation logic (which is more user-friendly)
+            from ..models.creature import Creature
+            # We can't directly access the creature here, so we'll create a temporary one
+            # In a real implementation, we'd pass the creature or its can_translate status
+            
+            # For now, use the improved logic directly
+            happiness = creature_state.stats.get("happiness", 50)
+            energy = creature_state.stats.get("energy", 50)
+            
+            can_translate = True
+            translation_hint = None
+            
+            # Apply the same improved logic as in creature.can_translate()
+            if happiness < 20 and energy < 20:
+                can_translate = False
+                translation_hint = f"Your {creature_state.species} seems very distressed (happiness: {happiness:.0f}, energy: {energy:.0f}). Try feeding, petting, or playing to help them feel better!"
+            elif happiness < 10:
+                can_translate = False
+                translation_hint = f"Your {creature_state.species} is very upset (happiness: {happiness:.0f}). They need comfort - try petting, feeding, or giving them space to recover."
+            elif energy < 5:
+                can_translate = False
+                translation_hint = f"Your {creature_state.species} is exhausted (energy: {energy:.0f}). They need rest or food to regain energy before they can communicate clearly."
+            
+            result["can_translate"] = can_translate
+            if translation_hint:
+                result["translation_hint"] = translation_hint
             
             return result
             
@@ -74,43 +98,97 @@ class TranslatorAgent:
         
         system_prompt = f"""You are the Translator Agent for a {creature_state.species}.
 
+Your role is to translate the creature's human language thoughts into authentic creature language.
+
 Current state: {creature_state.mood}
 Energy level: {creature_state.stats.get('energy', 50)}/100
 
 Available creature sounds by emotion:
 {sounds_summary}
 
-Review and refine the creature language to:
-1. ONLY use these types of responses:
-   - Physical actions in asterisks: *tail wag*, *stretch*, *pounce*
-   - Creature sounds in asterisks: sounds appropriate to this species
-   - Descriptive behaviors: *lying down*, *alert posture*, *gentle approach*
+Your task is to translate the human message into creature language:
+1. ONLY use expressions appropriate for {creature_state.species}:
+   - Physical actions in asterisks that this species can actually do
+   - Species-appropriate sounds in asterisks that this species would make
+   - Descriptive behaviors authentic to this species
 
-2. NEVER use:
-   - Human words or phrases
+2. SPECIES-SPECIFIC GUIDELINES:
+   {self._get_species_guidelines(creature_state.species)}
+
+3. NEVER use:
+   - Human words or phrases (except in HUMAN_TRANSLATION)
    - Emojis or punctuation outside asterisks
-   - Generic sounds not appropriate to this species
+   - Actions this species cannot physically perform
+   - Sounds this species cannot make
 
-3. Match energy level and physical state:
+4. Match energy level and physical state:
    - Low energy: tired actions, quiet sounds
-   - High energy: active behaviors, loud vocalizations
+   - High energy: active behaviors, louder expressions
    - Consider current stats and mood
 
-4. Species authenticity:
-   - Use sounds and behaviors appropriate to {creature_state.species}
-   - Follow behavioral patterns from the template
-   - Maintain creature perspective throughout
-
-5. Cultural appropriateness:
-   - Use sounds that match the creature's "language"
-   - Consider regional variations if applicable
+5. Template authenticity:
+   - Follow behavioral patterns from the creature template
+   - Use only sounds defined in the template
+   - Maintain authentic creature perspective
 
 Response format:
-CREATURE_LANGUAGE: (refined creature language using ONLY actions and sounds)
-HUMAN_TRANSLATION: (what the creature is trying to communicate, in simple human language)
-DEBUG: (explanation of choices made)"""
+CREATURE_LANGUAGE: (translate the human message into creature actions and sounds)
+HUMAN_TRANSLATION: (pass through the original human message exactly as provided)
+DEBUG: (explanation of translation choices made)"""
 
         return system_prompt
+    
+    def _get_species_guidelines(self, species: str) -> str:
+        """Get species-specific behavioral guidelines"""
+        guidelines = {
+            "human": """
+   - Use human actions: *nods*, *shrugs*, *gestures*, *leans forward*, *smiles*, *laughs*
+   - Use human sounds: *speaks softly*, *chuckles*, *sighs*, *hums*, *whispers*
+   - NEVER use animal behaviors: NO tail wagging, purring, barking, ear twitching, etc.
+   - Focus on facial expressions, body language, and speech patterns""",
+            
+            "dog": """
+   - Use dog actions: *tail wagging*, *head tilt*, *panting*, *play bow*, *sniffing*
+   - Use dog sounds: *woof*, *bark*, *whine*, *growl*, *yip*, *howl*
+   - Focus on canine body language and vocalizations""",
+            
+            "cat": """
+   - Use cat actions: *tail flick*, *slow blink*, *head bump*, *kneading*, *stretch*
+   - Use cat sounds: *meow*, *purr*, *chirp*, *hiss*, *trill*, *mrow*
+   - Focus on feline grace and independence""",
+            
+            "dragon": """
+   - Use dragon actions: *wing flutter*, *smoke puff*, *tail sweep*, *scale shimmer*
+   - Use dragon sounds: *rumble*, *roar*, *snort*, *growl*, *whistle*
+   - Focus on majestic, powerful movements""",
+            
+            "fairy": """
+   - Use fairy actions: *flutter*, *glow*, *sparkle*, *dance*, *twirl*, *hover*
+   - Use fairy sounds: *chime*, *bell*, *whisper*, *giggle*, *sing*, *hum*
+   - Focus on magical, delicate movements""",
+            
+            "elf": """
+   - Use elf actions: *graceful movement*, *keen observation*, *light step*, *elegant gesture*
+   - Use elf sounds: *whispers*, *soft chant*, *melodic hum*, *gentle voice*
+   - Focus on grace and perceptiveness""",
+            
+            "dwarf": """
+   - Use dwarf actions: *sturdy stance*, *strong grip*, *determined nod*, *confident posture*
+   - Use dwarf sounds: *gruff voice*, *hearty laugh*, *grumble*, *robust tone*
+   - Focus on strength and determination""",
+            
+            "gnome": """
+   - Use gnome actions: *fidgets with tools*, *adjusts spectacles*, *examines closely*, *inventive gesture*
+   - Use gnome sounds: *curious mutter*, *excited chatter*, *thoughtful hmm*, *clever giggle*
+   - Focus on curiosity and tinkering""",
+            
+            "sprite": """
+   - Use sprite actions: *quick dart*, *shimmering movement*, *tiny gesture*, *delicate flutter*
+   - Use sprite sounds: *tiny voice*, *silvery laugh*, *whispered secret*, *musical chime*
+   - Focus on quickness and mischief"""
+        }
+        
+        return guidelines.get(species, f"Use behaviors appropriate for {species}")
     
     def _format_decision_data(
         self, 
@@ -120,20 +198,22 @@ DEBUG: (explanation of choices made)"""
     ) -> str:
         """Format decision data for the translator"""
         
-        return f"""Decision Analysis:
-Action: {decision_data.get('action', 'unknown')}
-Vocalization: {decision_data.get('vocalization', 'unknown')}
-Intention: {decision_data.get('intention', 'unknown')}
-Energy Level: {decision_data.get('energy_level', 'medium')}
+        human_response = decision_data.get('human_response', 'I hear you.')
+        
+        return f"""The creature wants to communicate this message to the human:
+"{human_response}"
 
-Base creature language: {base_creature_language}
+Decision details:
+- Action: {decision_data.get('action', 'unknown')}
+- Vocalization: {decision_data.get('vocalization', 'unknown')}
+- Energy Level: {decision_data.get('energy_level', 'medium')}
 
 Current creature state:
 - Mood: {creature_state.mood}
 - Energy: {creature_state.stats.get('energy', 50)}/100
 - Species: {creature_state.species}
 
-Please refine this into authentic creature language and provide human translation."""
+Please translate the human message "{human_response}" into authentic creature language using appropriate actions and species-specific sounds."""
     
     def _check_translation_conditions(self, creature_state: CreatureState, template: CreatureTemplate) -> bool:
         """Check if translation conditions are met based on template rules"""

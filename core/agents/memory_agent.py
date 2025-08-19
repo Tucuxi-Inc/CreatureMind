@@ -4,7 +4,7 @@ Memory Agent - Provides relevant past context
 Adapted from the memory logic in WiddlePupper's AIAgentSystem.swift
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, Optional, List
 from ..models.creature import CreatureState
 from .ai_client import AIClient
 
@@ -28,7 +28,8 @@ class MemoryAgent:
         current_input: str,
         perception_data: Dict[str, Any],
         emotion_data: Dict[str, Any],
-        creature_state: CreatureState
+        creature_state: CreatureState,
+        chat_history: Optional[List[Dict[str, str]]] = None
     ) -> Dict[str, Any]:
         """
         Analyze memories and provide relevant context
@@ -45,6 +46,7 @@ class MemoryAgent:
             response = await self.ai_client.generate_response(
                 system_prompt=system_prompt,
                 user_message=user_message,
+                chat_history=chat_history,
                 temperature=0.6
             )
             
@@ -77,19 +79,30 @@ class MemoryAgent:
 Recent memories (up to 10 most recent):
 {memory_summary}
 
-Your task is to analyze these memories in the context of the current interaction and provide relevant insights.
+Your task is to analyze these memories AND the recent conversation history to provide relevant insights.
 
 Consider:
 1. What past interactions are most relevant to the current situation
 2. What behavioral patterns have emerged in recent interactions
-3. How the relationship with the user has developed
+3. How the relationship with the user has developed over time
 4. How past experiences might influence the current emotional state
+5. What topics or themes have been discussed recently
+6. Whether the user has asked about things mentioned before
+7. How the creature's personality has been expressed in past conversations
+
+IMPORTANT: Use both the stored memories AND the chat history to understand the full context 
+of the ongoing relationship. Look for:
+- Recurring themes in conversations
+- Topics the user returns to
+- How the creature has responded to similar situations before
+- Progress in the relationship (building trust, familiarity, etc.)
+- Unresolved conversations or promised activities
 
 Response format:
 RELEVANT_MEMORIES: (key past interactions that relate to current situation)
-PATTERNS: (behavioral patterns observed over time)
+PATTERNS: (behavioral patterns and conversation themes observed over time)
 RELATIONSHIP: (current state of bond with user - new|developing|strong|strained|etc)
-CONTEXT_IMPACT: (how memories affect interpretation of current interaction)"""
+CONTEXT_IMPACT: (how memories and conversation history affect interpretation of current interaction)"""
 
         return system_prompt
     
