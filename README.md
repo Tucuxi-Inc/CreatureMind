@@ -263,7 +263,7 @@ Fine-tune all 50 personality dimensions:
 - **Behavioral**: Energy, persistence, risk-taking, organization
 
 **🎭 Personality Blending**
-Combine multiple famous personalities:
+Combine multiple famous personalities with authentic speech mixing:
 ```json
 {
   "archetype_weights": {
@@ -275,6 +275,20 @@ Combine multiple famous personalities:
   }
 }
 ```
+
+### 🗣️ **NEW: Authentic Speech Styles**
+Each famous personality now speaks with their authentic voice patterns:
+
+- **🎨 Leonardo da Vinci**: *"Fascinating! I observe that... Art is never finished, only abandoned."*
+- **🔬 Einstein**: *"Let me think about this... Imagination is more important than knowledge."*  
+- **👩‍🏫 Montessori**: *"How wonderful! Let us discover... Help me to do it myself."*
+- **🤔 Socrates**: *"What is...? But consider... I know that I know nothing."*
+- **🤗 Fred Rogers**: *"You are special just the way you are. How does that make you feel?"*
+- **👴 Yoda**: *"Strong with the Force, you are. Much to learn, you have. Hmm."*
+
+**🎭 Speech Style Blending**: Combined personalities create unique speaking patterns!
+- **Socrates + Yoda**: *"But what is wisdom, hmm? Know that I know nothing, yet strong with questions, I am."*
+- **Einstein + Leonardo**: *"Fascinating equations, these are! I wonder if... the beauty of physics, like art, never truly finished it is."*
 
 ---
 
@@ -422,7 +436,28 @@ curl -X POST "http://localhost:8000/creatures/enhanced" \
 
 ## 📋 Recent Updates & Bug Fixes
 
-### Version 1.4.0 (Latest) - Complete Species Support & Human Templates
+### Version 1.5.0 (Latest) - Authentic Archetype Speech Styles
+
+#### 🗣️ Revolutionary Speech Style System
+- **Authentic Archetype Voices**: Each famous personality now speaks with their distinctive patterns
+- **Yoda's Inverted Syntax**: "Strong with the Force, you are. Much to learn, you have."
+- **Socrates' Questioning**: "What is wisdom? But consider... I know that I know nothing."
+- **Speech Style Blending**: Combined personalities create unique speaking patterns
+- **6 Complete Archetypes**: Leonardo, Einstein, Montessori, Socrates, Rogers, and Yoda
+
+#### 🎭 Enhanced Personality System
+- **Decision Agent Integration**: Speech styles seamlessly integrated into AI responses
+- **Archetype Blending Support**: Mix personalities like "60% Socrates + 40% Yoda" with natural speech
+- **Species-Appropriate Delivery**: Dragons speak like Yoda, humans like Einstein, maintaining authenticity
+- **Dynamic Speech Selection**: AI selects appropriate phrases and patterns based on personality
+
+#### 🧪 Testing & Quality Assurance
+- **Comprehensive Test Suite**: All speech styles verified with automated testing
+- **Single & Blended Testing**: Both individual archetypes and personality mixes validated
+- **Fallback Safety**: Simple personalities gracefully work without speech style interference
+- **Integration Verification**: Full end-to-end testing of speech style prompting system
+
+### Version 1.4.0 - Complete Species Support & Human Templates
 
 #### 🎭 Universal Species Support
 - **Added complete human template**: Full support for human characters with appropriate behaviors

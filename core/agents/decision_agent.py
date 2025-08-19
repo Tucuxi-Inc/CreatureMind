@@ -9,7 +9,7 @@ from typing import Dict, Any, Optional, List
 import numpy as np
 from ..models.creature import CreatureState
 from ..models.creature_template import CreatureTemplate
-from ..models.personality_system import PersonalityMode, EnhancedPersonality
+from ..models.personality_system import PersonalityMode, EnhancedPersonality, PersonalityArchetypes
 from .ai_client import AIClient
 from .production_trait_utility_model import ProductionTraitUtilityModel, ContextVector
 
@@ -275,6 +275,12 @@ CURRENT STATE:
         # Get action style guidance
         action_guidance = self.utility_model.get_action_guidance(action_style)
         
+        # Get speech style guidance if available
+        speech_style_data = self._get_speech_style_guidance(enhanced_personality)
+        speech_style_section = ""
+        if speech_style_data:
+            speech_style_section = self._format_speech_style_prompt(speech_style_data)
+        
         # Get current stats
         stats_summary = []
         for stat_name, value in creature_state.stats.items():
@@ -293,6 +299,8 @@ BEHAVIORAL GUIDANCE ({action_style.upper()}):
 - Behavior tags: {', '.join(action_guidance['behavior_tags'])}
 - Energy requirement: {action_guidance['energy_level']}
 - Social preference: {action_guidance['social_preference']}
+
+{speech_style_section}
 
 Creature Profile:
 - Species: {creature_state.species}
@@ -314,11 +322,12 @@ Based on all agent inputs and the conversation history, form a response that:
 1. Reflects the determined emotional state
 2. STRONGLY emphasizes the selected action style ({action_style})
 3. Incorporates dominant personality traits: {', '.join([trait for trait, _ in dominant_traits[:3]])}
-4. Considers relevant memories and conversation context
-5. References or builds upon recent topics/interactions when appropriate
-6. Shows awareness of relationship development through conversation history
-7. Maintains authentic creature behavior
-8. Matches current physical state and energy level
+4. {"USES AUTHENTIC SPEECH PATTERNS from the archetype personality above" if speech_style_data else "Maintains authentic creature behavior"}
+5. Considers relevant memories and conversation context
+6. References or builds upon recent topics/interactions when appropriate
+7. Shows awareness of relationship development through conversation history
+8. Maintains authentic creature behavior
+9. Matches current physical state and energy level
 
 Physical state constraints:
 - Low energy: avoid energetic actions, use tired behaviors
@@ -329,7 +338,7 @@ Physical state constraints:
 Response format:
 ACTION: (physical response - must strongly reflect {action_style} style and energy state)
 VOCALIZATION: (species-appropriate sounds - match {action_style} style and energy level)
-HUMAN_RESPONSE: (what the creature wants to say in human language)
+HUMAN_RESPONSE: (what the creature wants to say in human language{" - MUST use the archetype's distinctive speaking style" if speech_style_data else ""})
 INTENTION: (what the creature wants to convey - influenced by {action_style} approach)
 ENERGY_LEVEL: (low|medium|high - for response intensity)"""
 
@@ -350,3 +359,110 @@ ENERGY_LEVEL: (low|medium|high - for response intensity)"""
             "emotional": "Be expressive and empathetic. Show your feelings clearly. Respond to the emotional needs of others."
         }
         return style_guides.get(action_style, "Act naturally according to your species and current state.")
+    
+    def _get_speech_style_guidance(self, enhanced_personality: EnhancedPersonality) -> Optional[Dict[str, Any]]:
+        """Extract speech style information from archetype-based personality"""
+        if enhanced_personality.mode != PersonalityMode.COMPLEX:
+            return None
+        
+        # Check for blended archetypes first
+        if enhanced_personality.archetype_blend:
+            # Blended archetypes - combine speech styles
+            combined_styles = self._blend_speech_styles(enhanced_personality.archetype_blend)
+            if combined_styles:
+                return {
+                    'type': 'blended',
+                    'speech_style': combined_styles,
+                    'blend_info': enhanced_personality.archetype_blend
+                }
+        
+        # Check if this personality has single archetype base
+        elif enhanced_personality.archetype_base:
+            # Single archetype
+            archetype_info = PersonalityArchetypes.get_archetype_info(enhanced_personality.archetype_base)
+            if archetype_info and 'speech_style' in archetype_info:
+                return {
+                    'type': 'single',
+                    'archetype_name': archetype_info['name'],
+                    'speech_style': archetype_info['speech_style']
+                }
+        
+        return None
+    
+    def _blend_speech_styles(self, blend_data: Dict[str, float]) -> Optional[Dict[str, Any]]:
+        """Combine speech styles from multiple archetypes based on blend weights"""
+        if not blend_data:
+            return None
+        
+        # Get speech styles from each archetype in the blend
+        all_tones = []
+        all_patterns = []
+        all_phrases = []
+        all_quirks = []
+        blend_names = []
+        
+        for archetype_id, weight in blend_data.items():
+            if weight > 0:  # Only include archetypes with positive weight
+                archetype_info = PersonalityArchetypes.get_archetype_info(archetype_id)
+                if archetype_info and 'speech_style' in archetype_info:
+                    speech_style = archetype_info['speech_style']
+                    blend_names.append(f"{archetype_info['name']} ({weight:.1%})")
+                    
+                    # Weight determines how much this archetype influences the blend
+                    if weight >= 0.3:  # Significant influence
+                        all_tones.append(speech_style['tone'])
+                        all_patterns.extend(speech_style['patterns'])
+                        all_phrases.extend(speech_style['common_phrases'][:3])  # Take top phrases
+                        all_quirks.extend(speech_style['speech_quirks'])
+        
+        if not all_tones:
+            return None
+        
+        return {
+            'tone': f"A unique blend of: {' + '.join(all_tones)}",
+            'patterns': all_patterns[:6],  # Limit to avoid overwhelming prompt
+            'common_phrases': all_phrases[:8],
+            'speech_quirks': all_quirks[:6],
+            'blend_description': f"Speaking style influenced by: {', '.join(blend_names)}"
+        }
+    
+    def _format_speech_style_prompt(self, speech_style_data: Dict[str, Any]) -> str:
+        """Format speech style data into prompt text"""
+        speech_style = speech_style_data['speech_style']
+        
+        if speech_style_data['type'] == 'single':
+            archetype_name = speech_style_data['archetype_name']
+            prompt_section = f"""
+SPEECH STYLE - {archetype_name.upper()}:
+- Overall Tone: {speech_style['tone']}
+
+Speech Patterns:
+{chr(10).join([f"• {pattern}" for pattern in speech_style['patterns']])}
+
+Common Phrases:
+{chr(10).join([f"• {phrase}" for phrase in speech_style['common_phrases']])}
+
+Speech Quirks:
+{chr(10).join([f"• {quirk}" for quirk in speech_style['speech_quirks']])}
+
+CRITICAL: Your HUMAN_RESPONSE must authentically reflect {archetype_name}'s distinctive speaking style. Use their characteristic phrases, sentence structures, and verbal mannerisms."""
+        
+        else:  # blended
+            blend_info = speech_style.get('blend_description', 'Blended personality')
+            prompt_section = f"""
+SPEECH STYLE - BLENDED PERSONALITY:
+- {blend_info}
+- Overall Tone: {speech_style['tone']}
+
+Combined Speech Patterns:
+{chr(10).join([f"• {pattern}" for pattern in speech_style['patterns']])}
+
+Mixed Common Phrases:
+{chr(10).join([f"• {phrase}" for phrase in speech_style['common_phrases']])}
+
+Blended Speech Quirks:
+{chr(10).join([f"• {quirk}" for quirk in speech_style['speech_quirks']])}
+
+CRITICAL: Your HUMAN_RESPONSE must reflect this unique blend of speaking styles. Combine the verbal characteristics naturally."""
+        
+        return prompt_section
