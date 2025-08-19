@@ -1,0 +1,141 @@
+{
+  "id": "basic_human",
+  "name": "Basic Human",
+  "species": "human",
+  "description": "A friendly human companion who communicates through gestures, expressions, and speech",
+  "default_personality_traits": ["curious", "friendly", "intelligent", "empathetic"],
+  "stat_configs": {
+    "happiness": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.08,
+      "default_start": 75
+    },
+    "energy": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.12,
+      "default_start": 80
+    },
+    "hunger": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.15,
+      "default_start": 60
+    },
+    "social_connection": {
+      "min_value": 0,
+      "max_value": 100,
+      "decay_rate": 0.05,
+      "default_start": 50
+    }
+  },
+  "language": {
+    "sounds": {
+      "happy": ["*laughs*", "*chuckles*", "*hums contentedly*"],
+      "sad": ["*sighs*", "*speaks softly*", "*quiet voice*"],
+      "excited": ["*speaks enthusiastically*", "*laughs with joy*", "*animated voice*"],
+      "angry": ["*speaks firmly*", "*raises voice*", "*frustrated tone*"],
+      "confused": ["*hmm*", "*thinks aloud*", "*puzzled voice*"],
+      "neutral": ["*speaks calmly*", "*normal tone*", "*casual voice*"],
+      "tired": ["*yawns*", "*speaks wearily*", "*drowsy voice*"],
+      "content": ["*speaks warmly*", "*comfortable tone*", "*satisfied voice*"]
+    },
+    "behavioral_patterns": [
+      "Uses hand gestures when speaking",
+      "Makes eye contact during conversation", 
+      "Nods to show understanding",
+      "Leans in when interested",
+      "Crosses arms when skeptical",
+      "Smiles when happy",
+      "Tilts head when confused"
+    ],
+    "cultural_sounds": {
+      "en": {
+        "greeting": "hello",
+        "agreement": "yes",
+        "disagreement": "no"
+      }
+    },
+    "translation_conditions": {
+      "happiness": "> 20",
+      "energy": "> 15"
+    }
+  },
+  "activities": [
+    {
+      "name": "chat",
+      "stat_effects": {
+        "happiness": 5,
+        "social_connection": 10
+      },
+      "energy_cost": 5,
+      "description": "Have a conversation"
+    },
+    {
+      "name": "rest",
+      "stat_effects": {
+        "energy": 15
+      },
+      "energy_cost": -10,
+      "description": "Take a rest"
+    },
+    {
+      "name": "eat",
+      "stat_effects": {
+        "hunger": 25,
+        "energy": 10,
+        "happiness": 5
+      },
+      "energy_cost": 0,
+      "description": "Have a meal"
+    },
+    {
+      "name": "socialize",
+      "stat_effects": {
+        "happiness": 15,
+        "social_connection": 20
+      },
+      "energy_cost": 8,
+      "description": "Spend time socializing"
+    },
+    {
+      "name": "feed",
+      "stat_effects": {
+        "hunger": 25,
+        "energy": 10,
+        "happiness": 5
+      },
+      "energy_cost": 0,
+      "description": "Have a meal"
+    },
+    {
+      "name": "pet",
+      "stat_effects": {
+        "happiness": 10,
+        "social_connection": 8
+      },
+      "energy_cost": 2,
+      "description": "Show affection with gentle touch"
+    },
+    {
+      "name": "play",
+      "stat_effects": {
+        "happiness": 20,
+        "energy": -5
+      },
+      "energy_cost": 10,
+      "description": "Engage in playful activities together"
+    },
+    {
+      "name": "walk",
+      "stat_effects": {
+        "energy": 15,
+        "happiness": 8
+      },
+      "energy_cost": 5,
+      "description": "Take a refreshing walk together"
+    }
+  ],
+  "decision_prompt_additions": "CRITICAL: This is a HUMAN character, not an animal. NEVER use animal behaviors like: *tail wagging*, *barking*, *purring*, *meowing*, *panting*, *sniffing*, *howling*, *growling*, *chirping*, *roaring*, etc. ONLY use human behaviors like: *nods*, *shrugs*, *gestures*, *speaks*, *smiles*, *laughs*, *sighs*, *leans forward*, *crosses arms*, *tilts head*, *makes eye contact*, *yawns*, *stretches*, *walks*, *sits*, *stands*. This character communicates through human speech, facial expressions, and body language."
+}

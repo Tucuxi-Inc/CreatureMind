@@ -63,13 +63,24 @@ CreatureMind creates **AI creature minds** with unprecedented sophistication. Ea
    - Go to [git-scm.com](https://git-scm.com/download/win)
    - Download and install Git
 
-### Step 2: Get Your OpenAI API Key
+**For Linux users:**
+```bash
+# Ubuntu/Debian
+sudo apt update && sudo apt install python3 python3-pip git
+
+# CentOS/RHEL
+sudo yum install python3 python3-pip git
+```
+
+### Step 2: Get Your OpenAI API Key (Optional but Recommended)
+
+**🆓 CreatureMind works without an API key** using intelligent mock responses, but real OpenAI gives much better results.
 
 1. Go to [platform.openai.com](https://platform.openai.com)
 2. Sign up or log in
 3. Go to "API Keys" in your account
 4. Create a new key (it starts with `sk-`)
-5. **Keep this safe** - you'll need it in Step 4!
+5. **Keep this safe** - you can set it later via the web interface!
 
 ### Step 3: Download CreatureMind
 
@@ -88,26 +99,31 @@ cd CreatureMind
 1. **Open Terminal/Command Prompt** in the CreatureMind folder:
    - **Mac**: Right-click the CreatureMind folder → "New Terminal at Folder"
    - **Windows**: Shift+Right-click in the folder → "Open PowerShell window here"
+   - **Linux**: Right-click → "Open Terminal Here"
 
-2. **Install CreatureMind**:
+2. **Install CreatureMind dependencies**:
    ```bash
+   # Most systems:
    pip install -r requirements.txt
-   ```
-
-3. **Add your API key**:
-   - **Mac/Linux**:
-   ```bash
-   export OPENAI_API_KEY="your-api-key-here"
-   ```
-   - **Windows**:
-   ```bash
-   set OPENAI_API_KEY=your-api-key-here
+   
+   # If above doesn't work, try:
+   pip3 install -r requirements.txt
+   
+   # Or on some Linux systems:
+   python3 -m pip install -r requirements.txt
    ```
 
 ### Step 5: Start CreatureMind! 🎉
 
 ```bash
+# Most systems (including Mac/Linux):
 python -m api.server
+
+# If above doesn't work, try:
+python3 -m api.server
+
+# Alternative method:
+python3 -m uvicorn api.server:app --host 0.0.0.0 --port 8000
 ```
 
 You should see:
@@ -117,88 +133,220 @@ INFO: Uvicorn running on http://0.0.0.0:8000
 
 **🎉 Success! CreatureMind is now running!**
 
+### Step 6: Set Your API Key & Create Your First Creature
+
+1. **Open your browser** and go to: `http://localhost:8000`
+2. **Set your API key** (recommended):
+   - Click the "🔑 API Key" button in the top navigation
+   - Enter your OpenAI API key (starts with `sk-`)
+   - Click "Save Key" - changes take effect immediately!
+3. **Create your first creature**:
+   - Click "Create Your First Creature"
+   - Choose a creature type or create a custom template
+   - Give it a name and personality
+   - Click "Bring to Life"
+
+**What's the difference between API modes?**
+- **Without API Key**: Free, intelligent mock responses (great for testing)
+- **With API Key**: Real OpenAI responses (~$0.01-0.05 per conversation, much more lifelike)
+
+---
+
+## 🐕 Available Creature Species
+
+### 🏠 **Companion Creatures**
+- **🐕 Dogs**: Loyal, playful, energetic companions with tail wagging and barking
+- **🐱 Cats**: Independent, graceful felines with purring and elegant movements  
+- **🐲 Dragons**: Wise, ancient beings with wing flutters and majestic roars
+- **🧚 Fairies**: Delicate magical creatures with sparkling and ethereal chimes
+- **👤 Humans**: Natural human companions with speech, gestures, and expressions
+
+### 🏰 **Fantasy Adventures** *(Perfect for RPG games)*
+- **🧝‍♀️ Elves**: Graceful scouts with keen perception and melodic voices
+- **🪓 Dwarves**: Sturdy warriors with hearty laughs and determined stances
+- **🔧 Gnomes**: Brilliant tinkerers with curious muttering and inventive gestures
+- **✨ Sprites**: Quick, mischievous beings with tiny voices and shimmering movements
+
+Each species has:
+- **Unique sounds** and vocalizations
+- **Species-specific behaviors** and actions
+- **Authentic movement** patterns
+- **Cultural variations** and language sounds
+
+---
+
+## 🎮 Interacting with Your Creatures
+
+### Basic Activities
+All creatures support these standard activities through the web interface:
+
+- **🍽️ Feed**: Satisfies hunger and increases happiness
+- **🎾 Play**: Boosts happiness but uses energy  
+- **❤️ Pet**: Shows affection and builds social connection
+- **🚶 Walk**: Increases energy and provides stimulation
+
+### Conversation System
+- **Natural chat**: Talk to your creature in plain English
+- **Species responses**: Get authentic creature language back
+- **Mood-based translation**: Translation available when creature trusts you
+- **Memory building**: Creatures remember your conversations
+
+### Advanced Features
+- **Personality evolution**: Watch traits change based on interactions
+- **Learning system**: Creatures adapt to your preferences
+- **Emotional states**: Real-time mood changes affect behavior
+- **Custom templates**: Create your own creature types
+
+---
+
+## 🧬 Creating Custom Creatures
+
+### Web Interface Method (Recommended)
+1. Click "Create Template" in the web interface
+2. Fill out the intuitive form:
+   - **Species name** (e.g., "phoenix", "robot", "alien")
+   - **Personality traits** and temperament
+   - **Stats configuration** (happiness, energy, etc.)
+   - **Language sounds** for different emotions
+   - **Available activities** and their effects
+3. Your template is instantly available for creature creation!
+
+### Example Custom Template
+```json
+{
+  "name": "Cosmic Phoenix",
+  "species": "phoenix",
+  "description": "A stellar bird that burns with the fire of distant suns",
+  "activities": [
+    {
+      "name": "soar",
+      "stat_effects": {"energy": 15, "happiness": 10},
+      "description": "Soar through cosmic winds"
+    }
+  ],
+  "language": {
+    "sounds": {
+      "happy": ["*stellar song*", "*aurora flames*"],
+      "excited": ["*supernova cry*", "*solar flare*"]
+    }
+  }
+}
+```
+
+---
+
+## 🧠 Advanced Personality System
+
+### Simple Mode (Beginner-Friendly)
+- Choose 3-5 key traits like "playful", "loyal", "curious"
+- Select base temperament (calm, energetic, gentle, bold)
+- Add custom personality description
+
+### Complex Mode (Advanced)
+Choose from several configuration methods:
+
+**🎓 Famous Personalities**
+Start with scientifically-crafted personalities:
+- **🎨 Leonardo da Vinci** - Creative genius (high creativity, curiosity)
+- **🔬 Albert Einstein** - Analytical thinker (high systematic thinking)
+- **👩‍🏫 Maria Montessori** - Nurturing educator (high empathy, patience)
+- **🤔 Socrates** - Wise philosopher (high wisdom, humility)
+- **🤗 Fred Rogers** - Gentle soul (high empathy, emotional stability)
+- **👴 Yoda** - Ancient wisdom (high wisdom, mindfulness)
+
+**🎛️ Custom 50-Dimensional Traits**
+Fine-tune all 50 personality dimensions:
+- **Core Traits**: Extraversion, agreeableness, conscientiousness
+- **Emotional**: Optimism, emotional stability, empathy
+- **Cognitive**: Intelligence, creativity, curiosity, wisdom
+- **Social**: Sociability, trust, cooperation, leadership
+- **Behavioral**: Energy, persistence, risk-taking, organization
+
+**🎭 Personality Blending**
+Combine multiple famous personalities:
+```json
+{
+  "archetype_weights": {
+    "leonardo": 0.7,
+    "einstein": 0.3
+  },
+  "trait_modifications": {
+    "sociability": 0.8
+  }
+}
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### Common Installation Issues
+
+**"Command not found" errors:**
+- **Mac**: Make sure you installed Python with Homebrew
+- **Windows**: Make sure you checked "Add Python to PATH" during installation
+- **All systems**: Try using `python3` instead of `python`
+
+**"Permission denied" errors:**
+```bash
+# Try these alternatives in order:
+python3 -m api.server
+python3 -m uvicorn api.server:app --host 0.0.0.0 --port 8000
+sudo python3 -m api.server  # Last resort on Linux
+```
+
+**Package installation issues:**
+```bash
+# Try these alternatives:
+pip3 install -r requirements.txt
+python3 -m pip install -r requirements.txt
+pip install --user -r requirements.txt
+```
+
+**Port already in use:**
+```bash
+# Use a different port:
+python3 -m uvicorn api.server:app --host 0.0.0.0 --port 8001
+# Then visit http://localhost:8001
+```
+
+### Common Usage Issues
+
+**Activities showing mock responses:**
+- Make sure you set your API key via the web interface
+- Create a new creature after setting the API key
+- Check that your creature template includes the activity you're trying
+
+**Translation not working:**
+- Check creature's happiness and energy levels
+- Try feeding, petting, or playing to improve stats
+- Some species are more independent and translate less frequently
+
+**Creatures showing wrong behaviors:**
+- Make sure you're using the correct species template
+- Human creatures should use human actions, not animal behaviors
+- Create a fresh creature if switching between very different species
+
+**Stats not updating:**
+- Check the creature status page to verify stats are actually changing
+- Web interface may have display lag - stats update on the server immediately
+- Try refreshing the browser page
+
 ---
 
 ## 🐳 Docker Setup (Alternative Method)
 
-### Option A: Quick Start with Docker Compose (Recommended)
-
-**Prerequisites**: Docker and Docker Compose installed
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Tucuxi-Inc/CreatureMind.git
-   cd CreatureMind
-   ```
-
-2. **Set up environment:**
-   ```bash
-   echo "OPENAI_API_KEY=your-api-key-here" > .env
-   ```
-
-3. **Start with Docker Compose:**
-   ```bash
-   docker-compose up -d
-   ```
-
-4. **Open your browser:** `http://localhost:8000`
-
-**🎉 CreatureMind is now running in Docker!**
-
-### Option B: Docker Build and Run
-
-1. **Build the image:**
-   ```bash
-   docker build -t creaturemind .
-   ```
-
-2. **Run the container:**
-   ```bash
-   docker run -d \
-     --name creaturemind \
-     -p 8000:8000 \
-     -e OPENAI_API_KEY="your-api-key-here" \
-     creaturemind
-   ```
-
-3. **Open your browser:** `http://localhost:8000`
-
-### 🌐 Cloud Deployment Options
-
-**Deploy to any cloud platform that supports Docker:**
-
-**🚀 Railway (Easiest):**
-1. Fork this repository on GitHub
-2. Connect Railway to your GitHub account
-3. Deploy with one click from your forked repo
-4. Add `OPENAI_API_KEY` environment variable in Railway dashboard
-
-**☁️ Google Cloud Run:**
+### Quick Start with Docker Compose
 ```bash
-# Build and push to Google Container Registry
-gcloud builds submit --tag gcr.io/[PROJECT-ID]/creaturemind
-
-# Deploy to Cloud Run
-gcloud run deploy --image gcr.io/[PROJECT-ID]/creaturemind --platform managed
+git clone [repository-url] CreatureMind
+cd CreatureMind
+echo "OPENAI_API_KEY=your-api-key-here" > .env
+docker-compose up -d
 ```
 
-**🔷 Azure Container Instances:**
-```bash
-# Build and push to Azure Container Registry
-az acr build --registry [REGISTRY-NAME] --image creaturemind .
+Visit `http://localhost:8000` - CreatureMind is now running in Docker!
 
-# Deploy to Container Instances
-az container create --resource-group [RESOURCE-GROUP] \
-  --name creaturemind --image [REGISTRY].azurecr.io/creaturemind:latest
-```
-
-**🟠 AWS ECS/Fargate:**
-1. Push image to Amazon ECR
-2. Create ECS task definition
-3. Deploy to Fargate cluster
-
-### Docker Management Commands
-
+### Docker Management
 ```bash
 # View logs
 docker-compose logs -f
@@ -208,98 +356,60 @@ docker-compose down
 
 # Restart with updates
 docker-compose down && docker-compose up -d
-
-# View running containers
-docker ps
-
-# Access container shell
-docker exec -it creaturemind bash
 ```
 
 ---
 
-## 🧠 Enhanced Personality System Overview
+## 🌐 API Reference
 
-### The Four Pillars of Advanced Personalities
+### Core Endpoints
+- `POST /creatures/enhanced` - Create creature with personality system
+- `POST /creatures/{id}/message` - Send message to creature
+- `POST /creatures/{id}/activity` - Perform activity
+- `GET /creatures/{id}/status` - Get creature status
+- `GET /templates` - List available creature templates
 
-**1. 🧬 50-Dimensional Trait System**
-- Scientifically-grounded personality traits based on psychological research
-- Each trait affects behavior in realistic, measurable ways
-- Choose from simple (3-5 traits) or complex (50-dimensional) modes
+### Personality System Endpoints
+- `GET /personality/archetypes` - List famous personalities
+- `GET /personality/traits` - List all 50 traits
+- `POST /personality/simple` - Create simple personality
+- `POST /personality/complex` - Create complex personality
 
-**2. 🌱 Personality Evolution** 
-- Creatures change based on experiences and interactions
-- 10 evolution triggers: achievements, failures, learning, bonding, stress, etc.
-- Real personality development that you can track over time
+### API Key Management
+- `GET /api/status` - Check current API client status
+- `POST /api/set_key` - Set OpenAI API key dynamically
+- `POST /api/clear_key` - Revert to mock client
 
-**3. 💭 Emotional State Influence**
-- Current emotions temporarily modify personality traits
-- 12 emotion types with realistic behavioral impacts
-- Natural decay and realistic emotional patterns
-
-**4. 📚 Learning & Adaptation**
-- Creatures learn your preferences and behavioral patterns
-- 7 learning types: user preferences, emotional patterns, interaction outcomes
-- Adaptive responses that improve relationship quality over time
-
-### Famous Personality Archetypes
-
-Start with scientifically-crafted personalities based on historical figures:
-
-- **🎨 Leonardo da Vinci** - Creative genius (high creativity, curiosity, innovativeness)
-- **🔬 Albert Einstein** - Analytical thinker (high systematic thinking, intellectual curiosity)  
-- **👩‍🏫 Maria Montessori** - Nurturing educator (high empathy, patience, altruism)
-- **🤔 Socrates** - Wise philosopher (high wisdom, curiosity, humility)
-- **🤗 Fred Rogers** - Gentle soul (high empathy, kindness, emotional stability)
-- **👴 Yoda** - Ancient wisdom (high wisdom, patience, mindfulness)
+**Full API documentation available at:** `http://localhost:8000/docs`
 
 ---
 
-## 🐕 Create Your First Enhanced Creature
+## 🧪 Testing Your Setup
 
-### Option 1: Web Interface with Enhanced Personalities (Recommended)
-
-1. **Open your browser** and go to: `http://localhost:8000`
-2. **Click "Create Your First Creature"**
-3. **Choose your personality mode**:
-
-   **Simple Mode (Beginner-Friendly):**
-   - Pick 3-5 key traits like "playful", "loyal", "curious"
-   - Choose a base temperament
-   - Add custom description
-
-   **Complex Mode (Advanced):**
-   - **Archetype**: Start with Leonardo, Einstein, etc.
-   - **Custom**: Set all 50 traits individually  
-   - **Blend**: Combine multiple archetypes
-   - **Fine-tune**: Modify specific traits
-
-4. **Watch your creature come to life!**
-
-### Option 2: Terminal Commands
-
-**Create a creature with simple personality:**
+### Basic Functionality Test
 ```bash
-curl -X POST "http://localhost:8000/creatures/enhanced" \
+# Test health endpoint
+curl http://localhost:8000/health
+
+# Create a test creature
+curl -X POST "http://localhost:8000/creatures" \
   -H "Content-Type: application/json" \
-  -d '{
-    "name": "Buddy",
-    "template_id": "loyal_dog",
-    "personality_mode": "simple",
-    "simple_personality": {
-      "traits": ["playful", "loyal", "energetic"],
-      "base_temperament": "energetic"
-    }
-  }'
+  -d '{"name": "TestBuddy", "template_id": "loyal_dog"}'
+
+# Send a test message
+curl -X POST "http://localhost:8000/creatures/{creature_id}/message" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Hello!"}'
 ```
 
-**Create a creature with Einstein's personality:**
+### Personality System Test
 ```bash
+# Create creature with Einstein personality
 curl -X POST "http://localhost:8000/creatures/enhanced" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Einstein",
-    "template_id": "loyal_dog", 
+    "template_id": "basic_human",
     "personality_mode": "complex",
     "complex_personality": {
       "mode": "archetype",
@@ -308,587 +418,126 @@ curl -X POST "http://localhost:8000/creatures/enhanced" \
   }'
 ```
 
-**Create a custom personality blend:**
-```bash
-curl -X POST "http://localhost:8000/creatures/enhanced" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Creative Scientist",
-    "template_id": "loyal_dog",
-    "personality_mode": "complex", 
-    "complex_personality": {
-      "mode": "blend",
-      "archetype_weights": {
-        "leonardo": 0.7,
-        "einstein": 0.3
-      },
-      "trait_modifications": {
-        "sociability": 0.8
-      }
-    }
-  }'
-```
+---
 
-### Option 3: Use the Test Script
+## 📋 Recent Updates & Bug Fixes
 
-```bash
-python examples/test_api.py
-```
+### Version 1.4.0 (Latest) - Complete Species Support & Human Templates
 
-This automatically creates a creature and demonstrates the personality system!
+#### 🎭 Universal Species Support
+- **Added complete human template**: Full support for human characters with appropriate behaviors
+- **Enhanced MockAIClient**: Now supports all species (human, elf, dwarf, gnome, sprite) 
+- **Species-specific behaviors**: Each species uses authentic actions and sounds
+- **Fixed animal behavior leakage**: Humans no longer show tail wagging or purring
+
+#### 🔧 Critical Bug Fixes  
+- **Fixed activity translation failures**: Added missing activities (pet, play, walk, feed) to human template
+- **Fixed emoji mapping**: "Joyful" mood now shows 😄 instead of 😐
+- **Enhanced translator agent**: Species-specific behavioral guidelines prevent cross-species contamination
+- **Improved error messages**: Clear debugging information for missing activities
+
+#### 🎯 User Experience Improvements
+- **Strengthened AI safety**: Excellent handling of inappropriate requests with engaging but appropriate deflection
+- **Better activity descriptions**: Human-friendly activity names and descriptions
+- **Enhanced system prompts**: Explicit species behavior guidelines for consistent AI responses
+- **Comprehensive template system**: All web interface activities supported for all species
+
+#### 🧬 Technical Enhancements  
+- **Enhanced MockAIClient species support**: 9 total species with authentic behavioral patterns
+- **Improved translator prompts**: Species-specific examples and explicit behavior restrictions
+- **Template persistence**: Human template now persists across server restarts
+- **Better error handling**: Clear error messages for debugging activity and template issues
+
+### Version 1.3.0 - Memory Integration & Frontend Stability
+
+#### 🧠 Enhanced Memory & Context System
+- **Long-term Memory Integration**: Creatures maintain conversation context across multiple interactions
+- **Chat History Awareness**: All AI agents consider recent conversation history for coherent responses
+- **Context-Aware Responses**: Memory agent analyzes both stored memories and chat history
+
+#### 🔧 Critical Frontend Fixes
+- **Fixed Web Interface Regression**: Resolved stats updates and activity translation display issues
+- **Restored Activity Translations**: All activities properly display creature responses
+- **Visual Stats Updates**: Fixed stat display to update correctly after interactions
+
+### Version 1.2.0 - AI System Improvements
+
+#### 🤖 Modern AI Integration
+- **Upgraded to gpt-4.1-nano**: 90% cost reduction while maintaining response quality
+- **Real OpenAI Integration**: Fixed mock client fallback system
+- **Enhanced Mock Responses**: Improved fallback responses for testing without API key
+
+### Version 1.1.0 - Production Stability
+
+#### 🛠️ Critical Bug Fixes  
+- **Fixed Pydantic Forward Reference Errors**: Resolved 500 errors during creature creation
+- **Fixed Activity Stat Updates**: Activities now properly modify creature stats
+- **Much More Communicative Creatures**: Relaxed translation requirements for better UX
+
+#### 💡 Translation System Overhaul
+- **User-Friendly Translation Rules**: Creatures communicate unless severely distressed
+- **Helpful Translation Hints**: Specific guidance when translation unavailable
+- **Better Emotional Context**: Mood-appropriate responses and state tracking
 
 ---
 
-## 🎮 Interacting with Enhanced Creatures
-
-### Basic Interactions
-
-**Send a message:**
-```bash
-curl -X POST "http://localhost:8000/creatures/CREATURE_ID/message" \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Hello there!"}'
-```
-
-**Example responses based on personality:**
-
-**High Extraversion Creature:**
-```json
-{
-  "creature_language": "*bounds forward eagerly* *excited barking* *tail wagging intensely*",
-  "human_translation": "Hello there! I'm so excited to meet you!",
-  "can_translate": true,
-  "emotional_state": "excited"
-}
-```
-
-**Low Extraversion Creature:**
-```json
-{
-  "creature_language": "*cautious approach* *quiet sniff* *reserved posture*",
-  "human_translation": "Oh... hello. I need a moment to get comfortable.",
-  "can_translate": true,
-  "emotional_state": "cautious"
-}
-```
-
-### Watch Personality Evolution
-
-**Check personality development:**
-```bash
-curl -X GET "http://localhost:8000/creatures/CREATURE_ID/personality/development"
-```
-
-**Example response:**
-```json
-{
-  "development_analysis": {
-    "total_personality_change": 0.18,
-    "most_influenced_traits": [
-      {"trait": "confidence", "change": 0.15},
-      {"trait": "trust", "change": 0.12},
-      {"trait": "sociability", "change": 0.08}
-    ],
-    "development_summary": "Developed stronger confidence and trust through positive interactions"
-  },
-  "evolution_enabled": true,
-  "active_shifts": 3,
-  "total_shifts": 12
-}
-```
-
-### Monitor Learning Progress
-
-**Check what your creature has learned:**
-```bash
-curl -X GET "http://localhost:8000/creatures/CREATURE_ID/learning"
-```
-
-**Example response:**
-```json
-{
-  "learning_summary": {
-    "total_learnings": 23,
-    "learning_by_type": {
-      "user_preference": 8,
-      "behavioral_pattern": 7,
-      "emotional_pattern": 5
-    },
-    "strongest_learnings": [
-      {
-        "description": "User enjoys playful interactions",
-        "type": "user_preference",
-        "strength": 0.89,
-        "confidence": 0.85
-      }
-    ],
-    "learning_statistics": {
-      "average_confidence": 0.72,
-      "learning_velocity": 0.15,
-      "total_reinforcements": 89
-    }
-  }
-}
-```
-
----
-
-## 🔧 Complete API Reference
-
-### Enhanced Creature Creation
-
-**Create creature with enhanced personality:**
-```http
-POST /creatures/enhanced
-Content-Type: application/json
-
-{
-  "name": "My Creature",
-  "template_id": "loyal_dog",
-  "personality_mode": "complex",
-  "complex_personality": {
-    "mode": "archetype",
-    "archetype_name": "leonardo",
-    "trait_modifications": {
-      "sociability": 0.8
-    }
-  }
-}
-```
-
-### Personality Management
-
-**Get personality information:**
-```http
-GET /creatures/{creature_id}/personality
-```
-
-**Get development analysis:**
-```http
-GET /creatures/{creature_id}/personality/development
-```
-
-**Control evolution:**
-```http
-POST /creatures/{creature_id}/personality/evolution/toggle?enable=true
-POST /creatures/{creature_id}/personality/evolution/reset?keep_shifts=false
-```
-
-### Learning Management
-
-**Get learning data:**
-```http
-GET /creatures/{creature_id}/learning
-```
-
-**Control learning:**
-```http
-POST /creatures/{creature_id}/learning/toggle?enable=true
-POST /creatures/{creature_id}/learning/reset?keep_strong_learnings=true
-```
-
-### Personality System Endpoints
-
-**List available archetypes:**
-```http
-GET /personality/archetypes
-```
-
-**List all 50 traits:**
-```http
-GET /personality/traits
-```
-
-**Create personality configurations:**
-```http
-POST /personality/simple
-POST /personality/complex
-```
-
-### Enhanced Status Monitoring
-
-**Get comprehensive creature status:**
-```http
-GET /creatures/{creature_id}/status
-```
-
-**Example enhanced status response:**
-```json
-{
-  "creature_id": "abc123",
-  "name": "Leonardo",
-  "species": "dog",
-  "stats": {"happiness": 85, "energy": 70},
-  "personality": {
-    "mode": "complex",
-    "evolution_enabled": true,
-    "active_shifts": 3,
-    "total_shifts": 12,
-    "current_emotional_state": "content",
-    "development_analysis": {
-      "total_personality_change": 0.18,
-      "personality_stability": 0.82,
-      "evolution_trajectory": "steady_evolution"
-    }
-  }
-}
-```
-
----
-
-## 🐲 Creature Templates & Custom Creation
-
-### Built-in Templates
-
-**🏠 Companion Creatures:**
-- **`loyal_dog`** - Faithful canine companion with hunger/energy needs
-- **`independent_cat`** - Graceful feline with independent spirit
-- **`ancient_dragon`** - Wise, territorial dragon with treasure satisfaction
-- **`mystical_fairy`** - Magical forest dweller with nature connection
-
-**🏰 Dungeon Exploration Specialists** *(Perfect for RPG games)*:
-- **🧝‍♀️ `dungeon_elf_scout`** - Perceptive guide with stealth and ancient knowledge
-- **🪓 `dungeon_dwarf_warrior`** - Fearless protector with stone expertise and battle courage
-- **🔧 `dungeon_gnome_tinkerer`** - Brilliant inventor and puzzle-solving master
-- **✨ `dungeon_sprite_guide`** - Magical being with dungeon secrets and mystical powers
-
-### Custom Template Creation
-
-**Web Interface Method:**
-1. Click "Create Template" in the web interface
-2. Fill out the intuitive form
-3. Your template is instantly available!
-
-**API Method:**
-```http
-POST /templates
-Content-Type: application/json
-
-{
-  "name": "Cosmic Phoenix",
-  "species": "phoenix",
-  "description": "A stellar bird that burns with the fire of distant suns",
-  "personality_traits": ["curious", "wise", "energetic"],
-  "stat_configs": {
-    "stellar_energy": {"min_value": 0, "max_value": 100, "default_start": 80},
-    "cosmic_wisdom": {"min_value": 0, "max_value": 100, "default_start": 60}
-  },
-  "language_sounds": {
-    "happy": ["*stellar song*", "*aurora flames*"],
-    "powerful": ["*supernova cry*", "*solar flare*"]
-  },
-  "translation_conditions": {
-    "cosmic_wisdom": "> 40",
-    "stellar_energy": "> 30"
-  }
-}
-```
-
----
-
-## 🧬 The Science Behind Enhanced Personalities
-
-### Psychological Foundation
-
-CreatureMind's personality system is based on decades of psychological research:
-
-**The Big Five Model (OCEAN)**
-- Established in 1980s-1990s by researchers like Lewis Goldberg
-- Scientifically validated across cultures and languages
-- Foundation traits: Openness, Conscientiousness, Extraversion, Agreeableness, Neuroticism
-
-**Extended Trait Framework**
-- 50 scientifically-grounded traits across 10 categories
-- Based on contemporary personality psychology research
-- Real correlations between traits and behaviors
-
-### Mathematical Framework
-
-**Trait Vector Mathematics:**
-```
-Personality Vector P = [t1, t2, t3, ..., t50] where ti ∈ [0,1]
-Evolved Vector E = P + Σ(evolution_shifts) + emotional_influences
-```
-
-**Utility Computation:**
-```
-Action Utility U(a|P,x) = P^T * W_a * x + b_a
-
-Where:
-- P = personality trait vector
-- W_a = weight matrix for action a  
-- x = context vector
-- b_a = bias term for action a
-```
-
-**Learning Adaptation:**
-```
-Confidence(t+1) = Confidence(t) + α * (outcome - expected)
-Where α is the learning rate
-```
-
----
-
-## 🎯 Advanced Usage Examples
-
-### Game Development Integration
-
-**RPG Companion that evolves based on player choices:**
-```javascript
-class AdaptiveCompanion {
-  async updateFromPlayerAction(action, outcome) {
-    const interactionData = {
-      type: action.type,
-      emotional_impact: outcome.satisfaction,
-      primary_emotion: outcome.emotion,
-      context: { 
-        location: action.location,
-        difficulty: action.difficulty,
-        success: outcome.success
-      }
-    };
-    
-    // Creature learns and evolves from this action
-    await this.sendInteraction(interactionData);
-  }
-}
-```
-
-### Educational Application
-
-**Tutoring companion that adapts to learning style:**
-```javascript
-class LearningCompanion {
-  async adaptToStudentResponse(question, studentAnswer, isCorrect) {
-    const interactionData = {
-      type: 'learning_experience',
-      emotional_impact: isCorrect ? 0.6 : -0.2,
-      primary_emotion: isCorrect ? 'proud' : 'encouraging',
-      context: {
-        subject: question.subject,
-        difficulty: question.level,
-        learning_occurred: true,
-        success: isCorrect
-      }
-    };
-    
-    // Companion becomes more encouraging or challenging
-    await this.updatePersonality(interactionData);
-  }
-}
-```
-
-### Business Applications
-
-**Customer service bot that adapts to customer personality:**
-```javascript
-const serviceBotData = {
-  type: 'user_preference',
-  emotional_impact: customerSatisfactionScore,
-  context: {
-    customer_type: detectCustomerPersonality(),
-    issue_complexity: analyzeIssueComplexity(),
-    interaction_history: getCustomerHistory()
-  }
-};
-```
-
----
-
-## 🏗️ Enhanced Architecture Overview
-
-CreatureMind uses a **6-agent AI system** with advanced personality integration:
-
-1. **Perception Agent** - Understands what you're saying and extracts emotional context
-2. **Emotion Agent** - Determines creature's emotional state and influences
-3. **Memory Agent** - Recalls relevant past interactions and learned patterns
-4. **Personality Agent** - Applies 50-dimensional personality traits to decision making
-5. **Decision Agent** - Decides how to respond using trait-driven utility computation
-6. **Translator Agent** - Creates species language with personality-aware translation
-
-### Enhanced Features per Creature:
-
-**🧠 Personality System:**
-- 50-dimensional trait vectors or simple 3-5 trait mode
-- Famous personality archetypes or custom configurations
-- Real-time personality evolution based on interactions
-
-**💭 Emotional Intelligence:**
-- Current emotional state tracking
-- Emotional influences on trait expression
-- Natural emotional decay and realistic patterns
-
-**📚 Learning & Memory:**
-- Persistent interaction memory
-- Behavioral pattern learning
-- User preference adaptation
-- Long-term relationship building
-
-**🗣️ Communication:**
-- Species-specific language sounds
-- Mood and personality-based translation
-- Cultural variations and context awareness
-
----
-
-## 🛠️ Troubleshooting
-
-### Common Issues
-
-**"Command not found" errors:**
-- **Mac**: Make sure you installed Python with Homebrew
-- **Windows**: Make sure you checked "Add Python to PATH" during installation
-
-**"Permission denied" errors:**
-- Try adding `python3` instead of `python`
-- On Mac: `python3 -m api.server`
-
-**API key errors:**
-- Make sure your OpenAI API key starts with `sk-`
-- Check that you set the environment variable correctly
-- Try restarting your terminal after setting the key
-
-**Port already in use:**
-- Something else is using port 8000
-- Change the port: `python -m api.server --port 8001`
-
-**Personality system not working:**
-- Check that numpy is installed: `pip install numpy`
-- Verify API is running: `curl http://localhost:8000/health`
-- Check creature has enhanced personality: `GET /creatures/{id}/personality`
-
-### Getting Help
-
-- Check the server logs in your terminal
-- Try the basic test: `curl http://localhost:8000/health`
-- Look at `examples/test_api.py` for working examples
-- Visit the comprehensive guide: `ENHANCED_PERSONALITY_GUIDE.md`
+## 💰 Cost Information
+
+### API Usage Costs (with OpenAI)
+- **Conversations**: ~$0.01-0.05 per conversation
+- **Activities**: ~$0.005-0.02 per activity  
+- **gpt-4.1-nano model**: 90% cheaper than previous versions
+- **Estimated monthly**: $1-10 for regular use
+
+### Free Usage (without API)
+- **Unlimited mock interactions**
+- **All personality features**
+- **Full template system**
+- **Species-appropriate responses**
 
 ---
 
 ## 🎯 Next Steps & Learning Path
 
 ### For Beginners:
-1. Create your first creature with simple personality
-2. Have conversations and watch emotional responses
-3. Try different activities and see how personality affects reactions
-4. Observe personality evolution over several interactions
+1. ✅ **Complete setup** following this guide
+2. 🎮 **Create your first creature** with simple personality  
+3. 💬 **Have conversations** and try activities
+4. 🧬 **Watch personality evolution** over time
 
 ### For Intermediate Users:
-1. Experiment with personality archetypes (Leonardo, Einstein, etc.)
-2. Create custom personality blends
-3. Monitor learning progress and personality development
-4. Try controlling evolution and learning settings
+1. 🎭 **Try personality archetypes** (Einstein, Leonardo, etc.)
+2. 🔧 **Create custom creature templates**  
+3. 📊 **Monitor learning and evolution systems**
+4. 🎛️ **Experiment with complex personalities**
 
 ### For Advanced Users:
-1. Create fully custom 50-dimensional personalities
-2. Build applications using the enhanced API
-3. Deploy with Docker in production environments
-4. Integrate personality evolution into games or apps
+1. 🧠 **Build 50-dimensional personalities**
+2. 🔌 **Integrate with external applications**
+3. 🐳 **Deploy with Docker in production**
+4. 🎮 **Create game integrations**
 
 ### For Developers:
-- **Complete API Documentation**: Visit `http://localhost:8000/docs`
-- **Enhanced Personality Guide**: Read `ENHANCED_PERSONALITY_GUIDE.md`
+- **Complete API Documentation**: `http://localhost:8000/docs`
 - **Source Code**: Explore the `core/` directory
-- **Integration Examples**: Check out `examples/` for patterns
+- **Integration Examples**: Check `examples/` for patterns
+- **Custom Templates**: Build your own creature types
 
 ---
 
 ## 🌟 Origins & Innovation
 
-CreatureMind was born from **WiddlePupper**, an iOS virtual pet app that pioneered multi-agent creature consciousness. We've now evolved this into the world's most sophisticated AI personality system.
+CreatureMind evolved from **WiddlePupper**, an iOS virtual pet app that pioneered multi-agent creature consciousness. We've transformed this into the world's most sophisticated AI personality system.
 
 ### What Makes This Groundbreaking:
 
-**🔬 Scientific Foundation**: Based on 50+ years of personality psychology research
+**🔬 Scientific Foundation**: Based on 50+ years of personality psychology research  
 **🧬 Dynamic Evolution**: First AI system where personalities truly change over time  
-**📚 Persistent Learning**: Creatures build lasting relationships through memory and adaptation
-**💡 Practical Applications**: Ready for games, education, therapy, customer service, and more
-**🛠️ Developer-Friendly**: Complete API access with comprehensive documentation
+**📚 Persistent Learning**: Creatures build lasting relationships through memory and adaptation  
+**💡 Practical Applications**: Ready for games, education, therapy, customer service, and more  
+**🛠️ Developer-Friendly**: Complete API access with comprehensive documentation  
 
 The magic isn't just in the complexity - it's in how all these systems work together to create authentic, believable characters that feel genuinely alive and develop unique relationships with each user.
-
----
-
-## 📋 Recent Updates & Bug Fixes
-
-### Version 1.3.0 (Latest) - Memory Integration & Frontend Stability
-
-#### 🧠 Enhanced Memory & Context System
-- **Long-term Memory Integration**: Creatures now maintain conversation context across multiple interactions
-- **Chat History Awareness**: All AI agents now consider recent conversation history for more coherent responses
-- **Persistent Relationships**: Creatures build lasting relationships and remember past interactions
-- **Context-Aware Responses**: Memory agent analyzes both stored memories and chat history for better context
-
-#### 🔧 Critical Bug Fix: Frontend Regression
-- **Fixed Web Interface Regression**: Resolved issue where stats weren't updating and activities lost translations after memory integration
-- **Restored Activity Translations**: Activities (feed, pet, walk, play) now properly display creature responses and translations
-- **Visual Stats Updates**: Fixed visual stat display to correctly update after activities and interactions
-- **Maintained Memory Features**: All new memory and context features preserved while restoring web interface functionality
-
-#### 🧬 Technical Enhancements
-- **Enhanced Memory Agent**: Now processes both stored memories and chat history for comprehensive context analysis
-- **Improved Decision Agent**: Considers conversation history when forming responses for better continuity
-- **Chat History Integration**: All agents receive recent conversation context (last 10 messages) for coherent interactions
-- **Frontend Stability**: Simplified activity response handling to prevent timing issues with stats updates
-
-#### 🤖 AI System Improvements (From v1.2.0)
-- **Upgraded to gpt-4.1-nano**: Replaced expensive gpt-4-1106-preview with modern, cost-effective gpt-4.1-nano model
-- **Real OpenAI Integration**: Fixed mock client fallback to use proper OpenAI API calls when API key is provided
-- **Enhanced Mock Responses**: Improved mock client with varied, realistic responses for testing without API key
-- **Better Startup Guidance**: Clear messaging about API key status and model selection
-
-#### 💰 Cost Optimization
-- **90% Cost Reduction**: gpt-4.1-nano is significantly cheaper than gpt-4-1106-preview while maintaining quality
-- **Faster Responses**: gpt-4.1-nano provides quicker response times for better user experience
-- **Production Ready**: Optimized for real-world usage with proper error handling and retry logic
-
-### Version 1.1.0 - Production Stability & UX Improvements
-
-#### 🛠️ Critical Bug Fixes
-- **Fixed Pydantic Forward Reference Errors**: Resolved 500 Internal Server Errors during creature creation by removing problematic TYPE_CHECKING imports
-- **Fixed Activity Stat Updates**: Activities (feed, pet, walk, play) now properly update creature stats - hunger, happiness, and energy changes are correctly preserved and visible in API responses
-- **Improved Stats Boundary Protection**: Enhanced stats clamping ensures values never go below 0 or above configured maximums
-
-#### 🎯 User Experience Improvements
-- **Much More Communicative Creatures**: Completely rewrote translation logic to be user-friendly
-  - Old: Required happiness ≥ 50 AND energy ≥ 30 (too restrictive)
-  - New: Only refuses translation in severe distress (happiness < 20 AND energy < 20, or extremely low individual stats)
-  - Result: Creatures now communicate even when moderately tired or sad, making interactions much more engaging
-
-#### 💡 Enhanced Translation System
-- **Helpful Translation Hints**: When creatures can't translate, the system now provides specific guidance:
-  - *"Your dog seems very distressed (happiness: 15, energy: 18). Try feeding, petting, or playing to help them feel better!"*
-  - *"Your cat is exhausted (energy: 3). They need rest or food to regain energy before they can communicate clearly."*
-- **Better Emotional Context**: Translation system now considers creature's emotional state and provides context-appropriate responses
-
-#### 🔧 Technical Improvements
-- **Preserved Activity Effects**: Fixed process_activity() method to properly merge activity stat changes with interaction effects
-- **Enhanced Personality Evolution**: Activity-based personality evolution now triggers correctly for all activity types
-- **Improved Error Handling**: Better fallback responses and error messages throughout the system
-
-#### 📊 Testing Verification
-All fixes have been thoroughly tested and verified:
-- ✅ Stats properly clamped (no negative values, respect maximums)
-- ✅ Activities apply correct stat changes (feed: +30 hunger, +10 happiness)
-- ✅ Translation works with moderate stats (28-50 range) 
-- ✅ Translation hints appear when creatures are truly distressed
-- ✅ Personality evolution triggers correctly for all interaction types
-
-#### 🎮 User Experience Before vs After
-**Before (Restrictive)**:
-- Fed, pet, walked, and played with creature multiple turns
-- No translations despite reasonable stats (happiness: 75, energy: 45)
-- Users confused about what to do to make creatures communicate
-- Activities appeared to have no effect on creature stats
-
-**After (User-Friendly)**:
-- Creatures communicate readily unless genuinely distressed
-- Clear guidance when translation isn't available
-- Activities provide immediate, visible stat feedback
-- Much more engaging and intuitive experience
-
-This update transforms CreatureMind from a technically impressive but sometimes frustrating experience into a genuinely engaging AI companion system that prioritizes user experience while maintaining all the advanced personality features.
 
 ---
 
@@ -902,36 +551,46 @@ MIT License - Use CreatureMind in your projects, commercial or personal!
 
 **Your evolving creature is waiting to meet you!**
 
-1. Follow the setup steps above
-2. Create your first enhanced creature
-3. Watch them develop their unique personality
-4. Experience the future of AI companions
+1. ✅ **Follow the setup steps above**
+2. 🎭 **Create your first enhanced creature**  
+3. 🧬 **Watch them develop their unique personality**
+4. 🚀 **Experience the future of AI companions**
 
 *The journey of a thousand conversations begins with a single "hello" - but with CreatureMind, every conversation changes who your creature becomes...* 🧠✨
+
+---
+
+## 🆘 Getting Help
+
+- **Documentation Issues**: Check the troubleshooting section above
+- **API Problems**: Visit `http://localhost:8000/docs` for detailed API info
+- **Installation Help**: Try the alternative commands provided for your system
+- **Feature Questions**: Explore the `examples/` directory for working code
+
+**Remember**: Most issues can be solved by trying `python3` instead of `python`, or creating a fresh creature after setting your API key!
 
 ---
 
 ## 📋 Quick Start Checklist
 
 ### Basic Setup (10 minutes)
-- [ ] Install Python 3.11+ and get OpenAI API key
+- [ ] Install Python 3.11+ 
 - [ ] Download CreatureMind and run `pip install -r requirements.txt`
-- [ ] Set `OPENAI_API_KEY` environment variable
-- [ ] Start server with `python -m api.server`
-- [ ] Visit `http://localhost:8000` to create your first creature
+- [ ] Start server with `python -m api.server` (or `python3 -m api.server`)
+- [ ] Visit `http://localhost:8000` 
+- [ ] Set API key via web interface (optional)
+- [ ] Create your first creature
 
-### Enhanced Personality Features (20 minutes)  
-- [ ] Create creature with complex personality using an archetype
-- [ ] Send several different types of messages (happy, sad, excited)
-- [ ] Check personality development: `GET /creatures/{id}/personality/development`
-- [ ] Monitor learning progress: `GET /creatures/{id}/learning`
-- [ ] Observe how emotional state affects responses
+### Test Everything Works (5 minutes)
+- [ ] Send a message to your creature
+- [ ] Try all activities (feed, pet, play, walk)
+- [ ] Check that stats update correctly
+- [ ] Verify creature shows species-appropriate behaviors
 
-### Advanced Features (30 minutes)
-- [ ] Create custom personality with trait sliders
-- [ ] Create personality blend combining multiple archetypes
-- [ ] Experiment with evolution controls (enable/disable/reset)
-- [ ] Test learning controls and pattern recognition
-- [ ] Build simple application using the enhanced API
+### Advanced Features (20 minutes)
+- [ ] Create creature with complex personality (try Einstein archetype)
+- [ ] Monitor personality development and learning progress  
+- [ ] Create a custom creature template
+- [ ] Test different species and their unique behaviors
 
 **Welcome to the future of AI personalities. Welcome to CreatureMind.** 🧠🚀

@@ -21,6 +21,7 @@ class CreatureMindApp {
         document.getElementById('getStartedBtn').addEventListener('click', () => this.showCreationForm());
         document.getElementById('newCreatureBtn').addEventListener('click', () => this.showCreationForm());
         document.getElementById('createTemplateBtn').addEventListener('click', () => this.showTemplateForm());
+        document.getElementById('apiKeyBtn').addEventListener('click', () => this.showApiKeyModal());
         document.getElementById('cancelCreation').addEventListener('click', () => this.showWelcomeScreen());
         document.getElementById('cancelTemplate').addEventListener('click', () => this.showWelcomeScreen());
 
@@ -48,6 +49,12 @@ class CreatureMindApp {
         // Error modal
         document.getElementById('closeError').addEventListener('click', () => this.hideError());
         document.getElementById('errorOkBtn').addEventListener('click', () => this.hideError());
+
+        // API Key modal
+        document.getElementById('closeApiKey').addEventListener('click', () => this.hideApiKeyModal());
+        document.getElementById('toggleApiKeyVisibility').addEventListener('click', () => this.toggleApiKeyVisibility());
+        document.getElementById('saveApiKey').addEventListener('click', () => this.saveApiKey());
+        document.getElementById('clearApiKey').addEventListener('click', () => this.clearApiKey());
 
         // Enhanced personality system
         this.setupPersonalityEventListeners();
@@ -389,6 +396,7 @@ class CreatureMindApp {
                 'content': '😌',
                 'playful': '😄',
                 'hungry': '🤤',
+                'joyful': '😄',
                 'neutral': '😐'
             };
             moodEmoji.textContent = moodEmojiMap[mood] || '😐';
@@ -1144,6 +1152,112 @@ class CreatureMindApp {
         }
 
         return creatureData;
+    }
+
+    // API Key Management Methods
+    async showApiKeyModal() {
+        document.getElementById('apiKeyModal').classList.remove('hidden');
+        await this.updateApiKeyStatus();
+    }
+
+    hideApiKeyModal() {
+        document.getElementById('apiKeyModal').classList.add('hidden');
+        // Clear the input for security
+        document.getElementById('apiKeyInput').value = '';
+    }
+
+    async updateApiKeyStatus() {
+        try {
+            const response = await fetch('/api/status');
+            const status = await response.json();
+            
+            const statusElement = document.getElementById('apiKeyStatus');
+            
+            if (status.has_api_key) {
+                statusElement.className = 'status-indicator connected';
+                statusElement.innerHTML = `<i class="fas fa-circle-check"></i><span>API key configured - using ${status.model} model</span>`;
+            } else {
+                statusElement.className = 'status-indicator disconnected';
+                statusElement.innerHTML = '<i class="fas fa-circle-xmark"></i><span>No API key set - using mock responses</span>';
+            }
+        } catch (error) {
+            console.error('Failed to get API status:', error);
+        }
+    }
+
+    toggleApiKeyVisibility() {
+        const input = document.getElementById('apiKeyInput');
+        const icon = document.querySelector('#toggleApiKeyVisibility i');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'fas fa-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'fas fa-eye';
+        }
+    }
+
+    async saveApiKey() {
+        const apiKey = document.getElementById('apiKeyInput').value.trim();
+        
+        if (!apiKey) {
+            alert('Please enter an API key');
+            return;
+        }
+        
+        if (!apiKey.startsWith('sk-')) {
+            alert('Invalid API key format. OpenAI API keys start with "sk-"');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/set_key', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ api_key: apiKey })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || 'Failed to set API key');
+            }
+
+            const result = await response.json();
+            
+            await this.updateApiKeyStatus();
+            
+            alert(`API key set successfully! Now using ${result.model} model for real AI responses.`);
+            
+            this.hideApiKeyModal();
+            
+        } catch (error) {
+            console.error('Failed to save API key:', error);
+            alert(`Failed to save API key: ${error.message}`);
+        }
+    }
+
+    async clearApiKey() {
+        if (confirm('Are you sure you want to clear the API key? This will revert to mock responses.')) {
+            try {
+                const response = await fetch('/api/clear_key', {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to clear API key');
+                }
+
+                await this.updateApiKeyStatus();
+                alert('API key cleared. Now using mock responses.');
+                
+            } catch (error) {
+                console.error('Failed to clear API key:', error);
+                alert(`Failed to clear API key: ${error.message}`);
+            }
+        }
     }
 }
 

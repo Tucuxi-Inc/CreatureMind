@@ -1329,3 +1329,124 @@ body {
     border-radius: 4px;
     margin-top: 0.5rem;
 }
+
+/* API Key Modal Styles */
+.api-key-status {
+    margin-bottom: 1.5rem;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: var(--radius);
+    font-weight: 500;
+}
+
+.status-indicator.connected {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--accent-color);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-indicator.disconnected {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.input-group {
+    display: flex;
+    gap: 0;
+}
+
+.input-group .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+}
+
+.input-group .btn-icon {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    padding: 0.5rem 0.75rem;
+    background: var(--background-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+
+.input-group .btn-icon:hover {
+    background: var(--border);
+}
+
+.form-hint {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.form-hint a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.form-hint a:hover {
+    text-decoration: underline;
+}
+
+.api-key-info {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+}
+
+.api-key-info h4 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.comparison-item {
+    padding: 1rem;
+    background: var(--background-secondary);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.comparison-item h5 {
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.comparison-item ul {
+    list-style: none;
+    padding: 0;
+}
+
+.comparison-item li {
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.comparison-item li:before {
+    content: "•";
+    color: var(--primary-color);
+    margin-right: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .comparison {
+        grid-template-columns: 1fr;
+    }
+}

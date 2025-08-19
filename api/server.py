@@ -772,6 +772,61 @@ async def reset_creature_learning(creature_id: str, keep_strong_learnings: bool 
     }
 
 
+# API Key Management Endpoints
+class ApiKeyRequest(BaseModel):
+    api_key: str
+
+@app.get("/api/status")
+async def get_api_status():
+    """Get current API client status"""
+    global ai_client
+    is_real_client = hasattr(ai_client, 'client')  # OpenAI client has .client attribute
+    
+    return {
+        "client_type": "openai" if is_real_client else "mock",
+        "has_api_key": is_real_client,
+        "model": getattr(ai_client, 'model', 'mock') if is_real_client else "mock"
+    }
+
+@app.post("/api/set_key")
+async def set_api_key(request: ApiKeyRequest):
+    """Set OpenAI API key dynamically"""
+    global ai_client
+    
+    api_key = request.api_key.strip()
+    
+    if not api_key:
+        raise HTTPException(status_code=400, detail="API key cannot be empty")
+    
+    if not api_key.startswith('sk-'):
+        raise HTTPException(status_code=400, detail="Invalid API key format. OpenAI keys start with 'sk-'")
+    
+    try:
+        # Create new OpenAI client with the provided key
+        ai_client = create_ai_client("openai", api_key=api_key)
+        
+        return {
+            "message": "API key set successfully",
+            "client_type": "openai",
+            "model": ai_client.model
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to set API key: {str(e)}")
+
+@app.post("/api/clear_key")
+async def clear_api_key():
+    """Clear API key and revert to mock client"""
+    global ai_client
+    
+    # Revert to mock client
+    ai_client = create_ai_client("mock")
+    
+    return {
+        "message": "API key cleared, using mock client",
+        "client_type": "mock"
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

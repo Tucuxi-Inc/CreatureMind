@@ -20,6 +20,9 @@
                         <span>CreatureMind</span>
                     </div>
                     <nav class="nav">
+                        <button id="apiKeyBtn" class="btn btn-outline">
+                            <i class="fas fa-key"></i> API Key
+                        </button>
                         <button id="newCreatureBtn" class="btn btn-primary">
                             <i class="fas fa-plus"></i> New Creature
                         </button>
@@ -483,6 +486,66 @@
                 </div>
                 <div class="modal-footer">
                     <button id="errorOkBtn" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Key Modal -->
+        <div id="apiKeyModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-key"></i> OpenAI API Key Settings</h3>
+                    <button id="closeApiKey" class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="api-key-status">
+                        <div id="apiKeyStatus" class="status-indicator">
+                            <i class="fas fa-circle-xmark"></i>
+                            <span>No API key set - using mock responses</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="apiKeyInput">OpenAI API Key:</label>
+                        <div class="input-group">
+                            <input type="password" id="apiKeyInput" placeholder="sk-..." class="form-control">
+                            <button id="toggleApiKeyVisibility" class="btn btn-icon" type="button">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <small class="form-hint">
+                            Your API key is stored locally and never sent to external servers.
+                            Get your key from <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a>
+                        </small>
+                    </div>
+                    
+                    <div class="api-key-info">
+                        <h4>What's the difference?</h4>
+                        <div class="comparison">
+                            <div class="comparison-item">
+                                <h5><i class="fas fa-robot"></i> Mock Responses (No API Key)</h5>
+                                <ul>
+                                    <li>Free to use</li>
+                                    <li>Limited, pre-written responses</li>
+                                    <li>Good for testing the interface</li>
+                                    <li>Species-aware but not fully intelligent</li>
+                                </ul>
+                            </div>
+                            <div class="comparison-item">
+                                <h5><i class="fas fa-brain"></i> Real AI (With API Key)</h5>
+                                <ul>
+                                    <li>Costs ~$0.01-0.05 per conversation</li>
+                                    <li>Fully intelligent, contextual responses</li>
+                                    <li>Unique personality expression</li>
+                                    <li>Truly lifelike creature behavior</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="clearApiKey" class="btn btn-outline">Clear Key</button>
+                    <button id="saveApiKey" class="btn btn-primary">Save Key</button>
                 </div>
             </div>
         </div>

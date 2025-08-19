@@ -156,6 +156,7 @@ Physical state constraints:
 Response format:
 ACTION: (physical response - must match energy and emotional state)
 VOCALIZATION: (species-appropriate sounds - match energy level and emotion)
+HUMAN_RESPONSE: (what the creature wants to say in human language)
 INTENTION: (what the creature wants to convey to the user)
 ENERGY_LEVEL: (low|medium|high - for response intensity)"""
 
@@ -201,6 +202,7 @@ CURRENT STATE:
         decision_data = {
             "action": "*neutral stance*",
             "vocalization": "*quiet sound*",
+            "human_response": "I'm thinking about what you said.",
             "intention": "acknowledgment",
             "energy_level": "medium"
         }
@@ -216,6 +218,8 @@ CURRENT STATE:
                     decision_data["action"] = value
                 elif key == "VOCALIZATION":
                     decision_data["vocalization"] = value
+                elif key == "HUMAN_RESPONSE":
+                    decision_data["human_response"] = value
                 elif key == "INTENTION":
                     decision_data["intention"] = value
                 elif key == "ENERGY_LEVEL":
@@ -325,6 +329,7 @@ Physical state constraints:
 Response format:
 ACTION: (physical response - must strongly reflect {action_style} style and energy state)
 VOCALIZATION: (species-appropriate sounds - match {action_style} style and energy level)
+HUMAN_RESPONSE: (what the creature wants to say in human language)
 INTENTION: (what the creature wants to convey - influenced by {action_style} approach)
 ENERGY_LEVEL: (low|medium|high - for response intensity)"""
 
