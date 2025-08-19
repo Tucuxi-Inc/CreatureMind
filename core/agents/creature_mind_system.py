@@ -238,14 +238,16 @@ class CreatureMindSystem:
         
         # Apply activity effects
         response = CreatureMindResponse()
+        activity_stats_delta = {}
+        
         for stat_name, effect in activity.stat_effects.items():
             self.creature.stats.modify_stat(stat_name, effect)
-            response.stats_delta[stat_name] = effect
+            activity_stats_delta[stat_name] = effect
         
         # Energy cost
         if activity.energy_cost > 0:
             self.creature.stats.modify_stat("energy", -activity.energy_cost)
-            response.stats_delta["energy"] = response.stats_delta.get("energy", 0) - activity.energy_cost
+            activity_stats_delta["energy"] = activity_stats_delta.get("energy", 0) - activity.energy_cost
         
         # Generate creature response to the activity
         activity_prompt = f"The creature just experienced: {activity.description}"
@@ -255,8 +257,8 @@ class CreatureMindSystem:
         # Update personality based on activity (evolution system)
         if hasattr(self.creature.personality, 'enhanced_personality') and self.creature.personality.enhanced_personality:
             # Determine activity impact based on stat changes and activity type
-            happiness_change = response.stats_delta.get('happiness', 0)
-            energy_change = response.stats_delta.get('energy', 0)
+            happiness_change = activity_stats_delta.get('happiness', 0)
+            energy_change = activity_stats_delta.get('energy', 0)
             
             # Map activity types to evolution triggers and characteristics
             activity_evolution_map = {
@@ -283,7 +285,18 @@ class CreatureMindSystem:
             }
             self.creature.personality.enhanced_personality.update_from_interaction(interaction_data)
         
-        return await self.process_message(activity_prompt, context={"activity": activity_name})
+        # Get the creature's behavioral response to the activity
+        message_response = await self.process_message(activity_prompt, context={"activity": activity_name})
+        
+        # Preserve the activity stat changes by merging with message response changes
+        final_stats_delta = activity_stats_delta.copy()
+        for stat_name, message_delta in message_response.stats_delta.items():
+            final_stats_delta[stat_name] = final_stats_delta.get(stat_name, 0) + message_delta
+        
+        # Update the response with preserved activity effects
+        message_response.stats_delta = final_stats_delta
+        
+        return message_response
     
     def get_creature_status(self) -> Dict[str, Any]:
         """Get current creature status for debugging/monitoring"""
