@@ -1,15 +1,18 @@
 """
 AI Client - Generalized from WiddlePupper's OpenAIService.swift
 
-Handles communication with AI services (OpenAI, Claude, etc.)
+Handles communication with AI services (OpenAI, local AI via llama.cpp, etc.)
 """
 
 import asyncio
 import json
+import logging
 from typing import Dict, List, Optional, Any
 from abc import ABC, abstractmethod
 import openai
 from openai import AsyncOpenAI
+
+logger = logging.getLogger(__name__)
 
 
 class AIClient(ABC):
@@ -360,8 +363,213 @@ class MockAIClient(AIClient):
         return f"CREATURE_LANGUAGE: {creature_language}\nHUMAN_TRANSLATION: {human_response}\nDEBUG: Translated human response into {species} language"
 
 
-def create_ai_client(client_type: str = "openai", **kwargs) -> AIClient:
-    """Factory function to create AI clients"""
+class SmartAIClient(AIClient):
+    """Smart AI client with intelligent fallback chain: Local AI → OpenAI → Mock"""
+    
+    def __init__(self, api_key: Optional[str] = None, use_openai: bool = False):
+        from .local_ai_client import LocalAIClient
+        from .context_manager import ContextManager
+        
+        # Initialize clients
+        self.openai_client = OpenAIClient(api_key=api_key) if api_key else None
+        self.local_client = LocalAIClient()
+        self.mock_client = MockAIClient()
+        
+        # Configuration
+        self.use_openai = use_openai and (api_key is not None)  # Only use OpenAI if key provided
+        self.startup_attempted = False
+        
+        # Context management
+        self.context_manager = None  # Will be initialized when local client starts
+        
+        # Log initialization
+        mode = "OpenAI-first" if self.use_openai else "Local-first"
+        logger.info(f"🤖 SmartAIClient initialized - Mode: {mode}")
+        logger.info(f"   Available: OpenAI: {'✅' if self.openai_client else '❌'}, Local: 🔄, Mock: ✅")
+        
+    async def generate_response(
+        self,
+        system_prompt: str,
+        user_message: str,
+        chat_history: List[Dict[str, str]] = None,
+        temperature: float = 0.7,
+        max_tokens: int = 500
+    ) -> str:
+        """Generate response using smart fallback chain with context optimization"""
+        
+        # Determine client order: Local AI first unless OpenAI explicitly requested
+        if self.use_openai and self.openai_client:
+            clients_to_try = [
+                ("OpenAI", self.openai_client),
+                ("Local AI", self.local_client),
+                ("Mock", self.mock_client)
+            ]
+        else:
+            clients_to_try = [
+                ("Local AI", self.local_client),
+                ("OpenAI", self.openai_client),
+                ("Mock", self.mock_client)
+            ]
+        
+        # Initialize context manager if needed
+        if not self.context_manager:
+            # Default to 32k, will be updated when local AI starts
+            from .context_manager import ContextManager
+            self.context_manager = ContextManager(max_context=32768)
+        
+        # Try each client in order
+        for name, client in clients_to_try:
+            if client is None:
+                continue
+                
+            try:
+                logger.info(f"🤖 Trying {name}...")
+                
+                # Special handling for local AI startup and context management
+                if name == "Local AI":
+                    if not self.startup_attempted:
+                        logger.info("   🚀 Starting local AI (first time)...")
+                        await client.start()
+                        self.startup_attempted = True
+                        
+                        # Update context manager with detected model limits
+                        if hasattr(client, 'manager') and client.manager.config:
+                            self.context_manager.update_context_limit(client.manager.config.ctx_size)
+                            
+                    elif not client.is_available():
+                        logger.info("   🔄 Restarting local AI...")
+                        await client.start()
+                    
+                    # Optimize context for local AI
+                    opt_system, opt_user, opt_history, stats = self.context_manager.optimize_context(
+                        system_prompt=system_prompt,
+                        user_message=user_message,
+                        chat_history=chat_history
+                    )
+                    
+                    logger.info(f"📊 Context: {stats.total_tokens:,} tokens ({stats.compression_ratio:.1%} compressed)")
+                    
+                    response = await client.generate_response(
+                        system_prompt=opt_system,
+                        user_message=opt_user,
+                        chat_history=opt_history,
+                        temperature=temperature,
+                        max_tokens=min(max_tokens, stats.available_tokens)
+                    )
+                else:
+                    # For OpenAI and Mock, use original prompts (they have their own limits)
+                    response = await client.generate_response(
+                        system_prompt=system_prompt,
+                        user_message=user_message,
+                        chat_history=chat_history,
+                        temperature=temperature,
+                        max_tokens=max_tokens
+                    )
+                
+                logger.info(f"✅ {name} generated response successfully")
+                return response
+                
+            except Exception as e:
+                logger.warning(f"⚠️ {name} failed: {e}")
+                continue
+        
+        # If all else fails
+        raise RuntimeError("All AI clients failed to generate response")
+    
+    def get_status(self) -> Dict[str, Any]:
+        """Get comprehensive status of all available clients"""
+        local_available = False
+        local_info = {"available": False, "type": "local", "cost": "$0 (free)"}
+        
+        if hasattr(self.local_client, 'is_available'):
+            local_available = self.local_client.is_available()
+            
+        if local_available and hasattr(self.local_client, 'manager'):
+            manager = self.local_client.manager
+            available_models = manager.get_available_models()
+            
+            local_info.update({
+                "available": True,
+                "current_model": manager.current_model,
+                "context_size": f"{manager.config.ctx_size:,} tokens",
+                "available_models": len(available_models),
+                "model_list": list(available_models.keys())[:3]  # Show first 3
+            })
+        
+        return {
+            "mode": "OpenAI-first" if self.use_openai else "Local-first",
+            "clients": {
+                "openai": {
+                    "available": self.openai_client is not None,
+                    "enabled": self.use_openai,
+                    "type": "cloud",
+                    "cost": "~$0.01-0.05/conversation"
+                },
+                "local": local_info,
+                "mock": {
+                    "available": True,
+                    "type": "fallback",
+                    "cost": "$0 (limited responses)"
+                }
+            },
+            "context_manager": {
+                "max_context": self.context_manager.max_context if self.context_manager else "Not initialized",
+                "reserved_tokens": self.context_manager.reserved_response_tokens if self.context_manager else "Not initialized"
+            }
+        }
+    
+    def set_openai_preference(self, use_openai: bool):
+        """Enable/disable OpenAI preference"""
+        if use_openai and not self.openai_client:
+            logger.warning("⚠️ Cannot enable OpenAI - no API key provided")
+            return False
+            
+        self.use_openai = use_openai
+        mode = "OpenAI-first" if use_openai else "Local-first"
+        logger.info(f"🔄 Switching to {mode} mode")
+        return True
+    
+    async def get_available_models(self) -> Dict[str, Any]:
+        """Get available local models"""
+        if not self.startup_attempted:
+            await self.local_client.start()
+            self.startup_attempted = True
+            
+        if hasattr(self.local_client, 'manager'):
+            return self.local_client.manager.get_available_models()
+        return {}
+    
+    async def switch_local_model(self, model_name: str) -> bool:
+        """Switch local AI to a different model"""
+        if hasattr(self.local_client, 'manager'):
+            success = await self.local_client.manager.switch_model(model_name)
+            if success and self.context_manager:
+                # Update context manager with new model limits
+                new_ctx_size = self.local_client.manager.config.ctx_size
+                self.context_manager.update_context_limit(new_ctx_size)
+            return success
+        return False
+    
+    async def ensure_local_ready(self) -> bool:
+        """Ensure local AI is ready"""
+        if not self.startup_attempted:
+            await self.local_client.start()
+            self.startup_attempted = True
+        return self.local_client.is_available()
+
+
+def create_ai_client(client_type: str = "smart", **kwargs) -> AIClient:
+    """Factory function to create AI clients
+    
+    Args:
+        client_type: Type of client ("smart", "openai", "local", "mock")
+        api_key: OpenAI API key (optional)
+        use_openai: Whether to prefer OpenAI over local (default: False)
+        model_name: Local model name (optional)
+        
+    Returns:
+        Configured AIClient instance
+    """
     
     if client_type == "openai":
         api_key = kwargs.get("api_key")
@@ -373,5 +581,15 @@ def create_ai_client(client_type: str = "openai", **kwargs) -> AIClient:
     elif client_type == "mock":
         return MockAIClient()
     
+    elif client_type == "local":
+        from .local_ai_client import LocalAIClient
+        model_name = kwargs.get("model_name")
+        return LocalAIClient(model_name=model_name)
+    
+    elif client_type == "smart":
+        api_key = kwargs.get("api_key")
+        use_openai = kwargs.get("use_openai", False)  # Default to local-first
+        return SmartAIClient(api_key=api_key, use_openai=use_openai)
+    
     else:
-        raise ValueError(f"Unknown client type: {client_type}")
+        raise ValueError(f"Unknown client type: {client_type}. Available types: openai, local, mock, smart")

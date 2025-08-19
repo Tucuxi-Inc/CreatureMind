@@ -115,6 +115,15 @@ class CreatureMindSystem:
             response.debug_info["memory"] = memory_result
             
             # 4. Decision Agent - Form the core response (with chat history for context)
+            print(f"🎬 About to call DecisionAgent.decide() - AI client: {type(self.decision_agent.ai_client).__name__}")
+            print(f"🎬 DecisionAgent method exists: {hasattr(self.decision_agent, 'decide')}")
+            print(f"🎬 DecisionAgent object: {self.decision_agent}")
+            print(f"🎬 DecisionAgent decide method: {self.decision_agent.decide}")
+            
+            # Test if we can call the method synchronously (for debugging)
+            import inspect
+            print(f"🎬 Method signature: {inspect.signature(self.decision_agent.decide)}")
+            
             decision_result = await self.decision_agent.decide(
                 perception_data=perception_result,
                 emotion_data=emotion_result,
@@ -123,6 +132,8 @@ class CreatureMindSystem:
                 template=self.template,
                 chat_history=self.chat_history
             )
+            
+            print(f"🎬 DecisionAgent.decide() returned: {decision_result}")
             response.debug_info["decision"] = decision_result
             
             # 5. Generate creature language response

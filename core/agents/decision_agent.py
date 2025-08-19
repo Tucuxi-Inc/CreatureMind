@@ -7,11 +7,14 @@ Enhanced with trait-based utility decision making.
 
 from typing import Dict, Any, Optional, List
 import numpy as np
+import logging
 from ..models.creature import CreatureState
 from ..models.creature_template import CreatureTemplate
 from ..models.personality_system import PersonalityMode, EnhancedPersonality, PersonalityArchetypes
 from .ai_client import AIClient
 from .production_trait_utility_model import ProductionTraitUtilityModel, ContextVector
+
+logger = logging.getLogger(__name__)
 
 
 class DecisionAgent:
@@ -48,66 +51,44 @@ class DecisionAgent:
         Enhanced with trait-based utility computation for personality-driven behavior selection.
         """
         
-        # Get personality information
-        enhanced_personality = self._get_enhanced_personality(creature_state)
-        
-        # If using complex personality mode, compute trait-driven action style
-        action_style = None
-        utilities = None
-        
-        if enhanced_personality and enhanced_personality.mode == PersonalityMode.COMPLEX:
-            # Build context vector from agent inputs
-            context_vector = ContextVector.from_agent_data(
+        logger.info(f"🎭 DecisionAgent starting for {creature_state.species}")
+        # Make AI call for species-appropriate responses
+        try:
+            # Format input from other agents
+            user_message = self._format_agent_inputs(
                 perception_data, emotion_data, memory_data, creature_state
             )
             
-            # Get trait vector
-            trait_vector = enhanced_personality.get_trait_vector()
+            logger.info(f"🎭 DecisionAgent processing {creature_state.species} with {len(user_message)} char input")
             
-            # Compute utilities for different action styles
-            utilities = self.utility_model.compute_utilities(trait_vector, context_vector)
+            # Build species-appropriate system prompt
+            system_prompt = self._build_system_prompt(creature_state, template)
+
+            user_prompt = f"A human has sent you this message: '{user_message}'. Respond as a {creature_state.species} using the exact format above."
             
-            # Select action style based on personality
-            action_style = self.utility_model.select_action_style(utilities)
-        
-        # Build system prompt (enhanced with trait information)
-        system_prompt = self._build_enhanced_system_prompt(
-            creature_state, template, enhanced_personality, action_style, utilities
-        )
-        
-        # Combine all agent inputs
-        user_message = self._format_agent_inputs(
-            perception_data, emotion_data, memory_data, creature_state
-        )
-        
-        try:
             response = await self.ai_client.generate_response(
                 system_prompt=system_prompt,
-                user_message=user_message,
-                chat_history=chat_history,
+                user_message=user_prompt,
                 temperature=0.7
             )
             
-            decision_result = self._parse_decision_response(response)
+            logger.info(f"🎭 AI response generated for {creature_state.species} ({len(response) if response else 0} chars)")
             
-            # Add trait-based debug information
-            if action_style and utilities:
-                decision_result["debug_info"] = {
-                    "selected_action_style": action_style,
-                    "action_utilities": utilities,
-                    "personality_mode": enhanced_personality.mode.value if enhanced_personality else "simple"
-                }
+            # Parse response
+            decision_result = self._parse_decision_response(response)
+            logger.info(f"🎭 Decision completed for {creature_state.species}")
             
             return decision_result
             
         except Exception as e:
-            # Fallback response
+            logger.error(f"🎭 AI Error: {e}")
+            # Return error response
             return {
-                "action": "*quiet observation*",
-                "vocalization": "*soft sound*",
-                "intention": "cautious acknowledgment",
-                "energy_level": "low",
-                "error": str(e)
+                "action": "*cautious observation*",
+                "vocalization": "*low rumble*", 
+                "human_response": f"AI Error: {str(e)}",
+                "intention": "error handling",
+                "energy_level": "medium"
             }
     
     def _build_system_prompt(self, creature_state: CreatureState, template: CreatureTemplate) -> str:
@@ -154,13 +135,61 @@ Physical state constraints:
 - Consider species-specific energy patterns
 
 Response format:
-ACTION: (physical response - must match energy and emotional state)
-VOCALIZATION: (species-appropriate sounds - match energy level and emotion)
-HUMAN_RESPONSE: (what the creature wants to say in human language)
-INTENTION: (what the creature wants to convey to the user)
-ENERGY_LEVEL: (low|medium|high - for response intensity)"""
+ACTION: [describe the {creature_state.species}'s physical actions or movements]
+VOCALIZATION: [the sounds this {creature_state.species} makes]
+HUMAN_RESPONSE: [what the {creature_state.species} wants to communicate]
+INTENTION: [what the {creature_state.species} is trying to achieve]
+ENERGY_LEVEL: [exactly one of: low, medium, high]
+
+{self._get_species_example(creature_state.species)}"""
 
         return system_prompt
+    
+    def _get_species_example(self, species: str) -> str:
+        """Get species-specific example response"""
+        examples = {
+            "dog": """Example:
+ACTION: tail wagging enthusiastically, ears perked up
+VOCALIZATION: excited bark
+HUMAN_RESPONSE: Woof! Yes, let's play! I love playing with you!
+INTENTION: showing excitement and eagerness to play
+ENERGY_LEVEL: high""",
+            
+            "cat": """Example:
+ACTION: slow blink, stretches gracefully
+VOCALIZATION: soft purr
+HUMAN_RESPONSE: I suppose I could spare a moment for your attention.
+INTENTION: showing affection while maintaining dignity
+ENERGY_LEVEL: medium""",
+            
+            "dragon": """Example:
+ACTION: raises head majestically
+VOCALIZATION: low, rumbling growl
+HUMAN_RESPONSE: Greetings, small human. What brings you to my domain?
+INTENTION: asserting dominance while showing curiosity
+ENERGY_LEVEL: medium""",
+            
+            "fairy": """Example:
+ACTION: delicate flutter of wings, sparkles with joy
+VOCALIZATION: melodic chime
+HUMAN_RESPONSE: Oh, how wonderful! The magic in the air is so bright today!
+INTENTION: sharing joy and magical enthusiasm
+ENERGY_LEVEL: high""",
+            
+            "human": """Example:
+ACTION: warm smile, leans forward with interest
+VOCALIZATION: friendly voice
+HUMAN_RESPONSE: Hello! It's great to meet you. How are you today?
+INTENTION: establishing friendly connection
+ENERGY_LEVEL: medium"""
+        }
+        
+        return examples.get(species, f"""Example:
+ACTION: appropriate {species} behavior
+VOCALIZATION: {species}-appropriate sound
+HUMAN_RESPONSE: A friendly greeting appropriate for a {species}
+INTENTION: positive interaction
+ENERGY_LEVEL: medium""")
     
     def _format_agent_inputs(
         self, 
@@ -199,6 +228,10 @@ CURRENT STATE:
     def _parse_decision_response(self, response: str) -> Dict[str, Any]:
         """Parse the AI response into structured decision data"""
         
+        # Parse AI response into decision format
+        if not response:
+            logger.warning("🔍 AI response is empty")
+        
         decision_data = {
             "action": "*neutral stance*",
             "vocalization": "*quiet sound*",
@@ -230,239 +263,7 @@ CURRENT STATE:
     
     def _get_enhanced_personality(self, creature_state: CreatureState) -> Optional[EnhancedPersonality]:
         """Extract enhanced personality from creature state"""
-        # Get the creature from global creatures dict
-        # In a production system, this would be handled differently
-        from api.server import creatures
-        
-        creature = creatures.get(str(creature_state.creature_id))
-        if creature and creature.personality.enhanced_personality:
-            return creature.personality.enhanced_personality
-        
+        # For now, return None to avoid circular imports
+        # The personality should be passed through the creature_state or template
+        # TODO: Redesign to avoid global state access
         return None
-    
-    def _build_enhanced_system_prompt(
-        self, 
-        creature_state: CreatureState, 
-        template: CreatureTemplate,
-        enhanced_personality: Optional[EnhancedPersonality],
-        action_style: Optional[str],
-        utilities: Optional[Dict[str, float]]
-    ) -> str:
-        """Build enhanced system prompt with trait-based guidance"""
-        
-        if enhanced_personality and enhanced_personality.mode == PersonalityMode.COMPLEX and action_style:
-            return self._build_trait_aware_prompt(
-                creature_state, template, enhanced_personality, action_style, utilities
-            )
-        else:
-            return self._build_system_prompt(creature_state, template)
-    
-    def _build_trait_aware_prompt(
-        self,
-        creature_state: CreatureState,
-        template: CreatureTemplate, 
-        enhanced_personality: EnhancedPersonality,
-        action_style: str,
-        utilities: Dict[str, float]
-    ) -> str:
-        """Build prompt that incorporates trait-driven action style"""
-        
-        # Get top 5 traits for this creature
-        trait_vector = enhanced_personality.get_trait_vector()
-        dominant_traits = enhanced_personality.get_dominant_traits(5)
-        top_traits = [f"{trait} ({score:.2f})" for trait, score in dominant_traits]
-        
-        # Get action style guidance
-        action_guidance = self.utility_model.get_action_guidance(action_style)
-        
-        # Get speech style guidance if available
-        speech_style_data = self._get_speech_style_guidance(enhanced_personality)
-        speech_style_section = ""
-        if speech_style_data:
-            speech_style_section = self._format_speech_style_prompt(speech_style_data)
-        
-        # Get current stats
-        stats_summary = []
-        for stat_name, value in creature_state.stats.items():
-            stats_summary.append(f"- {stat_name.title()}: {value}/100")
-        
-        system_prompt = f"""You are the Decision Making Agent for a {creature_state.species}.
-
-ENHANCED TRAIT-DRIVEN PERSONALITY:
-- Personality Mode: Complex (50-dimensional trait system)
-- Dominant traits: {', '.join(top_traits)}
-- Selected action style: {action_style}
-- Style confidence: {utilities[action_style]:.2f}
-
-BEHAVIORAL GUIDANCE ({action_style.upper()}):
-{action_guidance['description']}
-- Behavior tags: {', '.join(action_guidance['behavior_tags'])}
-- Energy requirement: {action_guidance['energy_level']}
-- Social preference: {action_guidance['social_preference']}
-
-{speech_style_section}
-
-Creature Profile:
-- Species: {creature_state.species}
-- Template: {template.name}
-- Current mood: {creature_state.mood}
-
-Current State:
-{chr(10).join(stats_summary)}
-
-Species-Specific Behaviors:
-{chr(10).join([f"- {behavior}" for behavior in template.language.behavioral_patterns])}
-
-{template.decision_prompt_additions}
-
-CRITICAL: Your response MUST align with the {action_style} action style. This means:
-{self._get_style_specific_guidance(action_style)}
-
-Based on all agent inputs and the conversation history, form a response that:
-1. Reflects the determined emotional state
-2. STRONGLY emphasizes the selected action style ({action_style})
-3. Incorporates dominant personality traits: {', '.join([trait for trait, _ in dominant_traits[:3]])}
-4. {"USES AUTHENTIC SPEECH PATTERNS from the archetype personality above" if speech_style_data else "Maintains authentic creature behavior"}
-5. Considers relevant memories and conversation context
-6. References or builds upon recent topics/interactions when appropriate
-7. Shows awareness of relationship development through conversation history
-8. Maintains authentic creature behavior
-9. Matches current physical state and energy level
-
-Physical state constraints:
-- Low energy: avoid energetic actions, use tired behaviors
-- Low stats: show signs of need/distress
-- High stats: more willing to engage and be active
-- Consider species-specific energy patterns
-
-Response format:
-ACTION: (physical response - must strongly reflect {action_style} style and energy state)
-VOCALIZATION: (species-appropriate sounds - match {action_style} style and energy level)
-HUMAN_RESPONSE: (what the creature wants to say in human language{" - MUST use the archetype's distinctive speaking style" if speech_style_data else ""})
-INTENTION: (what the creature wants to convey - influenced by {action_style} approach)
-ENERGY_LEVEL: (low|medium|high - for response intensity)"""
-
-        return system_prompt
-    
-    def _get_style_specific_guidance(self, action_style: str) -> str:
-        """Provide specific guidance for each action style"""
-        style_guides = {
-            "playful": "Be energetic, fun-loving, and spontaneous. Use bouncy movements and happy sounds. Initiate games and activities.",
-            "cautious": "Be careful, observant, and measured. Move slowly and assess before acting. Show wariness of new situations.", 
-            "assertive": "Be confident, direct, and decisive. Stand tall and communicate clearly. Take charge of the situation.",
-            "nurturing": "Be caring, gentle, and protective. Use soft sounds and comforting gestures. Focus on the wellbeing of others.",
-            "curious": "Be inquisitive and investigative. Explore new things with interest. Ask questions through behavior.",
-            "defensive": "Be protective and alert. Watch for threats. Position yourself defensively while staying ready to react.",
-            "social": "Be friendly and engaging. Seek connection and interaction. Use welcoming body language and sounds.",
-            "independent": "Be self-reliant and autonomous. Make your own decisions. Maintain personal space and dignity.",
-            "analytical": "Be thoughtful and systematic. Consider all angles before responding. Show careful problem-solving behavior.",
-            "emotional": "Be expressive and empathetic. Show your feelings clearly. Respond to the emotional needs of others."
-        }
-        return style_guides.get(action_style, "Act naturally according to your species and current state.")
-    
-    def _get_speech_style_guidance(self, enhanced_personality: EnhancedPersonality) -> Optional[Dict[str, Any]]:
-        """Extract speech style information from archetype-based personality"""
-        if enhanced_personality.mode != PersonalityMode.COMPLEX:
-            return None
-        
-        # Check for blended archetypes first
-        if enhanced_personality.archetype_blend:
-            # Blended archetypes - combine speech styles
-            combined_styles = self._blend_speech_styles(enhanced_personality.archetype_blend)
-            if combined_styles:
-                return {
-                    'type': 'blended',
-                    'speech_style': combined_styles,
-                    'blend_info': enhanced_personality.archetype_blend
-                }
-        
-        # Check if this personality has single archetype base
-        elif enhanced_personality.archetype_base:
-            # Single archetype
-            archetype_info = PersonalityArchetypes.get_archetype_info(enhanced_personality.archetype_base)
-            if archetype_info and 'speech_style' in archetype_info:
-                return {
-                    'type': 'single',
-                    'archetype_name': archetype_info['name'],
-                    'speech_style': archetype_info['speech_style']
-                }
-        
-        return None
-    
-    def _blend_speech_styles(self, blend_data: Dict[str, float]) -> Optional[Dict[str, Any]]:
-        """Combine speech styles from multiple archetypes based on blend weights"""
-        if not blend_data:
-            return None
-        
-        # Get speech styles from each archetype in the blend
-        all_tones = []
-        all_patterns = []
-        all_phrases = []
-        all_quirks = []
-        blend_names = []
-        
-        for archetype_id, weight in blend_data.items():
-            if weight > 0:  # Only include archetypes with positive weight
-                archetype_info = PersonalityArchetypes.get_archetype_info(archetype_id)
-                if archetype_info and 'speech_style' in archetype_info:
-                    speech_style = archetype_info['speech_style']
-                    blend_names.append(f"{archetype_info['name']} ({weight:.1%})")
-                    
-                    # Weight determines how much this archetype influences the blend
-                    if weight >= 0.3:  # Significant influence
-                        all_tones.append(speech_style['tone'])
-                        all_patterns.extend(speech_style['patterns'])
-                        all_phrases.extend(speech_style['common_phrases'][:3])  # Take top phrases
-                        all_quirks.extend(speech_style['speech_quirks'])
-        
-        if not all_tones:
-            return None
-        
-        return {
-            'tone': f"A unique blend of: {' + '.join(all_tones)}",
-            'patterns': all_patterns[:6],  # Limit to avoid overwhelming prompt
-            'common_phrases': all_phrases[:8],
-            'speech_quirks': all_quirks[:6],
-            'blend_description': f"Speaking style influenced by: {', '.join(blend_names)}"
-        }
-    
-    def _format_speech_style_prompt(self, speech_style_data: Dict[str, Any]) -> str:
-        """Format speech style data into prompt text"""
-        speech_style = speech_style_data['speech_style']
-        
-        if speech_style_data['type'] == 'single':
-            archetype_name = speech_style_data['archetype_name']
-            prompt_section = f"""
-SPEECH STYLE - {archetype_name.upper()}:
-- Overall Tone: {speech_style['tone']}
-
-Speech Patterns:
-{chr(10).join([f"• {pattern}" for pattern in speech_style['patterns']])}
-
-Common Phrases:
-{chr(10).join([f"• {phrase}" for phrase in speech_style['common_phrases']])}
-
-Speech Quirks:
-{chr(10).join([f"• {quirk}" for quirk in speech_style['speech_quirks']])}
-
-CRITICAL: Your HUMAN_RESPONSE must authentically reflect {archetype_name}'s distinctive speaking style. Use their characteristic phrases, sentence structures, and verbal mannerisms."""
-        
-        else:  # blended
-            blend_info = speech_style.get('blend_description', 'Blended personality')
-            prompt_section = f"""
-SPEECH STYLE - BLENDED PERSONALITY:
-- {blend_info}
-- Overall Tone: {speech_style['tone']}
-
-Combined Speech Patterns:
-{chr(10).join([f"• {pattern}" for pattern in speech_style['patterns']])}
-
-Mixed Common Phrases:
-{chr(10).join([f"• {phrase}" for phrase in speech_style['common_phrases']])}
-
-Blended Speech Quirks:
-{chr(10).join([f"• {quirk}" for quirk in speech_style['speech_quirks']])}
-
-CRITICAL: Your HUMAN_RESPONSE must reflect this unique blend of speaking styles. Combine the verbal characteristics naturally."""
-        
-        return prompt_section

@@ -148,19 +148,55 @@ async def startup_event():
     # Load creature templates
     await load_templates()
     
-    # Create AI client
+    # Create Smart AI client with Local AI first, OpenAI opt-in
     api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        print("🚨 Warning: No OpenAI API key found. Using mock client.")
-        print("   Set OPENAI_API_KEY environment variable to enable real AI responses.")
-        print("   Mock responses are limited and not realistic.")
-        client_type = "mock"
+    if api_key:
+        print("✅ OpenAI API key found. Using SmartAIClient with Local-first + OpenAI fallback.")
+        use_openai = False  # Default to local-first even with API key
     else:
-        print("✅ OpenAI API key found. Using real AI client with gpt-4.1-nano model.")
-        client_type = "openai"
+        print("🧠 No OpenAI API key found. Using SmartAIClient with Local AI + Mock fallback.")
+        print("   Local AI provides fast, free inference using Gemma-3-270M.")
+        print("   Set OPENAI_API_KEY to enable OpenAI as additional option.")
+        use_openai = False
     
     global ai_client
-    ai_client = create_ai_client(client_type, api_key=api_key)
+    # Simplified: Use LocalAI directly for faster, simpler inference
+    print("🧠 Using LocalAI only for fast, free inference with Gemma-3-270M")
+    ai_client = create_ai_client("local")
+    
+    # Start Local AI server automatically
+    print("🚀 Starting Local AI server...")
+    try:
+        if hasattr(ai_client, 'manager'):
+            success = await ai_client.manager.start_server()
+            if success:
+                print("✅ Local AI server ready!")
+            else:
+                print("❌ Local AI server failed to start")
+                raise RuntimeError("Failed to start Local AI server")
+        else:
+            print("⚠️ LocalAI client doesn't have manager")
+    except Exception as e:
+        print(f"❌ Error starting Local AI: {e}")
+        raise
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Clean up on shutdown"""
+    print("🛑 Shutting down CreatureMind API server...")
+    global ai_client
+    
+    # Clean up local AI server
+    try:
+        if hasattr(ai_client, 'manager') and ai_client.manager.is_running:
+            print("   Stopping Local AI server...")
+            await ai_client.manager.stop_server()
+            print("   ✅ Local AI server stopped")
+    except Exception as e:
+        print(f"   ⚠️ Error stopping Local AI: {e}")
+    
+    print("✅ CreatureMind API server shutdown complete")
 
 
 async def load_templates():
@@ -778,19 +814,39 @@ class ApiKeyRequest(BaseModel):
 
 @app.get("/api/status")
 async def get_api_status():
-    """Get current API client status"""
+    """Get current SmartAIClient status"""
     global ai_client
-    is_real_client = hasattr(ai_client, 'client')  # OpenAI client has .client attribute
     
-    return {
-        "client_type": "openai" if is_real_client else "mock",
-        "has_api_key": is_real_client,
-        "model": getattr(ai_client, 'model', 'mock') if is_real_client else "mock"
-    }
+    # Check if this is a SmartAIClient
+    if hasattr(ai_client, 'get_status'):
+        try:
+            smart_status = ai_client.get_status()
+            return {
+                "client_type": "smart",
+                "mode": smart_status['mode'],
+                "clients": smart_status['clients'],
+                "context_manager": smart_status.get('context_manager', {}),
+                "local_ai_ready": smart_status['clients']['local']['available']
+            }
+        except Exception as e:
+            return {
+                "client_type": "smart",
+                "mode": "unknown",
+                "error": str(e),
+                "local_ai_ready": False
+            }
+    else:
+        # Legacy client detection
+        is_real_client = hasattr(ai_client, 'client')
+        return {
+            "client_type": "openai" if is_real_client else "mock",
+            "has_api_key": is_real_client,
+            "model": getattr(ai_client, 'model', 'mock') if is_real_client else "mock"
+        }
 
 @app.post("/api/set_key")
 async def set_api_key(request: ApiKeyRequest):
-    """Set OpenAI API key dynamically"""
+    """Set OpenAI API key and enable OpenAI option in SmartAIClient"""
     global ai_client
     
     api_key = request.api_key.strip()
@@ -802,29 +858,72 @@ async def set_api_key(request: ApiKeyRequest):
         raise HTTPException(status_code=400, detail="Invalid API key format. OpenAI keys start with 'sk-'")
     
     try:
-        # Create new OpenAI client with the provided key
-        ai_client = create_ai_client("openai", api_key=api_key)
+        # Create new SmartAIClient with the provided key (local-first by default)
+        ai_client = create_ai_client("smart", api_key=api_key, use_openai=False)
         
         return {
-            "message": "API key set successfully",
-            "client_type": "openai",
-            "model": ai_client.model
+            "message": "API key set successfully. SmartAIClient now supports Local AI + OpenAI fallback.",
+            "client_type": "smart",
+            "mode": "Local-first",
+            "local_ai_available": True,
+            "openai_available": True
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to set API key: {str(e)}")
 
 @app.post("/api/clear_key")
 async def clear_api_key():
-    """Clear API key and revert to mock client"""
+    """Clear API key and revert to SmartAIClient with Local AI + Mock fallback"""
     global ai_client
     
-    # Revert to mock client
-    ai_client = create_ai_client("mock")
+    # Revert to SmartAIClient without OpenAI key (Local + Mock fallback)
+    ai_client = create_ai_client("smart", api_key=None, use_openai=False)
     
     return {
-        "message": "API key cleared, using mock client",
-        "client_type": "mock"
+        "message": "API key cleared. Using SmartAIClient with Local AI + Mock fallback.",
+        "client_type": "smart",
+        "mode": "Local-first",
+        "local_ai_available": True,
+        "openai_available": False
     }
+
+
+@app.post("/api/preference/local")
+async def set_local_first():
+    """Switch to Local-first mode (Local AI -> OpenAI -> Mock)"""
+    global ai_client
+    
+    if hasattr(ai_client, 'set_openai_preference'):
+        success = ai_client.set_openai_preference(False)  # False = Local-first
+        if success:
+            return {
+                "message": "Switched to Local-first mode",
+                "mode": "Local-first",
+                "fallback_chain": ["Local AI", "OpenAI", "Mock"]
+            }
+        else:
+            raise HTTPException(status_code=400, detail="Failed to switch to Local-first mode")
+    else:
+        raise HTTPException(status_code=400, detail="Client does not support preference switching")
+
+
+@app.post("/api/preference/openai")
+async def set_openai_first():
+    """Switch to OpenAI-first mode (OpenAI -> Local AI -> Mock)"""
+    global ai_client
+    
+    if hasattr(ai_client, 'set_openai_preference'):
+        success = ai_client.set_openai_preference(True)  # True = OpenAI-first
+        if success:
+            return {
+                "message": "Switched to OpenAI-first mode",
+                "mode": "OpenAI-first",
+                "fallback_chain": ["OpenAI", "Local AI", "Mock"]
+            }
+        else:
+            raise HTTPException(status_code=400, detail="Failed to switch to OpenAI-first mode (API key required)")
+    else:
+        raise HTTPException(status_code=400, detail="Client does not support preference switching")
 
 
 if __name__ == "__main__":

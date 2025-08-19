@@ -4,10 +4,13 @@ Translator Agent - Creates final creature language and human translation
 Adapted from the translator logic in WiddlePupper's AIAgentSystem.swift
 """
 
+import logging
 from typing import Dict, Any
 from ..models.creature import CreatureState
 from ..models.creature_template import CreatureTemplate
 from .ai_client import AIClient
+
+logger = logging.getLogger(__name__)
 
 
 class TranslatorAgent:
@@ -35,6 +38,8 @@ class TranslatorAgent:
         Create final creature language and translation
         """
         
+        logger.info(f"🔄 TranslatorAgent translating for {creature_state.species}")
+        
         system_prompt = self._build_system_prompt(creature_state, template)
         
         # Format decision data for translation
@@ -47,7 +52,20 @@ class TranslatorAgent:
                 temperature=0.6
             )
             
-            result = self._parse_translation_response(response)
+            logger.info(f"🔄 Creature language generated for {creature_state.species}")
+            
+            # Get creature stats for translation logic
+            happiness = creature_state.stats.get("happiness", 50)
+            energy = creature_state.stats.get("energy", 50)
+            
+            # Determine if translation should be provided based on stats
+            can_translate = True
+            if happiness < 20 and energy < 20:
+                can_translate = False
+            elif happiness < 10 or energy < 5:
+                can_translate = False
+            
+            result = self._parse_translation_response(response, decision_data, can_translate)
             
             # Use creature's own translation logic (which is more user-friendly)
             from ..models.creature import Creature
@@ -132,9 +150,14 @@ Your task is to translate the human message into creature language:
    - Maintain authentic creature perspective
 
 Response format:
-CREATURE_LANGUAGE: (translate the human message into creature actions and sounds)
-HUMAN_TRANSLATION: (pass through the original human message exactly as provided)
-DEBUG: (explanation of translation choices made)"""
+CREATURE_LANGUAGE: [convert the action and vocalization into authentic species-specific language]
+DEBUG: [brief notes about creature language choices]
+
+Example for dragon:
+Input: Action: "raises head majestically", Vocalization: "low, rumbling growl"
+Output:
+CREATURE_LANGUAGE: *lifts massive scaled head with ancient dignity* *deep rumble reverberates from chest, echoing like distant thunder*
+DEBUG: Dragon displays regal bearing through head position, rumble indicates curiosity"""
 
         return system_prompt
     
@@ -198,22 +221,21 @@ DEBUG: (explanation of translation choices made)"""
     ) -> str:
         """Format decision data for the translator"""
         
-        human_response = decision_data.get('human_response', 'I hear you.')
+        action = decision_data.get('action', 'stands quietly')
+        vocalization = decision_data.get('vocalization', 'quiet sound')
+        energy_level = decision_data.get('energy_level', 'medium')
         
-        return f"""The creature wants to communicate this message to the human:
-"{human_response}"
+        return f"""Convert these creature behaviors into authentic {creature_state.species} language:
 
-Decision details:
-- Action: {decision_data.get('action', 'unknown')}
-- Vocalization: {decision_data.get('vocalization', 'unknown')}
-- Energy Level: {decision_data.get('energy_level', 'medium')}
+Action to convert: "{action}"
+Vocalization to convert: "{vocalization}"
+Energy level: {energy_level}
 
 Current creature state:
 - Mood: {creature_state.mood}
-- Energy: {creature_state.stats.get('energy', 50)}/100
 - Species: {creature_state.species}
 
-Please translate the human message "{human_response}" into authentic creature language using appropriate actions and species-specific sounds."""
+Convert these into species-appropriate actions and sounds that authentically represent a {creature_state.species}'s behavior."""
     
     def _check_translation_conditions(self, creature_state: CreatureState, template: CreatureTemplate) -> bool:
         """Check if translation conditions are met based on template rules"""
@@ -247,12 +269,16 @@ Please translate the human message "{human_response}" into authentic creature la
         
         return True
     
-    def _parse_translation_response(self, response: str) -> Dict[str, Any]:
+    def _parse_translation_response(self, response: str, decision_data: Dict[str, Any], can_translate: bool) -> Dict[str, Any]:
         """Parse the AI response into structured translation data"""
+        
+        # Debug: log the raw response
+        logger.info(f"🔍 TRANSLATOR Raw AI response: '{response}'")
+        logger.info(f"🔍 TRANSLATOR Response length: {len(response)} chars")
         
         translation_data = {
             "creature_language": "*quiet sound*",
-            "human_translation": None,
+            "human_translation": decision_data.get('human_response') if can_translate else None,
             "debug_info": ""
         }
         
@@ -265,8 +291,6 @@ Please translate the human message "{human_response}" into authentic creature la
                 
                 if key == "CREATURE_LANGUAGE":
                     translation_data["creature_language"] = value
-                elif key == "HUMAN_TRANSLATION":
-                    translation_data["human_translation"] = value
                 elif key == "DEBUG":
                     translation_data["debug_info"] = value
         
