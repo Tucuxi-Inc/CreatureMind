@@ -840,3 +840,443 @@ body {
     display: flex;
     gap: 0.5rem;
 }
+
+/* Enhanced Personality Interface Styles */
+
+/* Personality Mode Selector */
+.personality-mode-selector {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.mode-option {
+    flex: 1;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--background);
+}
+
+.mode-option:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+}
+
+.mode-option.active {
+    border-color: var(--primary-color);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.mode-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.mode-header input[type="radio"] {
+    margin: 0;
+}
+
+.mode-header label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.mode-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+/* Personality Panel */
+.personality-panel {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    background: var(--background-secondary);
+    margin-bottom: 1rem;
+}
+
+/* Method Selector for Complex Personality */
+.method-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.method-option {
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--background);
+    text-align: center;
+}
+
+.method-option:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+}
+
+.method-option.active {
+    border-color: var(--primary-color);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.method-option input[type="radio"] {
+    display: none;
+}
+
+.method-option label {
+    cursor: pointer;
+    display: block;
+}
+
+.method-option label strong {
+    display: block;
+    margin: 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.method-option label p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.method-option i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+/* Method Panels */
+.method-panel {
+    margin-top: 1rem;
+}
+
+/* Archetype Grid */
+.archetype-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.archetype-card {
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--background);
+}
+
+.archetype-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+    transform: translateY(-2px);
+}
+
+.archetype-card.selected {
+    border-color: var(--primary-color);
+    background: rgba(99, 102, 241, 0.05);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.archetype-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.archetype-icon {
+    font-size: 2rem;
+}
+
+.archetype-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.archetype-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+}
+
+.archetype-traits {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* Trait Sliders */
+.trait-sliders {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    background: var(--background);
+}
+
+.trait-slider {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.trait-slider:last-child {
+    border-bottom: none;
+}
+
+.trait-label {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.trait-label .trait-description {
+    display: block;
+    font-weight: normal;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.2rem;
+}
+
+.trait-range {
+    width: 120px;
+}
+
+.trait-value {
+    font-weight: 600;
+    color: var(--primary-color);
+    min-width: 40px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.slider-controls {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+/* Blend Controls */
+.blend-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.blend-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--background);
+}
+
+.blend-archetype {
+    flex: 1;
+    font-weight: 500;
+}
+
+.blend-weight {
+    width: 120px;
+}
+
+.blend-weight-display {
+    font-weight: 600;
+    color: var(--primary-color);
+    min-width: 40px;
+    text-align: center;
+}
+
+.remove-blend {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Trait Modifications */
+.trait-modifications {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    background: var(--background);
+}
+
+.help-text {
+    margin: 0 0 1rem 0;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.modification-controls {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.modification-controls select {
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.modification-controls input[type="range"] {
+    width: 120px;
+}
+
+.active-modifications {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.modification-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: var(--background-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.modification-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.modification-trait {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.modification-value {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+}
+
+.remove-modification {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+/* Personality Preview */
+.personality-preview {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    background: var(--background);
+}
+
+.preview-traits, .preview-description {
+    margin-bottom: 1rem;
+}
+
+.preview-traits:last-child, .preview-description:last-child {
+    margin-bottom: 0;
+}
+
+.preview-traits h4, .preview-description h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.preview-traits div, .preview-description div {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.trait-score {
+    display: inline-block;
+    margin: 0.2rem 0.5rem 0.2rem 0;
+    padding: 0.2rem 0.5rem;
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary-color);
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Responsive adjustments for personality interface */
+@media (max-width: 768px) {
+    .personality-mode-selector {
+        flex-direction: column;
+    }
+    
+    .method-selector {
+        grid-template-columns: 1fr;
+    }
+    
+    .archetype-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .trait-slider {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .modification-controls {
+        grid-template-columns: 1fr;
+    }
+    
+    .modification-controls select,
+    .modification-controls input,
+    .modification-controls span,
+    .modification-controls button {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .blend-item {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+}

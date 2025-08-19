@@ -164,6 +164,19 @@ class CreatureMindSystem:
             # Apply any stat changes from the interaction
             self._apply_interaction_effects(emotion_result, response)
             
+            # Update personality based on interaction (evolution system)
+            if hasattr(self.creature.personality, 'enhanced_personality') and self.creature.personality.enhanced_personality:
+                interaction_data = {
+                    'type': 'message',
+                    'emotional_impact': emotion_result.get('impact_score', 0.0),
+                    'primary_emotion': response.emotional_state,
+                    'context': context or {},
+                    'learning_occurred': 'learn' in user_input.lower() or 'teach' in user_input.lower(),
+                    'bonding_occurred': response.stats_delta.get('happiness', 0) > 10,
+                    'stress_level': max(0, -emotion_result.get('impact_score', 0.0))
+                }
+                self.creature.personality.enhanced_personality.update_from_interaction(interaction_data)
+            
         except Exception as e:
             response = self._create_error_response(str(e))
         finally:
@@ -239,12 +252,43 @@ class CreatureMindSystem:
         if parameters:
             activity_prompt += f" with parameters: {json.dumps(parameters)}"
         
+        # Update personality based on activity (evolution system)
+        if hasattr(self.creature.personality, 'enhanced_personality') and self.creature.personality.enhanced_personality:
+            # Determine activity impact based on stat changes and activity type
+            happiness_change = response.stats_delta.get('happiness', 0)
+            energy_change = response.stats_delta.get('energy', 0)
+            
+            # Map activity types to evolution triggers and characteristics
+            activity_evolution_map = {
+                'feed': {'trigger_type': 'achievement' if happiness_change > 0 else 'failure'},
+                'play': {'trigger_type': 'positive_interaction', 'bonding': True},
+                'pet': {'trigger_type': 'social_bonding', 'bonding': True},
+                'walk': {'trigger_type': 'learning_experience', 'exploration': True},
+                'train': {'trigger_type': 'learning_experience', 'skill_building': True},
+                'rest': {'trigger_type': 'repeated_behavior', 'self_care': True}
+            }
+            
+            activity_info = activity_evolution_map.get(activity_name, {'trigger_type': 'repeated_behavior'})
+            
+            interaction_data = {
+                'type': activity_info['trigger_type'],
+                'emotional_impact': happiness_change / 50.0,  # Normalize to -1.0 to 1.0 range
+                'primary_emotion': 'happy' if happiness_change > 0 else ('sad' if happiness_change < 0 else 'neutral'),
+                'context': {'activity': activity_name, 'parameters': parameters or {}},
+                'learning_occurred': activity_info.get('skill_building', False) or activity_info.get('exploration', False),
+                'bonding_occurred': activity_info.get('bonding', False) and happiness_change > 0,
+                'stress_level': max(0, -happiness_change / 50.0),
+                'success': happiness_change > 0,
+                'failed': happiness_change < -10
+            }
+            self.creature.personality.enhanced_personality.update_from_interaction(interaction_data)
+        
         return await self.process_message(activity_prompt, context={"activity": activity_name})
     
     def get_creature_status(self) -> Dict[str, Any]:
         """Get current creature status for debugging/monitoring"""
         current_state = CreatureState.from_creature(self.creature)
-        return {
+        status = {
             "creature_id": str(self.creature.id),
             "name": self.creature.name,
             "species": self.creature.species,
@@ -256,3 +300,19 @@ class CreatureMindSystem:
             "memory_count": len(self.creature.memories),
             "chat_history_length": len(self.chat_history)
         }
+        
+        # Add personality development information if enhanced personality is available
+        if hasattr(self.creature.personality, 'enhanced_personality') and self.creature.personality.enhanced_personality:
+            enhanced = self.creature.personality.enhanced_personality
+            development_analysis = enhanced.get_personality_development_analysis()
+            
+            status["personality"] = {
+                "mode": enhanced.mode.value,
+                "evolution_enabled": enhanced.evolution_enabled,
+                "active_shifts": len([s for s in enhanced.personality_shifts if not s.is_expired]),
+                "total_shifts": len(enhanced.personality_shifts),
+                "current_emotional_state": enhanced.current_emotional_state.primary_emotion if enhanced.current_emotional_state else None,
+                "development_analysis": development_analysis
+            }
+        
+        return status

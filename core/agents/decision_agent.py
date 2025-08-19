@@ -2,12 +2,16 @@
 Decision Agent - Forms the core response
 
 Adapted from the decision making logic in WiddlePupper's AIAgentSystem.swift
+Enhanced with trait-based utility decision making.
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, Optional
+import numpy as np
 from ..models.creature import CreatureState
 from ..models.creature_template import CreatureTemplate
+from ..models.personality_system import PersonalityMode, EnhancedPersonality
 from .ai_client import AIClient
+from .production_trait_utility_model import ProductionTraitUtilityModel, ContextVector
 
 
 class DecisionAgent:
@@ -19,10 +23,15 @@ class DecisionAgent:
     - Physical actions and behaviors
     - Vocalizations and sounds
     - Underlying intentions and motivations
+    
+    Enhanced with trait-based utility decision making for more sophisticated
+    personality-driven behavior selection.
     """
     
     def __init__(self, ai_client: AIClient):
         self.ai_client = ai_client
+        self.utility_model = ProductionTraitUtilityModel()
+        self.trait_influence_strength = 0.7  # How much personality affects decisions vs context
     
     async def decide(
         self, 
@@ -34,9 +43,36 @@ class DecisionAgent:
     ) -> Dict[str, Any]:
         """
         Make the core decision about how the creature should respond
+        
+        Enhanced with trait-based utility computation for personality-driven behavior selection.
         """
         
-        system_prompt = self._build_system_prompt(creature_state, template)
+        # Get personality information
+        enhanced_personality = self._get_enhanced_personality(creature_state)
+        
+        # If using complex personality mode, compute trait-driven action style
+        action_style = None
+        utilities = None
+        
+        if enhanced_personality and enhanced_personality.mode == PersonalityMode.COMPLEX:
+            # Build context vector from agent inputs
+            context_vector = ContextVector.from_agent_data(
+                perception_data, emotion_data, memory_data, creature_state
+            )
+            
+            # Get trait vector
+            trait_vector = enhanced_personality.get_trait_vector()
+            
+            # Compute utilities for different action styles
+            utilities = self.utility_model.compute_utilities(trait_vector, context_vector)
+            
+            # Select action style based on personality
+            action_style = self.utility_model.select_action_style(utilities)
+        
+        # Build system prompt (enhanced with trait information)
+        system_prompt = self._build_enhanced_system_prompt(
+            creature_state, template, enhanced_personality, action_style, utilities
+        )
         
         # Combine all agent inputs
         user_message = self._format_agent_inputs(
@@ -50,7 +86,17 @@ class DecisionAgent:
                 temperature=0.7
             )
             
-            return self._parse_decision_response(response)
+            decision_result = self._parse_decision_response(response)
+            
+            # Add trait-based debug information
+            if action_style and utilities:
+                decision_result["debug_info"] = {
+                    "selected_action_style": action_style,
+                    "action_utilities": utilities,
+                    "personality_mode": enhanced_personality.mode.value if enhanced_personality else "simple"
+                }
+            
+            return decision_result
             
         except Exception as e:
             # Fallback response
@@ -173,3 +219,123 @@ CURRENT STATE:
                         decision_data["energy_level"] = value.lower()
         
         return decision_data
+    
+    def _get_enhanced_personality(self, creature_state: CreatureState) -> Optional[EnhancedPersonality]:
+        """Extract enhanced personality from creature state"""
+        # Get the creature from global creatures dict
+        # In a production system, this would be handled differently
+        from api.server import creatures
+        
+        creature = creatures.get(str(creature_state.creature_id))
+        if creature and creature.personality.enhanced_personality:
+            return creature.personality.enhanced_personality
+        
+        return None
+    
+    def _build_enhanced_system_prompt(
+        self, 
+        creature_state: CreatureState, 
+        template: CreatureTemplate,
+        enhanced_personality: Optional[EnhancedPersonality],
+        action_style: Optional[str],
+        utilities: Optional[Dict[str, float]]
+    ) -> str:
+        """Build enhanced system prompt with trait-based guidance"""
+        
+        if enhanced_personality and enhanced_personality.mode == PersonalityMode.COMPLEX and action_style:
+            return self._build_trait_aware_prompt(
+                creature_state, template, enhanced_personality, action_style, utilities
+            )
+        else:
+            return self._build_system_prompt(creature_state, template)
+    
+    def _build_trait_aware_prompt(
+        self,
+        creature_state: CreatureState,
+        template: CreatureTemplate, 
+        enhanced_personality: EnhancedPersonality,
+        action_style: str,
+        utilities: Dict[str, float]
+    ) -> str:
+        """Build prompt that incorporates trait-driven action style"""
+        
+        # Get top 5 traits for this creature
+        trait_vector = enhanced_personality.get_trait_vector()
+        dominant_traits = enhanced_personality.get_dominant_traits(5)
+        top_traits = [f"{trait} ({score:.2f})" for trait, score in dominant_traits]
+        
+        # Get action style guidance
+        action_guidance = self.utility_model.get_action_guidance(action_style)
+        
+        # Get current stats
+        stats_summary = []
+        for stat_name, value in creature_state.stats.items():
+            stats_summary.append(f"- {stat_name.title()}: {value}/100")
+        
+        system_prompt = f"""You are the Decision Making Agent for a {creature_state.species}.
+
+ENHANCED TRAIT-DRIVEN PERSONALITY:
+- Personality Mode: Complex (50-dimensional trait system)
+- Dominant traits: {', '.join(top_traits)}
+- Selected action style: {action_style}
+- Style confidence: {utilities[action_style]:.2f}
+
+BEHAVIORAL GUIDANCE ({action_style.upper()}):
+{action_guidance['description']}
+- Behavior tags: {', '.join(action_guidance['behavior_tags'])}
+- Energy requirement: {action_guidance['energy_level']}
+- Social preference: {action_guidance['social_preference']}
+
+Creature Profile:
+- Species: {creature_state.species}
+- Template: {template.name}
+- Current mood: {creature_state.mood}
+
+Current State:
+{chr(10).join(stats_summary)}
+
+Species-Specific Behaviors:
+{chr(10).join([f"- {behavior}" for behavior in template.language.behavioral_patterns])}
+
+{template.decision_prompt_additions}
+
+CRITICAL: Your response MUST align with the {action_style} action style. This means:
+{self._get_style_specific_guidance(action_style)}
+
+Based on all agent inputs, form a response that:
+1. Reflects the determined emotional state
+2. STRONGLY emphasizes the selected action style ({action_style})
+3. Incorporates dominant personality traits: {', '.join([trait for trait, _ in dominant_traits[:3]])}
+4. Considers relevant memories and context  
+5. Maintains authentic creature behavior
+6. Matches current physical state and energy level
+
+Physical state constraints:
+- Low energy: avoid energetic actions, use tired behaviors
+- Low stats: show signs of need/distress
+- High stats: more willing to engage and be active
+- Consider species-specific energy patterns
+
+Response format:
+ACTION: (physical response - must strongly reflect {action_style} style and energy state)
+VOCALIZATION: (species-appropriate sounds - match {action_style} style and energy level)
+INTENTION: (what the creature wants to convey - influenced by {action_style} approach)
+ENERGY_LEVEL: (low|medium|high - for response intensity)"""
+
+        return system_prompt
+    
+    def _get_style_specific_guidance(self, action_style: str) -> str:
+        """Provide specific guidance for each action style"""
+        style_guides = {
+            "playful": "Be energetic, fun-loving, and spontaneous. Use bouncy movements and happy sounds. Initiate games and activities.",
+            "cautious": "Be careful, observant, and measured. Move slowly and assess before acting. Show wariness of new situations.", 
+            "assertive": "Be confident, direct, and decisive. Stand tall and communicate clearly. Take charge of the situation.",
+            "nurturing": "Be caring, gentle, and protective. Use soft sounds and comforting gestures. Focus on the wellbeing of others.",
+            "curious": "Be inquisitive and investigative. Explore new things with interest. Ask questions through behavior.",
+            "defensive": "Be protective and alert. Watch for threats. Position yourself defensively while staying ready to react.",
+            "social": "Be friendly and engaging. Seek connection and interaction. Use welcoming body language and sounds.",
+            "independent": "Be self-reliant and autonomous. Make your own decisions. Maintain personal space and dignity.",
+            "analytical": "Be thoughtful and systematic. Consider all angles before responding. Show careful problem-solving behavior.",
+            "emotional": "Be expressive and empathetic. Show your feelings clearly. Respond to the emotional needs of others."
+        }
+        return style_guides.get(action_style, "Act naturally according to your species and current state.")

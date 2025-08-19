@@ -5,10 +5,13 @@ Represents any type of creature/character with configurable stats, personality, 
 """
 
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, TYPE_CHECKING
 from uuid import UUID, uuid4
 from pydantic import BaseModel, Field
 from enum import Enum
+
+if TYPE_CHECKING:
+    from .personality_system import EnhancedPersonality
 
 
 class StatConfig(BaseModel):
@@ -70,6 +73,9 @@ class CreaturePersonality(BaseModel):
     traits: List[str] = Field(default_factory=list)
     custom_description: str = ""
     base_temperament: str = "neutral"  # "calm", "energetic", "aggressive", etc.
+    
+    # Enhanced personality system
+    enhanced_personality: Optional["EnhancedPersonality"] = None
 
 
 class Creature(BaseModel):

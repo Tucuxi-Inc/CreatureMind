@@ -48,6 +48,9 @@ class CreatureMindApp {
         // Error modal
         document.getElementById('closeError').addEventListener('click', () => this.hideError());
         document.getElementById('errorOkBtn').addEventListener('click', () => this.hideError());
+
+        // Enhanced personality system
+        this.setupPersonalityEventListeners();
     }
 
     async loadTemplates() {
@@ -116,48 +119,7 @@ class CreatureMindApp {
         return selectedTraits;
     }
 
-    async handleCreatureCreation(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(e.target);
-        const creatureData = {
-            name: formData.get('name'),
-            template_id: formData.get('template_id'),
-            personality_traits: this.getSelectedTraits(),
-            custom_personality: formData.get('custom_personality')
-        };
-
-        this.showLoading('Creating your creature...');
-
-        try {
-            const response = await fetch('/creatures', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(creatureData)
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const creature = await response.json();
-            this.currentCreature = creature;
-            
-            this.hideLoading();
-            this.showCreatureInterface();
-            this.updateCreatureDisplay();
-            
-            // Send welcome message
-            this.addMessage('system', `🎉 ${creature.name} has come to life! Say hello to your new companion.`);
-            
-        } catch (error) {
-            this.hideLoading();
-            console.error('Failed to create creature:', error);
-            this.showError('Failed to create your creature. Please try again.');
-        }
-    }
+    // Note: handleCreatureCreation method moved to enhanced personality section
 
     async sendMessage() {
         const input = document.getElementById('messageInput');
@@ -689,6 +651,473 @@ class CreatureMindApp {
         });
 
         return templateData;
+    }
+
+    // Enhanced Personality System Methods
+    setupPersonalityEventListeners() {
+        // Personality mode selection
+        document.querySelectorAll('input[name="personality_mode"]').forEach(radio => {
+            radio.addEventListener('change', () => this.handlePersonalityModeChange());
+        });
+
+        // Method selection for complex personality
+        document.querySelectorAll('input[name="personality_method"]').forEach(radio => {
+            radio.addEventListener('change', () => this.handlePersonalityMethodChange());
+        });
+
+        // Trait modification controls
+        document.getElementById('modifyTraitSelect').addEventListener('change', (e) => {
+            this.handleTraitSelectChange(e);
+        });
+
+        document.getElementById('modifyTraitSlider').addEventListener('input', (e) => {
+            document.getElementById('modifyTraitValue').textContent = parseFloat(e.target.value).toFixed(2);
+        });
+
+        document.getElementById('addModification').addEventListener('click', () => {
+            this.addTraitModification();
+        });
+
+        // Slider controls
+        document.getElementById('resetSliders').addEventListener('click', () => {
+            this.resetTraitSliders();
+        });
+
+        document.getElementById('randomizeSliders').addEventListener('click', () => {
+            this.randomizeTraitSliders();
+        });
+
+        // Blend controls
+        document.getElementById('addBlendArchetype').addEventListener('click', () => {
+            this.addBlendArchetype();
+        });
+
+        // Load initial data
+        this.loadPersonalityData();
+    }
+
+    async loadPersonalityData() {
+        try {
+            // Load archetypes
+            const archetypesResponse = await fetch('/personality/archetypes');
+            this.archetypes = await archetypesResponse.json();
+
+            // Load trait definitions
+            const traitsResponse = await fetch('/personality/traits');
+            this.traitDefinitions = await traitsResponse.json();
+
+            // Populate UI elements
+            this.populateArchetypeGrid();
+            this.populateTraitSliders();
+            this.populateTraitModificationSelect();
+
+        } catch (error) {
+            console.error('Failed to load personality data:', error);
+        }
+    }
+
+    handlePersonalityModeChange() {
+        const selectedMode = document.querySelector('input[name="personality_mode"]:checked').value;
+        
+        // Update visual state
+        document.querySelectorAll('.mode-option').forEach(option => {
+            option.classList.remove('active');
+        });
+        document.querySelector(`[data-mode="${selectedMode}"]`).classList.add('active');
+
+        // Show/hide appropriate panels
+        if (selectedMode === 'simple') {
+            document.getElementById('simplePersonalityPanel').classList.remove('hidden');
+            document.getElementById('complexPersonalityPanel').classList.add('hidden');
+        } else {
+            document.getElementById('simplePersonalityPanel').classList.add('hidden');
+            document.getElementById('complexPersonalityPanel').classList.remove('hidden');
+        }
+    }
+
+    handlePersonalityMethodChange() {
+        const selectedMethod = document.querySelector('input[name="personality_method"]:checked').value;
+        
+        // Update visual state
+        document.querySelectorAll('.method-option').forEach(option => {
+            option.classList.remove('active');
+        });
+        document.querySelector(`[data-method="${selectedMethod}"]`).classList.add('active');
+
+        // Show/hide appropriate panels
+        document.querySelectorAll('.method-panel').forEach(panel => {
+            panel.classList.add('hidden');
+        });
+
+        if (selectedMethod === 'archetype') {
+            document.getElementById('archetypePanel').classList.remove('hidden');
+        } else if (selectedMethod === 'custom') {
+            document.getElementById('customTraitsPanel').classList.remove('hidden');
+        } else if (selectedMethod === 'blend') {
+            document.getElementById('blendPanel').classList.remove('hidden');
+        }
+
+        this.updatePersonalityPreview();
+    }
+
+    populateArchetypeGrid() {
+        const grid = document.getElementById('archetypeGrid');
+        grid.innerHTML = '';
+
+        this.archetypes.archetypes.forEach(archetype => {
+            const card = document.createElement('div');
+            card.className = 'archetype-card';
+            card.dataset.archetype = archetype.id;
+            
+            const iconMap = {
+                'leonardo': '🎨',
+                'einstein': '🔬', 
+                'montessori': '👩‍🏫',
+                'socrates': '🤔',
+                'rogers': '🤗',
+                'yoda': '👴'
+            };
+
+            card.innerHTML = `
+                <div class="archetype-header">
+                    <div class="archetype-icon">${iconMap[archetype.id] || '⭐'}</div>
+                    <div class="archetype-name">${archetype.name}</div>
+                </div>
+                <div class="archetype-description">${archetype.description}</div>
+                <div class="archetype-traits">Famous for their unique personality traits</div>
+            `;
+
+            card.addEventListener('click', () => this.selectArchetype(archetype.id));
+            grid.appendChild(card);
+        });
+    }
+
+    selectArchetype(archetypeId) {
+        // Update visual selection
+        document.querySelectorAll('.archetype-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        document.querySelector(`[data-archetype="${archetypeId}"]`).classList.add('selected');
+
+        this.selectedArchetype = archetypeId;
+        this.updatePersonalityPreview();
+    }
+
+    populateTraitSliders() {
+        const container = document.getElementById('traitSliders');
+        container.innerHTML = '';
+
+        this.traitDefinitions.traits.forEach(trait => {
+            const slider = document.createElement('div');
+            slider.className = 'trait-slider';
+            
+            slider.innerHTML = `
+                <div class="trait-label">
+                    ${trait.name.replace(/_/g, ' ')}
+                    <span class="trait-description">${trait.description}</span>
+                </div>
+                <input type="range" class="trait-range" min="0" max="1" step="0.01" value="0.5" data-trait="${trait.name}">
+                <span class="trait-value">0.50</span>
+            `;
+
+            const range = slider.querySelector('.trait-range');
+            const valueDisplay = slider.querySelector('.trait-value');
+
+            range.addEventListener('input', () => {
+                valueDisplay.textContent = parseFloat(range.value).toFixed(2);
+                this.updatePersonalityPreview();
+            });
+
+            container.appendChild(slider);
+        });
+    }
+
+    populateTraitModificationSelect() {
+        const select = document.getElementById('modifyTraitSelect');
+        select.innerHTML = '<option value="">Select a trait to modify...</option>';
+
+        this.traitDefinitions.traits.forEach(trait => {
+            const option = document.createElement('option');
+            option.value = trait.name;
+            option.textContent = trait.name.replace(/_/g, ' ');
+            select.appendChild(option);
+        });
+    }
+
+    handleTraitSelectChange(e) {
+        const slider = document.getElementById('modifyTraitSlider');
+        const button = document.getElementById('addModification');
+        
+        if (e.target.value) {
+            slider.disabled = false;
+            button.disabled = false;
+        } else {
+            slider.disabled = true;
+            button.disabled = true;
+        }
+    }
+
+    addTraitModification() {
+        const select = document.getElementById('modifyTraitSelect');
+        const slider = document.getElementById('modifyTraitSlider');
+        const traitName = select.value;
+        const traitValue = parseFloat(slider.value);
+
+        if (!traitName) return;
+
+        // Check if modification already exists
+        const existing = document.querySelector(`[data-modification-trait="${traitName}"]`);
+        if (existing) {
+            existing.remove();
+        }
+
+        // Add modification
+        const container = document.getElementById('activeModifications');
+        const item = document.createElement('div');
+        item.className = 'modification-item';
+        item.dataset.modificationTrait = traitName;
+        
+        item.innerHTML = `
+            <div class="modification-info">
+                <span class="modification-trait">${traitName.replace(/_/g, ' ')}</span>
+                <span class="modification-value">${traitValue.toFixed(2)}</span>
+            </div>
+            <button type="button" class="remove-modification">×</button>
+        `;
+
+        item.querySelector('.remove-modification').addEventListener('click', () => {
+            item.remove();
+            this.updatePersonalityPreview();
+        });
+
+        container.appendChild(item);
+
+        // Reset controls
+        select.value = '';
+        slider.value = 0.5;
+        document.getElementById('modifyTraitValue').textContent = '0.50';
+        slider.disabled = true;
+        document.getElementById('addModification').disabled = true;
+
+        this.updatePersonalityPreview();
+    }
+
+    resetTraitSliders() {
+        document.querySelectorAll('.trait-range').forEach(range => {
+            range.value = 0.5;
+            range.nextElementSibling.textContent = '0.50';
+        });
+        this.updatePersonalityPreview();
+    }
+
+    randomizeTraitSliders() {
+        document.querySelectorAll('.trait-range').forEach(range => {
+            const value = Math.random();
+            range.value = value;
+            range.nextElementSibling.textContent = value.toFixed(2);
+        });
+        this.updatePersonalityPreview();
+    }
+
+    addBlendArchetype() {
+        const container = document.getElementById('blendControls');
+        const item = document.createElement('div');
+        item.className = 'blend-item';
+        
+        const archetypeOptions = this.archetypes.archetypes.map(arch => 
+            `<option value="${arch.id}">${arch.name}</option>`
+        ).join('');
+
+        item.innerHTML = `
+            <select class="blend-archetype">
+                <option value="">Select personality...</option>
+                ${archetypeOptions}
+            </select>
+            <input type="range" class="blend-weight" min="0" max="1" step="0.1" value="0.5">
+            <span class="blend-weight-display">0.5</span>
+            <button type="button" class="remove-blend">×</button>
+        `;
+
+        const weightSlider = item.querySelector('.blend-weight');
+        const weightDisplay = item.querySelector('.blend-weight-display');
+
+        weightSlider.addEventListener('input', () => {
+            weightDisplay.textContent = weightSlider.value;
+            this.updatePersonalityPreview();
+        });
+
+        item.querySelector('.blend-archetype').addEventListener('change', () => {
+            this.updatePersonalityPreview();
+        });
+
+        item.querySelector('.remove-blend').addEventListener('click', () => {
+            item.remove();
+            this.updatePersonalityPreview();
+        });
+
+        container.appendChild(item);
+    }
+
+    updatePersonalityPreview() {
+        // This is a simplified preview - in practice you'd want to call the API
+        const previewTraits = document.getElementById('previewTopTraits');
+        const previewDescription = document.getElementById('previewDescription');
+
+        const method = document.querySelector('input[name="personality_method"]:checked')?.value;
+        
+        if (method === 'archetype' && this.selectedArchetype) {
+            const archetype = this.archetypes.archetypes.find(a => a.id === this.selectedArchetype);
+            previewTraits.innerHTML = `Selected: <strong>${archetype.name}</strong>`;
+            previewDescription.textContent = archetype.description;
+            
+        } else if (method === 'custom') {
+            // Show top 5 traits from sliders
+            const traits = Array.from(document.querySelectorAll('.trait-range')).map(slider => ({
+                name: slider.dataset.trait,
+                value: parseFloat(slider.value)
+            })).sort((a, b) => b.value - a.value).slice(0, 5);
+
+            previewTraits.innerHTML = traits.map(trait => 
+                `<span class="trait-score">${trait.name.replace(/_/g, ' ')}: ${trait.value.toFixed(2)}</span>`
+            ).join('');
+            previewDescription.textContent = 'Custom personality with manually adjusted traits';
+            
+        } else if (method === 'blend') {
+            const blendItems = Array.from(document.querySelectorAll('.blend-item')).map(item => {
+                const archetype = item.querySelector('.blend-archetype').value;
+                const weight = parseFloat(item.querySelector('.blend-weight').value);
+                return { archetype, weight };
+            }).filter(item => item.archetype);
+
+            if (blendItems.length > 0) {
+                const archetypeNames = blendItems.map(item => {
+                    const arch = this.archetypes.archetypes.find(a => a.id === item.archetype);
+                    return `${arch?.name} (${(item.weight * 100).toFixed(0)}%)`;
+                });
+                previewTraits.innerHTML = `Blend: ${archetypeNames.join(', ')}`;
+                previewDescription.textContent = 'Custom blend of multiple famous personalities';
+            } else {
+                previewTraits.textContent = 'Add personalities to create a blend';
+                previewDescription.textContent = 'Select archetypes and adjust weights to create a unique blend';
+            }
+        } else {
+            previewTraits.textContent = 'Select a personality configuration to see preview';
+            previewDescription.textContent = 'This creature will have a unique personality based on your selections';
+        }
+    }
+
+    // Update creature creation to handle enhanced personality
+    async handleCreatureCreation(e) {
+        e.preventDefault();
+        
+        this.showLoading('Bringing your creature to life...');
+
+        try {
+            const creatureData = this.collectCreatureData(e.target);
+            
+            // Use enhanced endpoint if personality system is complex
+            const personalityMode = document.querySelector('input[name="personality_mode"]:checked').value;
+            const endpoint = personalityMode === 'complex' ? '/creatures/enhanced' : '/creatures';
+            
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(creatureData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            this.hideLoading();
+            this.currentCreature = result;
+            this.showCreatureInterface();
+            this.updateCreatureDisplay();
+            
+            // Send welcome message
+            this.addMessage('system', `🎉 ${result.name} has come to life! Say hello to your new companion.`);
+            
+        } catch (error) {
+            this.hideLoading();
+            console.error('Creature creation failed:', error);
+            this.showError(`Failed to create creature: ${error.message}`);
+        }
+    }
+
+    collectCreatureData(form) {
+        const formData = new FormData(form);
+        const personalityMode = formData.get('personality_mode');
+        
+        const creatureData = {
+            name: formData.get('name'),
+            template_id: formData.get('template_id'),
+            personality_mode: personalityMode
+        };
+
+        if (personalityMode === 'simple') {
+            // Collect simple personality data
+            const traits = Array.from(document.querySelectorAll('.trait-option.selected')).map(el => el.textContent);
+            
+            creatureData.simple_personality = {
+                traits: traits,
+                custom_description: formData.get('custom_personality') || '',
+                base_temperament: formData.get('base_temperament') || 'neutral'
+            };
+            
+            // Legacy support
+            creatureData.personality_traits = traits;
+            creatureData.custom_personality = formData.get('custom_personality') || '';
+            
+        } else if (personalityMode === 'complex') {
+            // Collect complex personality data
+            const method = document.querySelector('input[name="personality_method"]:checked').value;
+            
+            const complexPersonality = {
+                mode: method
+            };
+
+            if (method === 'archetype') {
+                complexPersonality.archetype_name = this.selectedArchetype;
+                
+            } else if (method === 'custom') {
+                const traitValues = {};
+                document.querySelectorAll('.trait-range').forEach(slider => {
+                    traitValues[slider.dataset.trait] = parseFloat(slider.value);
+                });
+                complexPersonality.trait_values = traitValues;
+                
+            } else if (method === 'blend') {
+                const archetypeWeights = {};
+                document.querySelectorAll('.blend-item').forEach(item => {
+                    const archetype = item.querySelector('.blend-archetype').value;
+                    const weight = parseFloat(item.querySelector('.blend-weight').value);
+                    if (archetype) {
+                        archetypeWeights[archetype] = weight;
+                    }
+                });
+                complexPersonality.archetype_weights = archetypeWeights;
+            }
+
+            // Collect trait modifications
+            const modifications = {};
+            document.querySelectorAll('.modification-item').forEach(item => {
+                const trait = item.dataset.modificationTrait;
+                const value = parseFloat(item.querySelector('.modification-value').textContent);
+                modifications[trait] = value;
+            });
+            
+            if (Object.keys(modifications).length > 0) {
+                complexPersonality.trait_modifications = modifications;
+            }
+
+            creatureData.complex_personality = complexPersonality;
+        }
+
+        return creatureData;
     }
 }
 
