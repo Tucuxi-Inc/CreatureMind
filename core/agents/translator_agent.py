@@ -276,22 +276,36 @@ Convert these into species-appropriate actions and sounds that authentically rep
         logger.info(f"🔍 TRANSLATOR Raw AI response: '{response}'")
         logger.info(f"🔍 TRANSLATOR Response length: {len(response)} chars")
         
+        # Start with DecisionAgent data as fallback
+        action = decision_data.get('action', 'stands quietly')
+        vocalization = decision_data.get('vocalization', 'quiet sound')
+        
+        # Create a reasonable default using the DecisionAgent's output
+        default_creature_language = f"*{action}* {vocalization}"
+        
         translation_data = {
-            "creature_language": "*quiet sound*",
+            "creature_language": default_creature_language,
             "human_translation": decision_data.get('human_response') if can_translate else None,
             "debug_info": ""
         }
         
         lines = response.strip().split('\n')
+        found_creature_language = False
+        
         for line in lines:
             if ':' in line:
                 key, value = line.split(':', 1)
                 key = key.strip().upper().replace('_', '_')
                 value = value.strip()
                 
-                if key == "CREATURE_LANGUAGE":
+                if key == "CREATURE_LANGUAGE" and value and value != "*quiet sound*":
                     translation_data["creature_language"] = value
+                    found_creature_language = True
                 elif key == "DEBUG":
                     translation_data["debug_info"] = value
+        
+        # If we didn't find a proper creature language in the response, use our smart fallback
+        if not found_creature_language:
+            logger.info(f"🔄 Using fallback creature language from DecisionAgent: {default_creature_language}")
         
         return translation_data

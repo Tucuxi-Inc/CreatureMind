@@ -24,13 +24,13 @@ class LocalAIConfig:
     """Configuration for local AI inference"""
     server_port: int = 8081
     host: str = "127.0.0.1"
-    ctx_size: int = 32768  # Default context size
+    ctx_size: int = 128000  # Larger context size for gemma-3-4b model
     threads: int = 8       # Optimized for Apple Silicon
     gpu_layers: int = 99   # Use Metal GPU acceleration
     batch_size: int = 512  # Optimized batch size
     temperature: float = 0.7
     timeout: int = 600     # 10 minute timeout
-    model_name: str = "gemma-3-270m-it-F16.gguf"  # Default model
+    model_name: str = "gemma-3-4b-it-Q4_0.gguf"  # Default model - more capable 4B parameter model
 
 
 class LocalAIManager:
@@ -132,9 +132,14 @@ class LocalAIManager:
     def _select_default_model(self) -> str:
         """Select the best available model as default"""
         if not self.available_models:
-            return "gemma-3-270m-it-F16.gguf"  # Fallback
+            return "gemma-3-4b-it-Q4_0.gguf"  # Fallback to 4B model
         
-        # Priority order: try to find gemma-3-270m first (most compatible)
+        # Priority order: try to find gemma-3-4b first (more capable)
+        for filename in self.available_models:
+            if "4b" in filename.lower():
+                return filename
+        
+        # Fallback to 270m model if 4B not available
         for filename in self.available_models:
             if "270m" in filename.lower():
                 return filename
@@ -171,7 +176,16 @@ class LocalAIManager:
         self.config.ctx_size = self._get_model_context_size(model_name)
         
         logger.info(f"🔄 Switched to model: {model_name} (context: {self.config.ctx_size:,} tokens)")
-        return True
+        
+        # Restart server with new model
+        logger.info("🚀 Starting server with new model...")
+        restart_success = await self.start_server()
+        if restart_success:
+            logger.info(f"✅ Successfully switched to model: {model_name}")
+            return True
+        else:
+            logger.error(f"❌ Failed to restart server with model: {model_name}")
+            return False
     
     def _validate_setup(self):
         """Validate that all required files exist"""

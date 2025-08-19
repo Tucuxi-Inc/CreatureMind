@@ -814,11 +814,33 @@ class ApiKeyRequest(BaseModel):
 
 @app.get("/api/status")
 async def get_api_status():
-    """Get current SmartAIClient status"""
+    """Get current AI client status"""
     global ai_client
     
+    # Check for LocalAI client
+    if hasattr(ai_client, 'manager'):
+        # This is a LocalAI client
+        is_running = hasattr(ai_client, 'manager') and ai_client.manager.is_running
+        current_model = ai_client.manager.current_model
+        available_models = ai_client.manager.get_available_models()
+        
+        # Get model display info
+        model_info = available_models.get(current_model, {})
+        model_display = f"{model_info.get('display_name', current_model)}"
+        
+        return {
+            "client_type": "local",
+            "has_api_key": True,  # Local AI doesn't need API key
+            "model": model_display,
+            "current_model": current_model,
+            "available_models": len(available_models),
+            "local_ai_ready": is_running,
+            "mode": "Local AI (Free)",
+            "cost": "Free - runs on your computer"
+        }
+    
     # Check if this is a SmartAIClient
-    if hasattr(ai_client, 'get_status'):
+    elif hasattr(ai_client, 'get_status'):
         try:
             smart_status = ai_client.get_status()
             return {
@@ -826,14 +848,16 @@ async def get_api_status():
                 "mode": smart_status['mode'],
                 "clients": smart_status['clients'],
                 "context_manager": smart_status.get('context_manager', {}),
-                "local_ai_ready": smart_status['clients']['local']['available']
+                "local_ai_ready": smart_status['clients']['local']['available'],
+                "has_api_key": smart_status['clients']['openai']['available'] or smart_status['clients']['local']['available']
             }
         except Exception as e:
             return {
                 "client_type": "smart",
                 "mode": "unknown",
                 "error": str(e),
-                "local_ai_ready": False
+                "local_ai_ready": False,
+                "has_api_key": False
             }
     else:
         # Legacy client detection
@@ -924,6 +948,67 @@ async def set_openai_first():
             raise HTTPException(status_code=400, detail="Failed to switch to OpenAI-first mode (API key required)")
     else:
         raise HTTPException(status_code=400, detail="Client does not support preference switching")
+
+
+# Local AI Model Management Endpoints
+@app.get("/api/models")
+async def list_available_models():
+    """List available Local AI models"""
+    global ai_client
+    
+    if hasattr(ai_client, 'manager'):
+        try:
+            available_models = ai_client.manager.get_available_models()
+            current_model = ai_client.manager.current_model
+            
+            # Format model information for web interface
+            models_info = []
+            for filename, specs in available_models.items():
+                models_info.append({
+                    "filename": filename,
+                    "display_name": specs.get("display_name", filename),
+                    "size": specs.get("size", "Unknown"),
+                    "family": specs.get("family", "Unknown"),
+                    "ctx_size": specs.get("ctx_size", 32768),
+                    "is_current": filename == current_model
+                })
+            
+            return {
+                "models": models_info,
+                "current_model": current_model
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to list models: {str(e)}")
+    else:
+        raise HTTPException(status_code=400, detail="Local AI client not available")
+
+
+@app.post("/api/models/switch")
+async def switch_model(request: dict):
+    """Switch to a different Local AI model"""
+    global ai_client
+    
+    model_name = request.get("model_name")
+    if not model_name:
+        raise HTTPException(status_code=400, detail="model_name is required")
+    
+    if hasattr(ai_client, 'manager'):
+        try:
+            # This will kill the current llama-server and start with new model
+            success = await ai_client.manager.switch_model(model_name)
+            
+            if success:
+                return {
+                    "message": f"Successfully switched to model: {model_name}",
+                    "current_model": model_name,
+                    "status": "ready"
+                }
+            else:
+                raise HTTPException(status_code=400, detail=f"Failed to switch to model: {model_name}")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error switching model: {str(e)}")
+    else:
+        raise HTTPException(status_code=400, detail="Local AI client not available")
 
 
 if __name__ == "__main__":

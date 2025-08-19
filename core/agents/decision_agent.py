@@ -64,7 +64,14 @@ class DecisionAgent:
             # Build species-appropriate system prompt
             system_prompt = self._build_system_prompt(creature_state, template)
 
-            user_prompt = f"A human has sent you this message: '{user_message}'. Respond as a {creature_state.species} using the exact format above."
+            # Enhance context based on whether this is an activity or message
+            if "just experienced:" in user_message:
+                # This is an activity
+                activity_desc = user_message.split("just experienced:", 1)[1].strip()
+                user_prompt = f"Your human just did this activity with you: {activity_desc}. Show how you as a {creature_state.species} react to this specific activity. Use the exact response format above and make your response unique to this situation."
+            else:
+                # This is a regular message
+                user_prompt = f"A human has sent you this message: '{user_message}'. Respond as a {creature_state.species} using the exact format above."
             
             response = await self.ai_client.generate_response(
                 system_prompt=system_prompt,
@@ -103,13 +110,31 @@ class DecisionAgent:
         behaviors = template.language.behavioral_patterns
         behavior_summary = "\n".join([f"- {behavior}" for behavior in behaviors])
         
+        # Get enhanced personality information
+        enhanced_personality = self._get_enhanced_personality(creature_state)
+        personality_prompt = ""
+        logger.info(f"🧠 Enhanced personality: {enhanced_personality}")
+        if enhanced_personality and enhanced_personality.mode == PersonalityMode.COMPLEX:
+            if enhanced_personality.archetype_base:
+                personality_prompt = f"\nPersonality Archetype: {enhanced_personality.archetype_base}\n"
+                # Add archetype-specific speech patterns
+                archetype_patterns = self._get_archetype_speech_patterns(enhanced_personality.archetype_base)
+                if archetype_patterns:
+                    personality_prompt += f"Speech Pattern: {archetype_patterns}\n"
+            
+            # Add dominant traits
+            dominant_traits = enhanced_personality.get_dominant_traits(3)
+            if dominant_traits:
+                trait_descriptions = [f"{trait}: {score:.2f}" for trait, score in dominant_traits]
+                personality_prompt += f"Dominant Traits: {', '.join(trait_descriptions)}\n"
+        
         system_prompt = f"""You are the Decision Making Agent for a {creature_state.species}.
 
 Creature Profile:
 - Species: {creature_state.species}
 - Template: {template.name}
 - Personality: {', '.join(creature_state.personality_traits)}
-- Current mood: {creature_state.mood}
+- Current mood: {creature_state.mood}{personality_prompt}
 
 Current State:
 {chr(10).join(stats_summary)}
@@ -134,12 +159,14 @@ Physical state constraints:
 - High stats: more willing to engage and be active
 - Consider species-specific energy patterns
 
-Response format:
-ACTION: [describe the {creature_state.species}'s physical actions or movements]
-VOCALIZATION: [the sounds this {creature_state.species} makes]
-HUMAN_RESPONSE: [what the {creature_state.species} wants to communicate]
-INTENTION: [what the {creature_state.species} is trying to achieve]
-ENERGY_LEVEL: [exactly one of: low, medium, high]
+You must respond in this exact format:
+ACTION: (describe physical movements and behaviors)
+VOCALIZATION: (sounds the creature makes)  
+HUMAN_RESPONSE: (what the creature wants to communicate)
+INTENTION: (what the creature is trying to achieve)
+ENERGY_LEVEL: (low, medium, or high)
+
+Create responses appropriate to the situation. Vary your responses - do not repeat the same answer.
 
 {self._get_species_example(creature_state.species)}"""
 
@@ -151,8 +178,8 @@ ENERGY_LEVEL: [exactly one of: low, medium, high]
             "dog": """Example:
 ACTION: tail wagging enthusiastically, ears perked up
 VOCALIZATION: excited bark
-HUMAN_RESPONSE: Woof! Yes, let's play! I love playing with you!
-INTENTION: showing excitement and eagerness to play
+HUMAN_RESPONSE: Woof! I'm so happy to see you!
+INTENTION: showing excitement and joy
 ENERGY_LEVEL: high""",
             
             "cat": """Example:
@@ -263,7 +290,23 @@ CURRENT STATE:
     
     def _get_enhanced_personality(self, creature_state: CreatureState) -> Optional[EnhancedPersonality]:
         """Extract enhanced personality from creature state"""
-        # For now, return None to avoid circular imports
-        # The personality should be passed through the creature_state or template
-        # TODO: Redesign to avoid global state access
-        return None
+        try:
+            # Access enhanced personality from creature_state if available
+            if hasattr(creature_state, 'enhanced_personality'):
+                return creature_state.enhanced_personality
+            return None
+        except Exception as e:
+            logger.warning(f"Could not access enhanced personality: {e}")
+            return None
+    
+    def _get_archetype_speech_patterns(self, archetype_name: str) -> str:
+        """Get speech patterns for personality archetypes"""
+        patterns = {
+            "yoda": "Speak with inverted syntax like Yoda. Use phrases like 'Strong with the Force, you are', 'Much to learn, you have', 'Hmm' frequently. Place object before subject often.",
+            "einstein": "Speak thoughtfully with scientific curiosity. Use phrases like 'Let me think about this...', 'Imagination is more important than knowledge', 'I wonder if...'",
+            "leonardo": "Speak with artistic passion and curiosity. Use phrases like 'Fascinating!', 'I observe that...', 'Art is never finished, only abandoned'",
+            "socrates": "Speak with questioning wisdom. Use phrases like 'What is...?', 'But consider...', 'I know that I know nothing'",
+            "montessori": "Speak with nurturing encouragement. Use phrases like 'How wonderful!', 'Let us discover...', 'Help me to do it myself'",
+            "rogers": "Speak with gentle kindness. Use phrases like 'You are special just the way you are', 'How does that make you feel?'"
+        }
+        return patterns.get(archetype_name, "")

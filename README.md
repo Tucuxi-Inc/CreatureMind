@@ -102,11 +102,23 @@ sudo yum install python3 python3-pip git
 1. Download the CreatureMind folder
 2. Put it somewhere easy to find (like your Desktop)
 
-**Option B: Use Git (if you have it)**
+**Option B: Use Git (Recommended for Full Features)**
 ```bash
+# Install Git LFS first (for the AI model files)
+git lfs install
+
+# Clone with LFS support
 git clone [repository-url] CreatureMind
 cd CreatureMind
+
+# Pull LFS files (including the AI model)
+git lfs pull
 ```
+
+**Note**: Git LFS is required to download the Local AI model files. If you don't have Git LFS:
+- **Mac**: `brew install git-lfs`
+- **Windows**: Download from [git-lfs.github.io](https://git-lfs.github.io)
+- **Linux**: `sudo apt install git-lfs` or `sudo yum install git-lfs`
 
 ### Step 4: Set Up CreatureMind
 
@@ -376,9 +388,16 @@ python3 -m uvicorn api.server:app --host 0.0.0.0 --port 8001
 
 ### Quick Start with Docker Compose
 ```bash
+# Install Git LFS and clone with model files
+git lfs install
 git clone [repository-url] CreatureMind
 cd CreatureMind
+git lfs pull  # Download AI model files
+
+# Optional: Set OpenAI API key for premium mode
 echo "OPENAI_API_KEY=your-api-key-here" > .env
+
+# Start with Local AI (no API key needed)
 docker-compose up -d
 ```
 
@@ -505,11 +524,57 @@ CreatureMind now includes a complete Local AI system that runs entirely on your 
 - **Fairies**: Wing flutters, melodic chimes, magical enthusiasm
 - **All 9 species**: Each with unique behaviors, sounds, and personalities
 
+### 🔄 **NEW: Model Selection & Switching**
+CreatureMind now supports multiple Local AI models with seamless switching:
+
+**🤖 Available Models:**
+- **Gemma-3-270M** (Default) - Fast, lightweight responses (1-3 seconds, ~1GB RAM)
+- **Gemma-3-4B+** - More intelligent responses (10-20 seconds, 4-8GB RAM)
+- **Custom Models** - Add any compatible GGUF model to the models folder
+
+**⚡ Web Interface Model Switching:**
+1. Click the "🧠 AI Model" button in the web interface
+2. Select from available models with performance information
+3. Switch models instantly - server restarts automatically
+4. Different models for different needs: speed vs. intelligence
+
+**📁 Adding New Models:**
+1. Download any compatible GGUF model file
+2. Place in `localai/models/` directory  
+3. Restart CreatureMind - new model appears in selection
+4. Switch to new model via web interface
+
+**🎯 Model Recommendations:**
+- **270M**: Great for quick interactions, basic conversations
+- **4B+**: Better for complex personalities, nuanced responses, archetype understanding
+- **Custom**: Experiment with different model sizes and types
+
+**💡 Technical Notes:**
+- Model switching requires server restart (10-30 seconds)
+- Larger models provide better personality expression
+- Only smaller default model (270M) included in repository
+- Users can download additional models as needed
+
 ---
 
 ## 📋 Recent Updates & Bug Fixes
 
-### Version 1.6.0 (Latest) - FREE Local AI Integration
+### Version 1.7.0 (Latest) - Enhanced Model Selection & Web Interface
+
+#### 🔄 New Model Selection System
+- **Web Interface Model Switching**: Select between AI models directly from the web interface
+- **Multi-Model Support**: Choose between Gemma-3-270M (fast) and Gemma-3-4B+ (intelligent) models
+- **Automatic Server Restart**: Model switching properly restarts llama-server with new configuration
+- **Performance Information**: Clear model comparisons showing speed vs intelligence tradeoffs
+- **Custom Model Support**: Add any GGUF model to the models folder for automatic detection
+
+#### 🎯 Enhanced User Experience
+- **Smart Model Recommendations**: Interface guides users to appropriate model for their needs
+- **Real-time Model Status**: Live display of current model and server health
+- **Seamless Switching**: Models change without losing creature state or conversation history
+- **Repository Optimization**: Only includes lightweight 270M model, users download larger models as needed
+
+### Version 1.6.0 - FREE Local AI Integration
 
 #### 🏠 Revolutionary Local AI System
 - **Complete Local AI Stack**: No API keys required - runs 100% on your computer

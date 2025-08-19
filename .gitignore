@@ -152,6 +152,10 @@ data/
 *.log
 test_message.json
 
+# Local AI models - exclude large models but keep essential small model
+localai/models/*.gguf
+!localai/models/gemma-3-270m-it-F16.gguf
+
 # IDE files
 .vscode/
 .idea/

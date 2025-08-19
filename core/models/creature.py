@@ -213,6 +213,11 @@ class CreatureState(BaseModel):
         now = datetime.now()
         hours_since_interaction = (now - creature.last_interaction_time).total_seconds() / 3600
         
+        # Copy enhanced personality if available
+        enhanced_personality = None
+        if hasattr(creature.personality, 'enhanced_personality'):
+            enhanced_personality = creature.personality.enhanced_personality
+        
         return cls(
             creature_id=creature.id,
             stats={name: creature.stats.get_stat(name) for name in creature.stats.configs.keys()},
@@ -221,5 +226,6 @@ class CreatureState(BaseModel):
             recent_memories=creature.get_recent_memories(hours=12),
             personality_traits=creature.personality.traits,
             species=creature.species,
-            template_id=creature.template_id
+            template_id=creature.template_id,
+            enhanced_personality=enhanced_personality
         )

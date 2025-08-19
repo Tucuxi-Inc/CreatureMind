@@ -20,6 +20,9 @@
                         <span>CreatureMind</span>
                     </div>
                     <nav class="nav">
+                        <button id="modelSelectBtn" class="btn btn-outline">
+                            <i class="fas fa-microchip"></i> AI Model
+                        </button>
                         <button id="apiKeyBtn" class="btn btn-outline">
                             <i class="fas fa-key"></i> API Key
                         </button>
@@ -520,32 +523,89 @@
                     </div>
                     
                     <div class="api-key-info">
-                        <h4>What's the difference?</h4>
+                        <h4>AI Options Available</h4>
                         <div class="comparison">
                             <div class="comparison-item">
-                                <h5><i class="fas fa-robot"></i> Mock Responses (No API Key)</h5>
+                                <h5><i class="fas fa-computer"></i> Local AI (Currently Active)</h5>
                                 <ul>
-                                    <li>Free to use</li>
-                                    <li>Limited, pre-written responses</li>
-                                    <li>Good for testing the interface</li>
-                                    <li>Species-aware but not fully intelligent</li>
+                                    <li>💚 Completely free - no costs ever</li>
+                                    <li>🚀 Fast responses on your computer</li>
+                                    <li>🔒 Total privacy - no data leaves your device</li>
+                                    <li>🧠 Powered by Gemma-3-270M for intelligent responses</li>
+                                    <li>✨ Supports all creature personalities and species</li>
                                 </ul>
                             </div>
                             <div class="comparison-item">
-                                <h5><i class="fas fa-brain"></i> Real AI (With API Key)</h5>
+                                <h5><i class="fas fa-cloud"></i> OpenAI Premium (Optional)</h5>
                                 <ul>
-                                    <li>Costs ~$0.01-0.05 per conversation</li>
-                                    <li>Fully intelligent, contextual responses</li>
-                                    <li>Unique personality expression</li>
-                                    <li>Truly lifelike creature behavior</li>
+                                    <li>💰 Costs ~$0.01-0.05 per conversation</li>
+                                    <li>🌐 Requires internet connection</li>
+                                    <li>🎯 Advanced reasoning capabilities</li>
+                                    <li>📈 Potentially more creative responses</li>
+                                    <li>🔑 Enter API key below to enable as option</li>
                                 </ul>
                             </div>
                         </div>
+                        <p><strong>Recommendation:</strong> Local AI provides excellent responses for free! Only add OpenAI if you want premium features.</p>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button id="clearApiKey" class="btn btn-outline">Clear Key</button>
                     <button id="saveApiKey" class="btn btn-primary">Save Key</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Selection Modal -->
+        <div id="modelSelectModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-microchip"></i> Local AI Model Selection</h3>
+                    <button id="closeModelSelect" class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="model-status">
+                        <div id="currentModelStatus" class="status-indicator">
+                            <i class="fas fa-microchip"></i>
+                            <span>Loading model information...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="model-selection">
+                        <h4>Available Models:</h4>
+                        <div id="modelList" class="model-list">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="model-info">
+                        <h4>About Local AI Models:</h4>
+                        <div class="model-comparison">
+                            <div class="model-item">
+                                <h5><i class="fas fa-zap"></i> Smaller Models (270M-2B)</h5>
+                                <ul>
+                                    <li>⚡ Faster responses (1-3 seconds)</li>
+                                    <li>💾 Lower memory usage (~1-2GB)</li>
+                                    <li>📱 Good for basic conversations</li>
+                                    <li>🔄 Simpler personality expression</li>
+                                </ul>
+                            </div>
+                            <div class="model-item">
+                                <h5><i class="fas fa-brain"></i> Larger Models (4B+)</h5>
+                                <ul>
+                                    <li>🧠 More intelligent responses (10-20 seconds)</li>
+                                    <li>💾 Higher memory usage (4-8GB)</li>
+                                    <li>✨ Better personality expression</li>
+                                    <li>🎭 Complex archetype understanding</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p><strong>Note:</strong> Switching models will restart the AI server, which takes 10-30 seconds.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancelModelSwitch" class="btn btn-outline">Cancel</button>
+                    <button id="confirmModelSwitch" class="btn btn-primary" disabled>Switch Model</button>
                 </div>
             </div>
         </div>

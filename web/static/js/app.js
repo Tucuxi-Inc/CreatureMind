@@ -22,6 +22,7 @@ class CreatureMindApp {
         document.getElementById('newCreatureBtn').addEventListener('click', () => this.showCreationForm());
         document.getElementById('createTemplateBtn').addEventListener('click', () => this.showTemplateForm());
         document.getElementById('apiKeyBtn').addEventListener('click', () => this.showApiKeyModal());
+        document.getElementById('modelSelectBtn').addEventListener('click', () => this.showModelSelectModal());
         document.getElementById('cancelCreation').addEventListener('click', () => this.showWelcomeScreen());
         document.getElementById('cancelTemplate').addEventListener('click', () => this.showWelcomeScreen());
 
@@ -55,6 +56,11 @@ class CreatureMindApp {
         document.getElementById('toggleApiKeyVisibility').addEventListener('click', () => this.toggleApiKeyVisibility());
         document.getElementById('saveApiKey').addEventListener('click', () => this.saveApiKey());
         document.getElementById('clearApiKey').addEventListener('click', () => this.clearApiKey());
+
+        // Model selection modal
+        document.getElementById('closeModelSelect').addEventListener('click', () => this.hideModelSelectModal());
+        document.getElementById('cancelModelSwitch').addEventListener('click', () => this.hideModelSelectModal());
+        document.getElementById('confirmModelSwitch').addEventListener('click', () => this.confirmModelSwitch());
 
         // Enhanced personality system
         this.setupPersonalityEventListeners();
@@ -1173,10 +1179,16 @@ class CreatureMindApp {
             
             const statusElement = document.getElementById('apiKeyStatus');
             
-            if (status.has_api_key) {
+            if (status.client_type === 'local') {
+                // Local AI is running
+                statusElement.className = 'status-indicator connected';
+                statusElement.innerHTML = `<i class="fas fa-circle-check"></i><span>${status.mode} - ${status.model}</span>`;
+            } else if (status.has_api_key) {
+                // OpenAI or Smart client with API key
                 statusElement.className = 'status-indicator connected';
                 statusElement.innerHTML = `<i class="fas fa-circle-check"></i><span>API key configured - using ${status.model} model</span>`;
             } else {
+                // No AI available
                 statusElement.className = 'status-indicator disconnected';
                 statusElement.innerHTML = '<i class="fas fa-circle-xmark"></i><span>No API key set - using mock responses</span>';
             }
@@ -1195,6 +1207,109 @@ class CreatureMindApp {
         } else {
             input.type = 'password';
             icon.className = 'fas fa-eye';
+        }
+    }
+
+    // Model Selection Methods
+    async showModelSelectModal() {
+        document.getElementById('modelSelectModal').classList.remove('hidden');
+        await this.loadAvailableModels();
+    }
+
+    hideModelSelectModal() {
+        document.getElementById('modelSelectModal').classList.add('hidden');
+        this.selectedModel = null;
+        document.getElementById('confirmModelSwitch').disabled = true;
+    }
+
+    async loadAvailableModels() {
+        try {
+            const response = await fetch('/api/models');
+            const data = await response.json();
+            
+            this.renderModelList(data.models, data.current_model);
+            this.updateCurrentModelStatus(data.current_model);
+            
+        } catch (error) {
+            console.error('Failed to load models:', error);
+            document.getElementById('modelList').innerHTML = '<p class="error">Failed to load models</p>';
+        }
+    }
+
+    renderModelList(models, currentModel) {
+        const modelList = document.getElementById('modelList');
+        modelList.innerHTML = '';
+
+        models.forEach(model => {
+            const modelItem = document.createElement('div');
+            modelItem.className = `model-item ${model.is_current ? 'current' : ''}`;
+            
+            modelItem.innerHTML = `
+                <div class="model-header">
+                    <input type="radio" name="selectedModel" value="${model.filename}" 
+                           id="model_${model.filename}" ${model.is_current ? 'checked' : ''}>
+                    <label for="model_${model.filename}">
+                        <strong>${model.display_name}</strong>
+                        ${model.is_current ? '<span class="current-badge">Current</span>' : ''}
+                    </label>
+                </div>
+                <div class="model-details">
+                    <span class="model-size">${model.size}</span>
+                    <span class="model-family">${model.family}</span>
+                    <span class="model-context">Context: ${model.ctx_size.toLocaleString()}</span>
+                </div>
+            `;
+
+            modelItem.addEventListener('click', () => {
+                if (!model.is_current) {
+                    const radio = modelItem.querySelector('input[type="radio"]');
+                    radio.checked = true;
+                    this.selectedModel = model.filename;
+                    document.getElementById('confirmModelSwitch').disabled = false;
+                }
+            });
+
+            modelList.appendChild(modelItem);
+        });
+    }
+
+    updateCurrentModelStatus(currentModel) {
+        const statusElement = document.getElementById('currentModelStatus');
+        statusElement.className = 'status-indicator connected';
+        statusElement.innerHTML = `<i class="fas fa-microchip"></i><span>Current: ${currentModel}</span>`;
+    }
+
+    async confirmModelSwitch() {
+        if (!this.selectedModel) return;
+        
+        const confirmBtn = document.getElementById('confirmModelSwitch');
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Switching...';
+        
+        try {
+            const response = await fetch('/api/models/switch', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ model_name: this.selectedModel })
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                alert(`Successfully switched to ${this.selectedModel}!`);
+                this.hideModelSelectModal();
+                // Refresh the current status
+                await this.updateApiKeyStatus();
+            } else {
+                const error = await response.json();
+                throw new Error(error.detail || 'Failed to switch model');
+            }
+            
+        } catch (error) {
+            console.error('Failed to switch model:', error);
+            alert(`Failed to switch model: ${error.message}`);
+        } finally {
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = 'Switch Model';
         }
     }
 
