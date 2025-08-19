@@ -812,9 +812,27 @@ The magic isn't just in the complexity - it's in how all these systems work toge
 
 ## 📋 Recent Updates & Bug Fixes
 
-### Version 1.2.0 (Latest) - AI Model Upgrade & Real OpenAI Integration
+### Version 1.3.0 (Latest) - Memory Integration & Frontend Stability
 
-#### 🤖 AI System Improvements
+#### 🧠 Enhanced Memory & Context System
+- **Long-term Memory Integration**: Creatures now maintain conversation context across multiple interactions
+- **Chat History Awareness**: All AI agents now consider recent conversation history for more coherent responses
+- **Persistent Relationships**: Creatures build lasting relationships and remember past interactions
+- **Context-Aware Responses**: Memory agent analyzes both stored memories and chat history for better context
+
+#### 🔧 Critical Bug Fix: Frontend Regression
+- **Fixed Web Interface Regression**: Resolved issue where stats weren't updating and activities lost translations after memory integration
+- **Restored Activity Translations**: Activities (feed, pet, walk, play) now properly display creature responses and translations
+- **Visual Stats Updates**: Fixed visual stat display to correctly update after activities and interactions
+- **Maintained Memory Features**: All new memory and context features preserved while restoring web interface functionality
+
+#### 🧬 Technical Enhancements
+- **Enhanced Memory Agent**: Now processes both stored memories and chat history for comprehensive context analysis
+- **Improved Decision Agent**: Considers conversation history when forming responses for better continuity
+- **Chat History Integration**: All agents receive recent conversation context (last 10 messages) for coherent interactions
+- **Frontend Stability**: Simplified activity response handling to prevent timing issues with stats updates
+
+#### 🤖 AI System Improvements (From v1.2.0)
 - **Upgraded to gpt-4.1-nano**: Replaced expensive gpt-4-1106-preview with modern, cost-effective gpt-4.1-nano model
 - **Real OpenAI Integration**: Fixed mock client fallback to use proper OpenAI API calls when API key is provided
 - **Enhanced Mock Responses**: Improved mock client with varied, realistic responses for testing without API key

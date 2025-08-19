@@ -191,7 +191,7 @@ class CreatureMindApp {
             // Add creature response to activity
             this.addCreatureMessage(data);
             
-            // Always update stats after activities (activities should always affect stats)
+            // Update stats after activities - activities should always change stats
             await this.updateCreatureStats();
 
         } catch (error) {
