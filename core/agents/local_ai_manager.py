@@ -43,6 +43,8 @@ class LocalAIManager:
         "gemma-3-4b": {"ctx_size": 128000, "size": "4B", "family": "gemma3"},
         "gemma-3-9b": {"ctx_size": 128000, "size": "9B", "family": "gemma3"},
         "gemma-3-27b": {"ctx_size": 128000, "size": "27B", "family": "gemma3"},
+        # GPT models
+        "gpt-oss-20b": {"ctx_size": 128000, "size": "20B", "family": "gpt"},
         # Future models can be added here
         "llama-3.2-1b": {"ctx_size": 32768, "size": "1B", "family": "llama3"},
         "llama-3.2-3b": {"ctx_size": 32768, "size": "3B", "family": "llama3"},
@@ -125,6 +127,8 @@ class LocalAIManager:
                 return "gemma-3-9b"
             elif "gemma" in filename_lower and "27b" in filename_lower:
                 return "gemma-3-27b"
+            elif "gpt-oss" in filename_lower and "20b" in filename_lower:
+                return "gpt-oss-20b"
             # Add more patterns as needed
         
         return None
