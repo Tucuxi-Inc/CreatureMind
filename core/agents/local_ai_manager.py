@@ -27,7 +27,8 @@ class LocalAIConfig:
     ctx_size: int = 32768   # Context size for gemma-3-270m model
     threads: int = 8       # Optimized for Apple Silicon
     gpu_layers: int = 99   # Use Metal GPU acceleration
-    batch_size: int = 512  # Optimized batch size
+    batch_size: int = 2048  # Optimized batch size per llama.cpp recommendations
+    ubatch_size: int = 2048  # Unified batch size for better performance
     temperature: float = 0.7
     timeout: int = 600     # 10 minute timeout
     model_name: str = "gemma-3-270m-it-F16.gguf"  # Default model - lightweight 270M parameter model
@@ -39,13 +40,16 @@ class LocalAIManager:
     # Model specifications with context windows
     MODEL_SPECS = {
         "gemma-3-270m": {"ctx_size": 32768, "size": "270M", "family": "gemma3"},
+        "gemma-3-270m-ud": {"ctx_size": 32768, "size": "270M-UD", "family": "gemma3"},  # UD (Ultra Dense) variant
         "gemma-3-2b": {"ctx_size": 32768, "size": "2B", "family": "gemma3"}, 
         "gemma-3-4b": {"ctx_size": 128000, "size": "4B", "family": "gemma3"},
         "gemma-3-9b": {"ctx_size": 128000, "size": "9B", "family": "gemma3"},
         "gemma-3-27b": {"ctx_size": 128000, "size": "27B", "family": "gemma3"},
+        # Qwen models
+        "qwen3-0.6b": {"ctx_size": 40960, "size": "0.6B", "family": "qwen3"},  # Qwen3 0.6B with 40K context
         # GPT models
         "gpt-oss-20b": {"ctx_size": 128000, "size": "20B", "family": "gpt"},
-        # Future models can be added here
+        # Llama models
         "llama-3.2-1b": {"ctx_size": 32768, "size": "1B", "family": "llama3"},
         "llama-3.2-3b": {"ctx_size": 32768, "size": "3B", "family": "llama3"},
         "llama-3.3-70b": {"ctx_size": 128000, "size": "70B", "family": "llama3"}
@@ -115,21 +119,27 @@ class LocalAIManager:
         """Identify model type from filename"""
         filename_lower = filename.lower()
         
-        for model_key in self.MODEL_SPECS:
-            # Check for model name patterns
-            if "gemma" in filename_lower and "270m" in filename_lower:
+        # Check for specific model patterns (most specific first)
+        if "gemma" in filename_lower and "270m" in filename_lower:
+            if "ud" in filename_lower:  # Check for UD variant first
+                return "gemma-3-270m-ud"
+            else:
                 return "gemma-3-270m"
-            elif "gemma" in filename_lower and "2b" in filename_lower:
-                return "gemma-3-2b" 
-            elif "gemma" in filename_lower and "4b" in filename_lower:
-                return "gemma-3-4b"
-            elif "gemma" in filename_lower and "9b" in filename_lower:
-                return "gemma-3-9b"
-            elif "gemma" in filename_lower and "27b" in filename_lower:
-                return "gemma-3-27b"
-            elif "gpt-oss" in filename_lower and "20b" in filename_lower:
-                return "gpt-oss-20b"
-            # Add more patterns as needed
+        elif "gemma" in filename_lower and "2b" in filename_lower:
+            return "gemma-3-2b" 
+        elif "gemma" in filename_lower and "4b" in filename_lower:
+            return "gemma-3-4b"
+        elif "gemma" in filename_lower and "9b" in filename_lower:
+            return "gemma-3-9b"
+        elif "gemma" in filename_lower and "27b" in filename_lower:
+            return "gemma-3-27b"
+        elif "qwen" in filename_lower and "0.6b" in filename_lower:
+            return "qwen3-0.6b"
+        elif "qwen3" in filename_lower and "0.6b" in filename_lower:
+            return "qwen3-0.6b"
+        elif "gpt-oss" in filename_lower and "20b" in filename_lower:
+            return "gpt-oss-20b"
+        # Add more patterns as needed
         
         return None
     
@@ -212,7 +222,7 @@ class LocalAIManager:
             return True
         
         try:
-            # Build command with optimizations
+            # Build command with optimizations based on llama.cpp best practices
             cmd = [
                 str(self.server_binary),
                 "--model", str(self.model_path),
@@ -222,19 +232,41 @@ class LocalAIManager:
                 "--threads", str(self.config.threads),
                 "--gpu-layers", str(self.config.gpu_layers),
                 "--batch-size", str(self.config.batch_size),
+                "--ubatch-size", str(self.config.ubatch_size),  # Unified batch size for performance
                 "--timeout", str(self.config.timeout),
                 "--cont-batching",  # Enable continuous batching
-                "--flash-attn",     # Enable flash attention
+                "--flash-attn",     # Enable flash attention (-fa)
                 "--mlock",          # Keep model in RAM
                 "--no-mmap",        # Don't memory map (better for Apple Silicon)
-                "--chat-template", "gemma",  # Use Gemma chat template
                 "--log-disable"     # Reduce noise
             ]
             
+            # Add model-specific optimizations
+            model_family = self.available_models.get(self.current_model, {}).get("family", "unknown")
+            if model_family == "gpt":
+                # GPT models benefit from Jinja chat template auto-detection
+                cmd.append("--jinja")
+            elif model_family == "gemma3":
+                # Gemma models use specific chat template
+                cmd.extend(["--chat-template", "gemma"])
+            elif model_family == "qwen3":
+                # Qwen models use automatic chat template detection
+                cmd.append("--jinja")
+            # Other models will auto-detect chat template
+            
             logger.info("🚀 Starting llama-server with Apple Silicon optimizations...")
             logger.info(f"   Model: {self.model_path.name}")
+            logger.info(f"   Family: {model_family}")
             logger.info(f"   Context: {self.config.ctx_size:,} tokens")
+            logger.info(f"   Batch Size: {self.config.batch_size} (unified: {self.config.ubatch_size})")
+            logger.info(f"   GPU Layers: {self.config.gpu_layers}")
             logger.info(f"   Port: {self.config.server_port}")
+            if model_family == "gpt":
+                logger.info("   🤖 GPT optimizations: Jinja chat template enabled")
+            elif model_family == "gemma3":
+                logger.info("   🔷 Gemma optimizations: Gemma chat template enabled")
+            elif model_family == "qwen3":
+                logger.info("   🐉 Qwen optimizations: Jinja chat template enabled")
             
             # Start process
             self.server_process = subprocess.Popen(

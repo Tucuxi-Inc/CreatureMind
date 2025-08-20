@@ -130,7 +130,8 @@ class CreatureMindSystem:
                 memory_data=memory_result,
                 creature_state=current_state,
                 template=self.template,
-                chat_history=self.chat_history
+                chat_history=self.chat_history,
+                current_input=user_input
             )
             
             print(f"🎬 DecisionAgent.decide() returned: {decision_result}")
@@ -218,18 +219,9 @@ class CreatureMindSystem:
     
     def _apply_interaction_effects(self, emotion_result: Dict[str, Any], response: CreatureMindResponse) -> None:
         """Apply stat changes based on the interaction"""
-        # Basic interaction effects - could be made more sophisticated
-        
-        # Positive interactions generally increase happiness slightly
-        emotional_impact = emotion_result.get("impact_score", 0.0)
-        if emotional_impact > 0:
-            self.creature.stats.modify_stat("happiness", emotional_impact * 2)
-            response.stats_delta["happiness"] = emotional_impact * 2
-        
-        # Any interaction slightly reduces boredom/restlessness
-        if "energy" in self.creature.stats.configs:
-            self.creature.stats.modify_stat("energy", -1)  # Small energy cost for interaction
-            response.stats_delta["energy"] = -1
+        # Note: Stats are now managed externally via API, no automatic changes
+        # This keeps stats stable at their configured values unless explicitly modified
+        pass
     
     async def process_activity(self, activity_name: str, parameters: Dict[str, Any] = None) -> CreatureMindResponse:
         """

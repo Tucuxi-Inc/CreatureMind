@@ -42,10 +42,6 @@ class CreatureMindApp {
         });
         document.getElementById('sendButton').addEventListener('click', () => this.sendMessage());
 
-        // Activity buttons
-        document.querySelectorAll('.activity-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.performActivity(btn.dataset.activity));
-        });
 
         // Error modal
         document.getElementById('closeError').addEventListener('click', () => this.hideError());
@@ -168,10 +164,6 @@ class CreatureMindApp {
             // Add creature response
             this.addCreatureMessage(data);
             
-            // Update stats if they changed
-            if (data.stats_delta && Object.keys(data.stats_delta).length > 0) {
-                await this.updateCreatureStats();
-            }
 
         } catch (error) {
             this.removeTypingIndicator();
@@ -180,38 +172,6 @@ class CreatureMindApp {
         }
     }
 
-    async performActivity(activity) {
-        if (!this.currentCreature) return;
-
-        // Add activity initiation message
-        this.addMessage('activity', `🎮 ${activity.charAt(0).toUpperCase() + activity.slice(1)}ing your ${this.currentCreature.species}...`);
-
-        try {
-            const response = await fetch(`/creatures/${this.currentCreature.creature_id}/activity`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ activity })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            
-            // Add creature response to activity
-            this.addCreatureMessage(data);
-            
-            // Update stats after activities - activities should always change stats
-            await this.updateCreatureStats();
-
-        } catch (error) {
-            console.error('Failed to perform activity:', error);
-            this.addMessage('system', '❌ Failed to perform activity. Please try again.');
-        }
-    }
 
     addMessage(type, text, className = '') {
         const messagesContainer = document.getElementById('chatMessages');
@@ -220,7 +180,7 @@ class CreatureMindApp {
         
         if (type === 'user') {
             messageElement.textContent = text;
-        } else if (type === 'system' || type === 'activity') {
+        } else if (type === 'system') {
             messageElement.textContent = text;
         } else {
             messageElement.innerHTML = text;
@@ -298,22 +258,21 @@ class CreatureMindApp {
         }
     }
 
-    async updateCreatureStats() {
+    async updateCreatureStatus() {
         try {
             const response = await fetch(`/creatures/${this.currentCreature.creature_id}/status`);
-            if (!response.ok) throw new Error('Failed to fetch stats');
+            if (!response.ok) throw new Error('Failed to fetch status');
             
             const status = await response.json();
             
-            // Update the stored creature data with fresh stats
+            // Update the stored creature data
             this.currentCreature.stats = status.stats;
             
-            this.updateStatsDisplay(status.stats);
             this.updateMoodDisplay(status.mood);
             this.updateTranslationStatus(status.can_translate);
             
         } catch (error) {
-            console.error('Failed to update stats:', error);
+            console.error('Failed to update status:', error);
         }
     }
 
@@ -327,8 +286,6 @@ class CreatureMindApp {
         const emoji = this.getCreatureEmoji(this.currentCreature.species);
         document.getElementById('creature-emoji').textContent = emoji;
         
-        // Update stats
-        this.updateStatsDisplay(this.currentCreature.stats);
     }
 
     getCreatureEmoji(species) {
@@ -344,46 +301,6 @@ class CreatureMindApp {
         return emojiMap[species] || '🐾';
     }
 
-    updateStatsDisplay(stats) {
-        Object.entries(stats).forEach(([statName, value]) => {
-            const statElement = document.getElementById(`stat-${statName}`);
-            if (statElement) {
-                const fill = statElement.querySelector('.stat-fill');
-                const valueElement = statElement.querySelector('.stat-value');
-                
-                if (fill) {
-                    // Add animation class for visual feedback
-                    fill.classList.add('stat-updating');
-                    setTimeout(() => fill.classList.remove('stat-updating'), 500);
-                    
-                    fill.style.width = `${value}%`;
-                }
-                if (valueElement) {
-                    // Show the change visually
-                    const oldValue = parseInt(valueElement.textContent) || 0;
-                    const newValue = Math.round(value);
-                    valueElement.textContent = newValue;
-                    
-                    // Add visual indicator for changes
-                    if (newValue !== oldValue) {
-                        valueElement.classList.add('stat-changed');
-                        setTimeout(() => valueElement.classList.remove('stat-changed'), 1000);
-                    }
-                }
-                
-                // Update color based on value
-                if (fill) {
-                    if (value < 30) {
-                        fill.style.background = '#ef4444';
-                    } else if (value < 60) {
-                        fill.style.background = '#f59e0b';
-                    } else {
-                        fill.style.background = 'linear-gradient(90deg, #10b981, #6366f1)';
-                    }
-                }
-            }
-        });
-    }
 
     updateMoodDisplay(mood) {
         const moodText = document.getElementById('mood-text');

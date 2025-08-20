@@ -43,7 +43,8 @@ class DecisionAgent:
         memory_data: Dict[str, Any],
         creature_state: CreatureState,
         template: CreatureTemplate,
-        chat_history: Optional[List[Dict[str, str]]] = None
+        chat_history: Optional[List[Dict[str, str]]] = None,
+        current_input: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Make the core decision about how the creature should respond
@@ -61,17 +62,23 @@ class DecisionAgent:
             
             logger.info(f"🎭 DecisionAgent processing {creature_state.species} with {len(user_message)} char input")
             
-            # Build species-appropriate system prompt
-            system_prompt = self._build_system_prompt(creature_state, template)
+            # Build species-appropriate system prompt (simplified for smaller models)
+            system_prompt = self._build_system_prompt(creature_state, template, self.ai_client)
 
             # Enhance context based on whether this is an activity or message
-            if "just experienced:" in user_message:
+            if current_input and "just experienced:" in current_input:
                 # This is an activity
-                activity_desc = user_message.split("just experienced:", 1)[1].strip()
+                activity_desc = current_input.split("just experienced:", 1)[1].strip()
                 user_prompt = f"Your human just did this activity with you: {activity_desc}. Show how you as a {creature_state.species} react to this specific activity. Use the exact response format above and make your response unique to this situation."
             else:
-                # This is a regular message
-                user_prompt = f"A human has sent you this message: '{user_message}'. Respond as a {creature_state.species} using the exact format above."
+                # This is a regular message - use the actual user input
+                actual_user_message = current_input or "Hello"
+                user_prompt = f"""The human said to you: "{actual_user_message}"
+
+Agent Analysis (for context):
+{user_message}
+
+As a {creature_state.species}, respond to what the human said using the exact format above. Your response should be appropriate to a {creature_state.species} responding TO a human, not the other way around."""
             
             response = await self.ai_client.generate_response(
                 system_prompt=system_prompt,
@@ -98,9 +105,33 @@ class DecisionAgent:
                 "energy_level": "medium"
             }
     
-    def _build_system_prompt(self, creature_state: CreatureState, template: CreatureTemplate) -> str:
+    def _build_system_prompt(self, creature_state: CreatureState, template: CreatureTemplate, ai_client=None) -> str:
         """Build the system prompt for decision making"""
         
+        # Check if this is a smaller model and simplify accordingly
+        is_small_model = False
+        if ai_client and hasattr(ai_client, 'manager'):
+            current_model = getattr(ai_client.manager, 'current_model', '')
+            # Consider models under 1B parameters as "small"
+            is_small_model = any(size in current_model.lower() for size in ['270m', '0.6b'])
+        
+        if is_small_model:
+            # Simplified prompt for smaller models
+            return f"""You are a {creature_state.species} responding to a human.
+
+Species: {creature_state.species}
+Personality: {', '.join(creature_state.personality_traits[:2])}  # Limit traits
+
+Respond in this format:
+ACTION: (physical behavior)
+VOCALIZATION: (sounds you make)
+HUMAN_RESPONSE: (what you want to say - keep it simple)
+INTENTION: (your goal)
+ENERGY_LEVEL: (low, medium, or high)
+
+Be a {creature_state.species}. Vary your responses."""
+        
+        # Full prompt for larger models
         # Get current stats
         stats_summary = []
         for stat_name, value in creature_state.stats.items():
@@ -162,11 +193,16 @@ Physical state constraints:
 You must respond in this exact format:
 ACTION: (describe physical movements and behaviors)
 VOCALIZATION: (sounds the creature makes)  
-HUMAN_RESPONSE: (what the creature wants to communicate)
+HUMAN_RESPONSE: (what the creature wants to communicate in natural dialogue - NO stats, numbers, or technical information)
 INTENTION: (what the creature is trying to achieve)
 ENERGY_LEVEL: (low, medium, or high)
 
-Create responses appropriate to the situation. Vary your responses - do not repeat the same answer.
+IMPORTANT RULES:
+- HUMAN_RESPONSE should be natural dialogue from the creature's perspective
+- NEVER include stats, numbers, or percentages in HUMAN_RESPONSE
+- DO NOT mention happiness levels, energy levels, or any numerical values
+- Vary your responses - do not repeat the same answer
+- Stay in character as the creature
 
 {self._get_species_example(creature_state.species)}"""
 

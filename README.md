@@ -1,41 +1,40 @@
 # CreatureMind 🧠
 
-**The most advanced AI companion system ever created - featuring 50-dimensional evolving personalities, emotional intelligence, and learning adaptation.**
+**The most advanced AI companion system with FREE local AI inference and developer-friendly API controls.**
 
-Transform any idea into a living, breathing digital creature with authentic personality, emotions, and their own unique "language" that only translates when they're in the right mood. Watch your creatures grow, learn, and develop unique relationships with you over time.
+Transform any idea into a living, breathing digital creature with authentic personality, emotions, and their own unique "language" that only translates when they're in the right mood. Each creature develops a unique relationship with you through natural conversation.
 
-## 🆕 **BREAKTHROUGH: Local AI + Enhanced Personality System**
-**The world's first 50-dimensional AI personality system with FREE LOCAL AI inference!** No API keys required - your creatures run completely on your computer with fast, private responses. Plus real-time personality evolution, emotional influence, and learning adaptation!
+## 🆕 **REVOLUTIONARY: 100% Local AI + Developer Control**
+**The world's first local AI creature system with complete developer control!** No API keys required - your creatures run completely on your computer with fast, private responses. Plus a comprehensive API for external applications to control every aspect of creature behavior.
 
-### 🌟 **What Makes This Revolutionary?**
+### 🌟 **What Makes This Special?**
 
-| Traditional AI | CreatureMind Enhanced |
-|----------------|----------------------|
-| Requires expensive API | **FREE Local AI inference** |
-| Static responses | Dynamic personality evolution |
-| Fixed behavior patterns | Learns from every interaction |
-| No emotional depth | Real-time emotional influences |
-| One-size-fits-all | 50-dimensional trait customization |
-| Forgets interactions | Builds lasting relationships |
+| Traditional AI Chatbots | CreatureMind |
+|------------------------|-------------|
+| Requires expensive APIs | **FREE Local AI inference** |
+| Generic responses | **Species-specific authentic behavior** |
+| No memory | **Persistent conversation memory** |
+| Human-like only | **Any creature type imaginable** |
+| Static personalities | **Evolving personality traits** |
 | Cloud-dependent | **Runs completely offline** |
+| No developer control | **Complete API control over stats & behavior** |
 
 ---
 
 ## 🎯 What is CreatureMind?
 
-CreatureMind creates **AI creature minds** with unprecedented sophistication. Each creature:
+CreatureMind creates **AI creature minds** with unprecedented authenticity. Each creature:
 
 - **🏠 100% Local & Free**: Runs completely on your computer with no API costs
-- **⚡ Fast Local AI**: Powered by optimized Gemma-3-270M with instant responses  
-- **🧬 Evolving Personality**: 50-dimensional trait vectors that change based on experiences
+- **⚡ Multiple AI Models**: Choose from fast (Gemma-3-270M) to intelligent (GPT-OSS-20B, Qwen3-0.6B)
+- **🎭 Species-Specific Intelligence**: Dogs bark and wag tails, cats purr and act aloof, dragons roar majestically
 - **💭 Emotional Intelligence**: Real-time emotional states that influence behavior  
-- **📚 Learning & Adaptation**: Creatures learn your preferences and adapt over time
-- **🗣️ Natural Communication**: Speaks in their species "language" with mood-based translation
-- **🧠 Persistent Memory**: Remembers all interactions and builds deep relationships
-- **🎭 Authentic Behavior**: Each species responds with unique, believable patterns
-- **🔒 Privacy First**: All AI processing happens locally - your conversations stay private
+- **🗣️ Authentic Communication**: Each species speaks in their own "language" with mood-based translation
+- **🧠 Persistent Memory**: Remembers all interactions and builds relationships over time
+- **🔧 Developer API**: Complete programmatic control over stats, thresholds, and behavior
+- **🔒 Privacy First**: All AI processing happens locally - conversations stay private
 
-**Think Tamagotchi meets advanced psychology research, powered by cutting-edge LOCAL AI - for ANY creature you can imagine!**
+**Think sophisticated virtual pets meets psychology research, powered by FREE local AI - for ANY creature you can imagine!**
 
 ---
 
@@ -77,50 +76,19 @@ sudo apt update && sudo apt install python3 python3-pip git
 sudo yum install python3 python3-pip git
 ```
 
-### Step 2: Choose Your AI Mode
-
-**🆓 CreatureMind now includes FREE Local AI!** No API keys required - everything runs on your computer.
-
-**🏠 Local AI Mode (Recommended)**
-- ✅ **Completely free** - no costs ever
-- ✅ **Fast responses** - optimized for your hardware
-- ✅ **Total privacy** - conversations never leave your computer
-- ✅ **Works offline** - no internet required after setup
-- ✅ **Automatically downloads** Gemma-3-270M model (~1GB)
-
-**☁️ OpenAI Mode (Optional Premium)**
-- 💰 **Costs money** (~$0.01-0.05 per conversation)
-- 🌐 **Requires internet** and API key
-- 🎯 **Potentially more creative** responses
-- 🔑 **Get API key**: [platform.openai.com](https://platform.openai.com) → API Keys → Create new key
-
-**Most users should start with Local AI mode - you can always add OpenAI later!**
-
-### Step 3: Download CreatureMind
+### Step 2: Download CreatureMind
 
 **Option A: Download ZIP (Easiest)**
-1. Download the CreatureMind folder
-2. Put it somewhere easy to find (like your Desktop)
+1. Download the CreatureMind folder from the repository
+2. Extract it somewhere easy to find (like your Desktop)
 
-**Option B: Use Git (Recommended for Full Features)**
+**Option B: Use Git (Recommended)**
 ```bash
-# Install Git LFS first (for the AI model files)
-git lfs install
-
-# Clone with LFS support
 git clone [repository-url] CreatureMind
 cd CreatureMind
-
-# Pull LFS files (including the AI model)
-git lfs pull
 ```
 
-**Note**: Git LFS is required to download the Local AI model files. If you don't have Git LFS:
-- **Mac**: `brew install git-lfs`
-- **Windows**: Download from [git-lfs.github.io](https://git-lfs.github.io)
-- **Linux**: `sudo apt install git-lfs` or `sudo yum install git-lfs`
-
-### Step 4: Set Up CreatureMind
+### Step 3: Set Up CreatureMind
 
 1. **Open Terminal/Command Prompt** in the CreatureMind folder:
    - **Mac**: Right-click the CreatureMind folder → "New Terminal at Folder"
@@ -137,6 +105,33 @@ git lfs pull
    
    # Or on some Linux systems:
    python3 -m pip install -r requirements.txt
+   ```
+
+### Step 4: Download AI Models (First Time Only)
+
+CreatureMind needs AI model files to work. You'll need to download them separately:
+
+1. **Create the models directory**:
+   ```bash
+   mkdir -p localai/models
+   ```
+
+2. **Download models** (choose one or more):
+   
+   **Fast & Lightweight (Recommended for most users):**
+   - **Gemma-3-270M**: `gemma-3-270m-it-F16.gguf` (~540MB)
+   - **Qwen3-0.6B**: `qwen3-0.6b-instruct-q4_k_m.gguf` (~400MB)
+   
+   **More Intelligent (Requires more RAM):**
+   - **GPT-OSS-20B**: `gpt-oss-20b-Q4_0.gguf` (~12GB)
+   
+   Download from [Hugging Face](https://huggingface.co) or other GGUF model repositories and place in `localai/models/`
+
+3. **Verify setup**:
+   ```bash
+   # Check that you have at least one model file:
+   ls localai/models/
+   # Should show your .gguf files
    ```
 
 ### Step 5: Start CreatureMind! 🎉
@@ -156,13 +151,15 @@ You should see:
 ```
 🧠 Using LocalAI only for fast, free inference with Gemma-3-270M
 🚀 Starting Local AI server...
+   Model: gemma-3-270m-it-F16.gguf
+   Family: gemma3
+   Context: 32,768 tokens
+   🔷 Gemma optimizations: Gemma chat template enabled
 ✅ Local AI server ready!
 INFO: Uvicorn running on http://0.0.0.0:8000
 ```
 
 **🎉 Success! CreatureMind is now running with Local AI!**
-
-**⏳ First-time setup**: The Gemma-3-270M model (~1GB) will download automatically on first use. This takes 5-10 minutes depending on your internet speed.
 
 ### Step 6: Create Your First Creature & Start Chatting!
 
@@ -175,16 +172,7 @@ INFO: Uvicorn running on http://0.0.0.0:8000
 3. **Start chatting immediately!**
    - Your creature will respond using Local AI
    - Each species has unique behaviors and sounds
-   - Try activities like feeding, petting, and playing
-
-**🔑 Optional: Add OpenAI for Premium Responses**
-- Click the "🔑 API Key" button if you want to use OpenAI
-- Enter your OpenAI API key (starts with `sk-`)
-- Click "Save Key" - changes take effect immediately!
-
-**AI Mode Comparison:**
-- **Local AI (Default)**: FREE, fast, private responses powered by Gemma-3-270M
-- **OpenAI Mode**: Premium responses for ~$0.01-0.05 per conversation
+   - Natural conversation with species-appropriate responses
 
 ---
 
@@ -193,11 +181,11 @@ INFO: Uvicorn running on http://0.0.0.0:8000
 ### 🏠 **Companion Creatures**
 - **🐕 Dogs**: Loyal, playful, energetic companions with tail wagging and barking
 - **🐱 Cats**: Independent, graceful felines with purring and elegant movements  
-- **🐲 Dragons**: Wise, ancient beings with wing flutters and majestic roars
-- **🧚 Fairies**: Delicate magical creatures with sparkling and ethereal chimes
 - **👤 Humans**: Natural human companions with speech, gestures, and expressions
 
 ### 🏰 **Fantasy Adventures** *(Perfect for RPG games)*
+- **🐲 Dragons**: Wise, ancient beings with wing flutters and majestic roars
+- **🧚 Fairies**: Delicate magical creatures with sparkling and ethereal chimes
 - **🧝‍♀️ Elves**: Graceful scouts with keen perception and melodic voices
 - **🪓 Dwarves**: Sturdy warriors with hearty laughs and determined stances
 - **🔧 Gnomes**: Brilliant tinkerers with curious muttering and inventive gestures
@@ -211,27 +199,66 @@ Each species has:
 
 ---
 
-## 🎮 Interacting with Your Creatures
+## 🤖 AI Model System
 
-### Basic Activities
-All creatures support these standard activities through the web interface:
+### 🔄 **Multiple Model Support**
+CreatureMind supports multiple Local AI models with seamless switching:
 
-- **🍽️ Feed**: Satisfies hunger and increases happiness
-- **🎾 Play**: Boosts happiness but uses energy  
-- **❤️ Pet**: Shows affection and builds social connection
-- **🚶 Walk**: Increases energy and provides stimulation
+**🚀 Available Model Types:**
+- **Gemma-3-270M** (Default) - Fast, lightweight responses (1-3 seconds, ~1GB RAM)
+- **Gemma-3-270M-UD** - Ultra Dense variant for better quality responses
+- **Qwen3-0.6B** - Alternative small model with 40K context window
+- **GPT-OSS-20B** - Large, intelligent responses (20+ seconds, 8GB+ RAM)
+- **Custom Models** - Add any compatible GGUF model to the models folder
 
-### Conversation System
-- **Natural chat**: Talk to your creature in plain English
-- **Species responses**: Get authentic creature language back
-- **Mood-based translation**: Translation available when creature trusts you
-- **Memory building**: Creatures remember your conversations
+**⚡ Web Interface Model Switching:**
+1. Click the "🧠 AI Model" button in the web interface
+2. Select from available models with performance information
+3. Switch models instantly - server restarts automatically
+4. Different models for different needs: speed vs. intelligence
 
-### Advanced Features
-- **Personality evolution**: Watch traits change based on interactions
-- **Learning system**: Creatures adapt to your preferences
-- **Emotional states**: Real-time mood changes affect behavior
-- **Custom templates**: Create your own creature types
+**📁 Adding New Models:**
+1. Download any compatible GGUF model file
+2. Place in `localai/models/` directory  
+3. Restart CreatureMind - new model appears in selection
+4. Switch to new model via web interface
+
+**🎯 Model Recommendations:**
+- **270M/0.6B**: Great for quick interactions, basic conversations
+- **20B+**: Better for complex personalities, nuanced responses, detailed dialogue
+- **Custom**: Experiment with different model sizes and types
+
+---
+
+## 🗣️ Conversation System
+
+### Natural Chat Experience
+- **Species-Appropriate Responses**: Dogs bark and wag tails, cats purr and act aloof
+- **Emotional Intelligence**: Creatures respond based on their current emotional state
+- **Memory Persistence**: Creatures remember previous conversations and build relationships
+- **Translation System**: Creatures speak in their "language" - translation available when they trust you
+
+### How Translation Works
+- **Happiness/Energy/Hunger at 50+**: Creature trusts you enough to translate
+- **Below thresholds**: You get authentic creature sounds with "Translation not available"
+- **Developer Control**: Adjust translation thresholds via API for your application's needs
+
+### Example Conversations
+
+**Dog (Happy):**
+- *Action*: tail wagging enthusiastically, ears perked up
+- *Sound*: excited bark  
+- *Translation*: "Woof! I'm so happy to see you!"
+
+**Cat (Content):**
+- *Action*: slow blink, gentle purr, stretching paws
+- *Sound*: content purr
+- *Translation*: "I suppose you're acceptable company today."
+
+**Dragon (Wise):**
+- *Action*: majestic head raise, wings rustling softly
+- *Sound*: low rumbling growl
+- *Translation*: "Mortal, you seek wisdom. I shall consider your words."
 
 ---
 
@@ -242,7 +269,7 @@ All creatures support these standard activities through the web interface:
 2. Fill out the intuitive form:
    - **Species name** (e.g., "phoenix", "robot", "alien")
    - **Personality traits** and temperament
-   - **Stats configuration** (happiness, energy, etc.)
+   - **Stats configuration** (happiness, energy, hunger)
    - **Language sounds** for different emotions
    - **Available activities** and their effects
 3. Your template is instantly available for creature creation!
@@ -250,24 +277,162 @@ All creatures support these standard activities through the web interface:
 ### Example Custom Template
 ```json
 {
-  "name": "Cosmic Phoenix",
-  "species": "phoenix",
-  "description": "A stellar bird that burns with the fire of distant suns",
-  "activities": [
-    {
-      "name": "soar",
-      "stat_effects": {"energy": 15, "happiness": 10},
-      "description": "Soar through cosmic winds"
-    }
-  ],
-  "language": {
-    "sounds": {
-      "happy": ["*stellar song*", "*aurora flames*"],
-      "excited": ["*supernova cry*", "*solar flare*"]
+  \"name\": \"Cosmic Phoenix\",
+  \"species\": \"phoenix\",
+  \"description\": \"A stellar bird that burns with the fire of distant suns\",
+  \"stat_configs\": {
+    \"happiness\": {\"min_value\": 0, \"max_value\": 100, \"decay_rate\": 0, \"default_start\": 75},
+    \"energy\": {\"min_value\": 0, \"max_value\": 100, \"decay_rate\": 0, \"default_start\": 75},
+    \"hunger\": {\"min_value\": 0, \"max_value\": 100, \"decay_rate\": 0, \"default_start\": 75}
+  },
+  \"language\": {
+    \"sounds\": {
+      \"happy\": [\"*stellar song*\", \"*aurora flames*\"],
+      \"excited\": [\"*supernova cry*\", \"*solar flare*\"]
+    },
+    \"translation_conditions\": {
+      \"happiness\": \"> 50\",
+      \"energy\": \"> 50\",
+      \"hunger\": \"> 50\"
     }
   }
 }
 ```
+
+---
+
+## 🔧 Developer API Reference
+
+### 🎮 **Complete Programmatic Control**
+CreatureMind provides a comprehensive API for developers to integrate creatures into their applications:
+
+### Core Creature Management
+```bash
+# Create a new creature
+POST /creatures/enhanced
+{
+  \"name\": \"Buddy\",
+  \"template_id\": \"loyal_dog\",
+  \"personality_mode\": \"simple\",
+  \"personality_traits\": [\"loyal\", \"playful\", \"energetic\"]
+}
+
+# Send a message to your creature
+POST /creatures/{creature_id}/message
+{
+  \"message\": \"How are you feeling today?\",
+  \"context\": {\"environment\": \"park\", \"time\": \"morning\"}
+}
+
+# Get creature status
+GET /creatures/{creature_id}/status
+```
+
+### 📊 **Stat Management APIs**
+
+**Direct Stat Control:**
+```bash
+# Set specific stat values (0-100, automatically clamped)
+POST /creatures/{creature_id}/stats
+{
+  \"stats\": {
+    \"happiness\": 85,
+    \"energy\": 60,
+    \"hunger\": 90
+  }
+}
+```
+
+**Configuration Management:**
+```bash
+# Adjust decay rates and translation thresholds
+POST /creatures/{creature_id}/config
+{
+  \"decay_rates\": {
+    \"happiness\": 0.1,
+    \"energy\": 0.2,
+    \"hunger\": 0.15
+  },
+  \"thresholds\": {
+    \"happiness\": 60,
+    \"energy\": 50,
+    \"hunger\": 40
+  }
+}
+```
+
+**Translation Threshold Control:**
+```bash
+# Adjust when translation becomes available
+POST /creatures/{creature_id}/thresholds
+{
+  \"thresholds\": {
+    \"happiness\": 30,
+    \"energy\": 40,
+    \"hunger\": 50
+  }
+}
+```
+
+### 🎮 **Usage Examples for Games & Apps**
+
+**Feeding System:**
+```bash
+# Player feeds creature - increase hunger and happiness
+curl -X POST \"/creatures/123/stats\" \\
+  -d '{\"stats\": {\"hunger\": 95, \"happiness\": 80}}'
+```
+
+**Exercise/Battle System:**
+```bash
+# After battle - decrease energy, but increase happiness for victory
+curl -X POST \"/creatures/123/stats\" \\
+  -d '{\"stats\": {\"energy\": 40, \"happiness\": 90}}'
+```
+
+**Sleep/Rest System:**
+```bash
+# After rest - restore energy
+curl -X POST \"/creatures/123/stats\" \\
+  -d '{\"stats\": {\"energy\": 100}}'
+```
+
+**Dynamic Difficulty:**
+```bash
+# Make creature more/less talkative based on game state
+curl -X POST \"/creatures/123/thresholds\" \\
+  -d '{\"thresholds\": {\"happiness\": 20, \"energy\": 20, \"hunger\": 20}}'
+```
+
+### 📝 **API Response Format**
+Every creature interaction returns:
+```json
+{
+  \"creature_language\": \"*tail wagging* Woof!\",
+  \"human_translation\": \"I'm so excited to see you!\",
+  \"can_translate\": true,
+  \"emotional_state\": \"excited\",
+  \"stats_delta\": {\"happiness\": 0, \"energy\": 0, \"hunger\": 0},
+  \"debug_info\": {
+    \"decision\": {
+      \"action\": \"tail wagging enthusiastically\",
+      \"vocalization\": \"excited bark\",
+      \"intention\": \"showing excitement and joy\",
+      \"energy_level\": \"high\"
+    },
+    \"perception\": {\"user_intent\": \"greeting\", \"user_tone\": \"friendly\"},
+    \"emotion\": {\"primary_emotion\": \"excited\", \"impact_score\": 0.8},
+    \"memory\": {\"relevant_memories\": \"Previous positive interactions\"}
+  }
+}
+```
+
+**Developer Benefits:**
+- **Complete Control**: Manage all aspects of creature behavior programmatically
+- **Rich Debug Info**: Access to all AI agent outputs for analysis
+- **Flexible Integration**: Use only the features you need
+- **Real-time Updates**: Changes take effect immediately
+- **No Surprises**: Stats only change when you explicitly modify them
 
 ---
 
@@ -299,21 +464,21 @@ Fine-tune all 50 personality dimensions:
 - **Behavioral**: Energy, persistence, risk-taking, organization
 
 **🎭 Personality Blending**
-Combine multiple famous personalities with authentic speech mixing:
+Combine multiple famous personalities:
 ```json
 {
-  "archetype_weights": {
-    "leonardo": 0.7,
-    "einstein": 0.3
+  \"archetype_weights\": {
+    \"leonardo\": 0.7,
+    \"einstein\": 0.3
   },
-  "trait_modifications": {
-    "sociability": 0.8
+  \"trait_modifications\": {
+    \"sociability\": 0.8
   }
 }
 ```
 
-### 🗣️ **NEW: Authentic Speech Styles**
-Each famous personality now speaks with their authentic voice patterns:
+### 🗣️ **Authentic Speech Styles**
+Each famous personality speaks with their authentic voice patterns:
 
 - **🎨 Leonardo da Vinci**: *"Fascinating! I observe that... Art is never finished, only abandoned."*
 - **🔬 Einstein**: *"Let me think about this... Imagination is more important than knowledge."*  
@@ -321,10 +486,6 @@ Each famous personality now speaks with their authentic voice patterns:
 - **🤔 Socrates**: *"What is...? But consider... I know that I know nothing."*
 - **🤗 Fred Rogers**: *"You are special just the way you are. How does that make you feel?"*
 - **👴 Yoda**: *"Strong with the Force, you are. Much to learn, you have. Hmm."*
-
-**🎭 Speech Style Blending**: Combined personalities create unique speaking patterns!
-- **Socrates + Yoda**: *"But what is wisdom, hmm? Know that I know nothing, yet strong with questions, I am."*
-- **Einstein + Leonardo**: *"Fascinating equations, these are! I wonder if... the beauty of physics, like art, never truly finished it is."*
 
 ---
 
@@ -360,27 +521,32 @@ python3 -m uvicorn api.server:app --host 0.0.0.0 --port 8001
 # Then visit http://localhost:8001
 ```
 
+**No AI models found:**
+- Check that you have `.gguf` files in `localai/models/`
+- Download at least one model (Gemma-3-270M recommended)
+- Verify file permissions allow reading the model files
+
 ### Common Usage Issues
 
-**Activities showing mock responses:**
-- Make sure you set your API key via the web interface
-- Create a new creature after setting the API key
-- Check that your creature template includes the activity you're trying
+**Creatures giving repetitive responses:**
+- Try switching to a larger AI model (GPT-OSS-20B)
+- Smaller models (270M, 0.6B) may repeat responses with simple prompts
+- Larger models provide more varied and intelligent responses
 
 **Translation not working:**
-- Check creature's happiness and energy levels
-- Try feeding, petting, or playing to improve stats
-- Some species are more independent and translate less frequently
-
-**Creatures showing wrong behaviors:**
-- Make sure you're using the correct species template
-- Human creatures should use human actions, not animal behaviors
-- Create a fresh creature if switching between very different species
+- Check creature's happiness, energy, and hunger levels via `/status` endpoint
+- Default threshold is 50 for all stats
+- Use the API to adjust thresholds: `POST /creatures/{id}/thresholds`
 
 **Stats not updating:**
-- Check the creature status page to verify stats are actually changing
-- Web interface may have display lag - stats update on the server immediately
-- Try refreshing the browser page
+- Stats are now controlled entirely via API - no automatic decay
+- Use `POST /creatures/{id}/stats` to modify stats
+- Check the creature status page to verify current stat values
+
+**AI model switching issues:**
+- Model switching restarts the server (takes 10-30 seconds)
+- Make sure the new model file exists in `localai/models/`
+- Check terminal output for model loading errors
 
 ---
 
@@ -388,16 +554,14 @@ python3 -m uvicorn api.server:app --host 0.0.0.0 --port 8001
 
 ### Quick Start with Docker Compose
 ```bash
-# Install Git LFS and clone with model files
-git lfs install
+# Clone repository
 git clone [repository-url] CreatureMind
 cd CreatureMind
-git lfs pull  # Download AI model files
 
-# Optional: Set OpenAI API key for premium mode
-echo "OPENAI_API_KEY=your-api-key-here" > .env
+# Add your AI models to localai/models/ directory
+# (Download GGUF files and place them there)
 
-# Start with Local AI (no API key needed)
+# Start with Local AI
 docker-compose up -d
 ```
 
@@ -417,30 +581,6 @@ docker-compose down && docker-compose up -d
 
 ---
 
-## 🌐 API Reference
-
-### Core Endpoints
-- `POST /creatures/enhanced` - Create creature with personality system
-- `POST /creatures/{id}/message` - Send message to creature
-- `POST /creatures/{id}/activity` - Perform activity
-- `GET /creatures/{id}/status` - Get creature status
-- `GET /templates` - List available creature templates
-
-### Personality System Endpoints
-- `GET /personality/archetypes` - List famous personalities
-- `GET /personality/traits` - List all 50 traits
-- `POST /personality/simple` - Create simple personality
-- `POST /personality/complex` - Create complex personality
-
-### API Key Management
-- `GET /api/status` - Check current API client status
-- `POST /api/set_key` - Set OpenAI API key dynamically
-- `POST /api/clear_key` - Revert to mock client
-
-**Full API documentation available at:** `http://localhost:8000/docs`
-
----
-
 ## 🧪 Testing Your Setup
 
 ### Basic Functionality Test
@@ -449,241 +589,46 @@ docker-compose down && docker-compose up -d
 curl http://localhost:8000/health
 
 # Create a test creature (dog)
-curl -X POST "http://localhost:8000/creatures" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "TestBuddy", "template_id": "loyal_dog"}'
+curl -X POST \"http://localhost:8000/creatures/enhanced\" \\
+  -H \"Content-Type: application/json\" \\
+  -d '{\"name\": \"TestBuddy\", \"template_id\": \"loyal_dog\"}'
 
 # Send a test message (expect dog-like response with Local AI)
-curl -X POST "http://localhost:8000/creatures/{creature_id}/message" \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Want to play fetch?"}'
+curl -X POST \"http://localhost:8000/creatures/{creature_id}/message\" \\
+  -H \"Content-Type: application/json\" \\
+  -d '{\"message\": \"Want to play fetch?\"}'
 
-# Expected response: dog behaviors like tail wagging, excited bark, "Woof!"
+# Expected response: dog behaviors like tail wagging, excited bark, \"Woof!\"
+```
+
+### Developer API Test
+```bash
+# Test stat modification
+curl -X POST \"http://localhost:8000/creatures/{creature_id}/stats\" \\
+  -H \"Content-Type: application/json\" \\
+  -d '{\"stats\": {\"happiness\": 95, \"energy\": 60, \"hunger\": 80}}'
+
+# Test threshold adjustment  
+curl -X POST \"http://localhost:8000/creatures/{creature_id}/thresholds\" \\
+  -H \"Content-Type: application/json\" \\
+  -d '{\"thresholds\": {\"happiness\": 30, \"energy\": 30, \"hunger\": 30}}'
+
+# Verify changes
+curl \"http://localhost:8000/creatures/{creature_id}/status\"
 ```
 
 ### Multi-Species Test
 ```bash
 # Test different species get different responses
-curl -X POST "http://localhost:8000/creatures" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Whiskers", "template_id": "independent_cat"}'
+curl -X POST \"http://localhost:8000/creatures/enhanced\" \\
+  -H \"Content-Type: application/json\" \\
+  -d '{\"name\": \"Whiskers\", \"template_id\": \"independent_cat\"}'
 
 # Cat should respond with purrs, slow blinks, aloof but affectionate behavior
-curl -X POST "http://localhost:8000/creatures/{cat_id}/message" \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Here kitty, want treats?"}'
+curl -X POST \"http://localhost:8000/creatures/{cat_id}/message\" \\
+  -H \"Content-Type: application/json\" \\
+  -d '{\"message\": \"Here kitty, want treats?\"}'
 ```
-
-### Personality System Test
-```bash
-# Create creature with Einstein personality
-curl -X POST "http://localhost:8000/creatures/enhanced" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Einstein",
-    "template_id": "basic_human",
-    "personality_mode": "complex",
-    "complex_personality": {
-      "mode": "archetype",
-      "archetype_name": "einstein"
-    }
-  }'
-```
-
----
-
-## 🏠 Local AI System
-
-### 🆓 **Free Local AI Inference**
-CreatureMind now includes a complete Local AI system that runs entirely on your computer:
-
-**🔧 Technical Specs:**
-- **Model**: Google Gemma-3-270M (optimized for speed and quality)
-- **Context Window**: 32,768 tokens (remembers very long conversations)  
-- **Inference Speed**: 200+ tokens/second on Apple Silicon, 100+ on other systems
-- **Memory Usage**: ~2GB RAM during use
-- **Storage**: ~1GB for model files
-
-**🚀 Automatic Setup:**
-- **Self-downloading**: Model downloads automatically on first use
-- **Cross-platform**: Works on Mac (Apple Silicon optimized), Windows, Linux
-- **Optimized inference**: Uses llama.cpp with Apple Metal acceleration
-- **Intelligent fallback**: Seamlessly falls back to OpenAI if needed
-
-**💬 Multi-Agent AI System:**
-- **PerceptionAgent**: Analyzes user intent and emotional tone
-- **EmotionAgent**: Determines creature's emotional responses
-- **MemoryAgent**: Provides conversation context and relationship history  
-- **DecisionAgent**: Synthesizes all inputs into species-specific responses
-- **TranslatorAgent**: Converts responses into authentic creature language
-
-**🎭 Species-Specific Intelligence:**
-- **Dogs**: Tail wagging, excited barks, playful responses
-- **Cats**: Slow blinks, purrs, independent but affectionate behavior
-- **Dragons**: Majestic movements, rumbling growls, ancient wisdom
-- **Fairies**: Wing flutters, melodic chimes, magical enthusiasm
-- **All 9 species**: Each with unique behaviors, sounds, and personalities
-
-### 🔄 **NEW: Model Selection & Switching**
-CreatureMind now supports multiple Local AI models with seamless switching:
-
-**🤖 Available Models:**
-- **Gemma-3-270M** (Default) - Fast, lightweight responses (1-3 seconds, ~1GB RAM)
-- **Gemma-3-4B+** - More intelligent responses (10-20 seconds, 4-8GB RAM)
-- **Custom Models** - Add any compatible GGUF model to the models folder
-
-**⚡ Web Interface Model Switching:**
-1. Click the "🧠 AI Model" button in the web interface
-2. Select from available models with performance information
-3. Switch models instantly - server restarts automatically
-4. Different models for different needs: speed vs. intelligence
-
-**📁 Adding New Models:**
-1. Download any compatible GGUF model file
-2. Place in `localai/models/` directory  
-3. Restart CreatureMind - new model appears in selection
-4. Switch to new model via web interface
-
-**🎯 Model Recommendations:**
-- **270M**: Great for quick interactions, basic conversations
-- **4B+**: Better for complex personalities, nuanced responses, archetype understanding
-- **Custom**: Experiment with different model sizes and types
-
-**💡 Technical Notes:**
-- Model switching requires server restart (10-30 seconds)
-- Larger models provide better personality expression
-- Only smaller default model (270M) included in repository
-- Users can download additional models as needed
-
----
-
-## 📋 Recent Updates & Bug Fixes
-
-### Version 1.7.0 (Latest) - Enhanced Model Selection & Web Interface
-
-#### 🔄 New Model Selection System
-- **Web Interface Model Switching**: Select between AI models directly from the web interface
-- **Multi-Model Support**: Choose between Gemma-3-270M (fast) and Gemma-3-4B+ (intelligent) models
-- **Automatic Server Restart**: Model switching properly restarts llama-server with new configuration
-- **Performance Information**: Clear model comparisons showing speed vs intelligence tradeoffs
-- **Custom Model Support**: Add any GGUF model to the models folder for automatic detection
-
-#### 🎯 Enhanced User Experience & Defaults
-- **Optimized Default Model**: Now starts with lightweight 270M model for faster initial experience
-- **Smart Model Recommendations**: Interface guides users to appropriate model for their needs
-- **Real-time Model Status**: Live display of current model and server health
-- **Seamless Switching**: Models change without losing creature state or conversation history
-- **Repository Optimization**: Only includes lightweight 270M model, users download larger models as needed
-
-#### 🐛 Bug Fixes
-- **Fixed Default Model Priority**: System now correctly defaults to 270M model instead of 4B
-- **Verified Web Interface**: Model selection modal and switching functionality working perfectly
-- **Improved Startup Experience**: Faster initial load with lightweight model by default
-
-### Version 1.6.0 - FREE Local AI Integration
-
-#### 🏠 Revolutionary Local AI System
-- **Complete Local AI Stack**: No API keys required - runs 100% on your computer
-- **Gemma-3-270M Integration**: Optimized Google model with 32k context window
-- **Multi-Agent Architecture**: 5 specialized AI agents working together for authentic responses
-- **Species-Specific Intelligence**: Each creature type has unique AI prompting and behavior patterns
-- **Apple Silicon Optimization**: Metal acceleration for 2x faster inference on M1/M2/M3 Macs
-
-#### 🔧 Enhanced System Architecture  
-- **Smart AI Client**: Automatically chooses between Local AI and OpenAI based on availability
-- **Intelligent Model Management**: Automatic model downloading, health monitoring, and lifecycle management
-- **Chat Completions API**: Proper integration with llama.cpp server for optimal response quality
-- **Context-Aware Conversations**: Full conversation history maintained across multi-agent processing
-
-#### 🎭 Improved Species Authenticity
-- **Fixed Species Hardcoding**: All creature types now respond with appropriate behaviors (no more dragons giving dog responses!)
-- **Enhanced TranslatorAgent**: Converts AI decisions into authentic creature language for each species
-- **Proper Multi-Agent Flow**: PerceptionAgent → EmotionAgent → MemoryAgent → DecisionAgent → TranslatorAgent
-- **Species-Specific Examples**: Each creature type has tailored AI prompting for authentic responses
-
-#### 🚀 Performance & Reliability
-- **Fast Local Inference**: 200+ tokens/second on Apple Silicon, 100+ on other systems
-- **Automatic Model Setup**: Self-downloading and configuring Gemma-3-270M (~1GB)
-- **Robust Error Handling**: Graceful fallbacks and comprehensive error recovery
-- **Memory Optimization**: Efficient model loading and context management
-
-### Version 1.5.0 - Authentic Archetype Speech Styles
-
-#### 🗣️ Revolutionary Speech Style System
-- **Authentic Archetype Voices**: Each famous personality now speaks with their distinctive patterns
-- **Yoda's Inverted Syntax**: "Strong with the Force, you are. Much to learn, you have."
-- **Socrates' Questioning**: "What is wisdom? But consider... I know that I know nothing."
-- **Speech Style Blending**: Combined personalities create unique speaking patterns
-- **6 Complete Archetypes**: Leonardo, Einstein, Montessori, Socrates, Rogers, and Yoda
-
-#### 🎭 Enhanced Personality System
-- **Decision Agent Integration**: Speech styles seamlessly integrated into AI responses
-- **Archetype Blending Support**: Mix personalities like "60% Socrates + 40% Yoda" with natural speech
-- **Species-Appropriate Delivery**: Dragons speak like Yoda, humans like Einstein, maintaining authenticity
-- **Dynamic Speech Selection**: AI selects appropriate phrases and patterns based on personality
-
-#### 🧪 Testing & Quality Assurance
-- **Comprehensive Test Suite**: All speech styles verified with automated testing
-- **Single & Blended Testing**: Both individual archetypes and personality mixes validated
-- **Fallback Safety**: Simple personalities gracefully work without speech style interference
-- **Integration Verification**: Full end-to-end testing of speech style prompting system
-
-### Version 1.4.0 - Complete Species Support & Human Templates
-
-#### 🎭 Universal Species Support
-- **Added complete human template**: Full support for human characters with appropriate behaviors
-- **Enhanced MockAIClient**: Now supports all species (human, elf, dwarf, gnome, sprite) 
-- **Species-specific behaviors**: Each species uses authentic actions and sounds
-- **Fixed animal behavior leakage**: Humans no longer show tail wagging or purring
-
-#### 🔧 Critical Bug Fixes  
-- **Fixed activity translation failures**: Added missing activities (pet, play, walk, feed) to human template
-- **Fixed emoji mapping**: "Joyful" mood now shows 😄 instead of 😐
-- **Enhanced translator agent**: Species-specific behavioral guidelines prevent cross-species contamination
-- **Improved error messages**: Clear debugging information for missing activities
-
-#### 🎯 User Experience Improvements
-- **Strengthened AI safety**: Excellent handling of inappropriate requests with engaging but appropriate deflection
-- **Better activity descriptions**: Human-friendly activity names and descriptions
-- **Enhanced system prompts**: Explicit species behavior guidelines for consistent AI responses
-- **Comprehensive template system**: All web interface activities supported for all species
-
-#### 🧬 Technical Enhancements  
-- **Enhanced MockAIClient species support**: 9 total species with authentic behavioral patterns
-- **Improved translator prompts**: Species-specific examples and explicit behavior restrictions
-- **Template persistence**: Human template now persists across server restarts
-- **Better error handling**: Clear error messages for debugging activity and template issues
-
-### Version 1.3.0 - Memory Integration & Frontend Stability
-
-#### 🧠 Enhanced Memory & Context System
-- **Long-term Memory Integration**: Creatures maintain conversation context across multiple interactions
-- **Chat History Awareness**: All AI agents consider recent conversation history for coherent responses
-- **Context-Aware Responses**: Memory agent analyzes both stored memories and chat history
-
-#### 🔧 Critical Frontend Fixes
-- **Fixed Web Interface Regression**: Resolved stats updates and activity translation display issues
-- **Restored Activity Translations**: All activities properly display creature responses
-- **Visual Stats Updates**: Fixed stat display to update correctly after interactions
-
-### Version 1.2.0 - AI System Improvements
-
-#### 🤖 Modern AI Integration
-- **Upgraded to gpt-4.1-nano**: 90% cost reduction while maintaining response quality
-- **Real OpenAI Integration**: Fixed mock client fallback system
-- **Enhanced Mock Responses**: Improved fallback responses for testing without API key
-
-### Version 1.1.0 - Production Stability
-
-#### 🛠️ Critical Bug Fixes  
-- **Fixed Pydantic Forward Reference Errors**: Resolved 500 errors during creature creation
-- **Fixed Activity Stat Updates**: Activities now properly modify creature stats
-- **Much More Communicative Creatures**: Relaxed translation requirements for better UX
-
-#### 💡 Translation System Overhaul
-- **User-Friendly Translation Rules**: Creatures communicate unless severely distressed
-- **Helpful Translation Hints**: Specific guidance when translation unavailable
-- **Better Emotional Context**: Mood-appropriate responses and state tracking
 
 ---
 
@@ -694,16 +639,14 @@ CreatureMind now supports multiple Local AI models with seamless switching:
 - **⚡ Unlimited conversations**: Chat as much as you want
 - **🏠 Runs locally**: No data leaves your computer
 - **🚀 Fast responses**: Optimized for your hardware
-- **📱 One-time setup**: ~1GB model download
+- **📱 One-time setup**: Download model files once
 
-### OpenAI Mode (Optional Premium)
-- **Conversations**: ~$0.01-0.05 per conversation
-- **Activities**: ~$0.005-0.02 per activity  
-- **gpt-4.1-nano model**: 90% cheaper than previous versions
-- **Estimated monthly**: $1-10 for regular use
-- **☁️ Requires internet**: API key and online connection
+### Hardware Requirements
+- **Minimum**: 4GB RAM, 2GB free disk space
+- **Recommended**: 8GB RAM, 5GB free disk space
+- **Optimal**: 16GB+ RAM for larger models
 
-**Recommendation**: Start with Local AI (free) and add OpenAI later if desired!
+**Total cost: $0 forever!**
 
 ---
 
@@ -712,42 +655,106 @@ CreatureMind now supports multiple Local AI models with seamless switching:
 ### For Beginners:
 1. ✅ **Complete setup** following this guide
 2. 🎮 **Create your first creature** with simple personality  
-3. 💬 **Have conversations** and try activities
-4. 🧬 **Watch personality evolution** over time
-
-### For Intermediate Users:
-1. 🎭 **Try personality archetypes** (Einstein, Leonardo, etc.)
-2. 🔧 **Create custom creature templates**  
-3. 📊 **Monitor learning and evolution systems**
-4. 🎛️ **Experiment with complex personalities**
-
-### For Advanced Users:
-1. 🧠 **Build 50-dimensional personalities**
-2. 🔌 **Integrate with external applications**
-3. 🐳 **Deploy with Docker in production**
-4. 🎮 **Create game integrations**
+3. 💬 **Have conversations** and explore species differences
+4. 🧬 **Watch how personalities affect responses**
 
 ### For Developers:
-- **Complete API Documentation**: `http://localhost:8000/docs`
-- **Source Code**: Explore the `core/` directory
-- **Integration Examples**: Check `examples/` for patterns
-- **Custom Templates**: Build your own creature types
+1. 🔌 **Explore the API** at `http://localhost:8000/docs`
+2. 📊 **Test stat manipulation** endpoints
+3. 🎛️ **Integrate with your application**
+4. 🧠 **Experiment with different AI models**
+
+### For Game Developers:
+1. 🎮 **Plan creature integration** into game mechanics
+2. 📊 **Map game events** to creature stat changes
+3. 🗣️ **Design conversation systems** around creature responses
+4. 🎭 **Create custom species** for your game world
+
+### For Advanced Users:
+1. 🧠 **Build custom AI models** and add to CreatureMind
+2. 🔧 **Create complex creature templates**
+3. 🐳 **Deploy with Docker** in production
+4. 🌐 **Build web applications** around the API
 
 ---
 
-## 🌟 Origins & Innovation
+## 🔌 Integration Examples
 
-CreatureMind evolved from **WiddlePupper**, an iOS virtual pet app that pioneered multi-agent creature consciousness. We've transformed this into the world's most sophisticated AI personality system.
+### Game Integration
+```python
+import requests
 
-### What Makes This Groundbreaking:
+class CreatureCompanion:
+    def __init__(self, creature_id):
+        self.creature_id = creature_id
+        self.base_url = \"http://localhost:8000\"
+    
+    def feed(self):
+        # Player feeds creature
+        response = requests.post(f\"{self.base_url}/creatures/{self.creature_id}/stats\", 
+                               json={\"stats\": {\"hunger\": 95, \"happiness\": 85}})
+        return response.json()
+    
+    def battle_result(self, won=True):
+        # After battle - tired but happy if won
+        happiness = 90 if won else 60
+        response = requests.post(f\"{self.base_url}/creatures/{self.creature_id}/stats\",
+                               json={\"stats\": {\"energy\": 40, \"happiness\": happiness}})
+        return response.json()
+    
+    def chat(self, message):
+        # Natural conversation
+        response = requests.post(f\"{self.base_url}/creatures/{self.creature_id}/message\",
+                               json={\"message\": message})
+        return response.json()
 
-**🔬 Scientific Foundation**: Based on 50+ years of personality psychology research  
-**🧬 Dynamic Evolution**: First AI system where personalities truly change over time  
-**📚 Persistent Learning**: Creatures build lasting relationships through memory and adaptation  
-**💡 Practical Applications**: Ready for games, education, therapy, customer service, and more  
-**🛠️ Developer-Friendly**: Complete API access with comprehensive documentation  
+# Usage
+companion = CreatureCompanion(\"creature-123\")
+companion.feed()
+result = companion.chat(\"How do you feel after that meal?\")
+print(result[\"human_translation\"])  # \"That was delicious! Thank you!\"
+```
 
-The magic isn't just in the complexity - it's in how all these systems work together to create authentic, believable characters that feel genuinely alive and develop unique relationships with each user.
+### Educational App Integration
+```python
+class StudyBuddy:
+    def __init__(self, creature_id):
+        self.creature_id = creature_id
+        
+    def study_session_complete(self, success_rate):
+        # Adjust creature mood based on study performance
+        happiness = 70 + (success_rate * 30)  # 70-100 based on 0-1 success rate
+        energy = max(30, 75 - (success_rate * 20))  # More effort = less energy
+        
+        requests.post(f\"http://localhost:8000/creatures/{self.creature_id}/stats\",
+                     json={\"stats\": {\"happiness\": happiness, \"energy\": energy}})
+    
+    def encourage_student(self):
+        response = requests.post(f\"http://localhost:8000/creatures/{self.creature_id}/message\",
+                               json={\"message\": \"How are you feeling about studying today?\"})
+        return response.json()[\"human_translation\"]
+```
+
+---
+
+## 🌟 What Makes CreatureMind Revolutionary
+
+### 🔬 **Scientific Foundation**
+Built on decades of personality psychology research with authentic behavioral modeling for each species.
+
+### 🎮 **Developer-First Design**  
+Complete API control means you can integrate creatures into ANY application - games, education, customer service, therapy apps, and more.
+
+### 🏠 **Privacy & Control**
+Your creatures and conversations stay on your computer. No cloud dependency, no data collection, no privacy concerns.
+
+### 🆓 **Truly Free**
+No hidden costs, no API fees, no subscriptions. Download once, use forever.
+
+### 🧬 **Infinite Possibilities**
+Create any creature type imaginable with custom templates, stats, behaviors, and personalities.
+
+**The magic isn't just in the AI - it's in how CreatureMind gives you complete control to create authentic, believable characters that fit perfectly into YOUR vision.**
 
 ---
 
@@ -759,48 +766,49 @@ MIT License - Use CreatureMind in your projects, commercial or personal!
 
 ## 🎉 Ready to Create Truly Alive AI Companions?
 
-**Your evolving creature is waiting to meet you!**
+**Your creature is waiting to meet you!**
 
 1. ✅ **Follow the setup steps above**
-2. 🎭 **Create your first enhanced creature**  
-3. 🧬 **Watch them develop their unique personality**
-4. 🚀 **Experience the future of AI companions**
+2. 🤖 **Download an AI model** (Gemma-3-270M recommended)
+3. 🎭 **Create your first creature**  
+4. 💬 **Start chatting and see the magic**
+5. 🔧 **Explore the API** for your own applications
 
-*The journey of a thousand conversations begins with a single "hello" - but with CreatureMind, every conversation changes who your creature becomes...* 🧠✨
+*Every creature is unique. Every conversation matters. Every interaction shapes who they become.* 🧠✨
 
 ---
 
 ## 🆘 Getting Help
 
-- **Documentation Issues**: Check the troubleshooting section above
-- **API Problems**: Visit `http://localhost:8000/docs` for detailed API info
-- **Installation Help**: Try the alternative commands provided for your system
+- **Installation Issues**: Check the troubleshooting section above
+- **API Documentation**: Visit `http://localhost:8000/docs` for detailed API info
+- **Model Problems**: Ensure you have `.gguf` files in `localai/models/`
 - **Feature Questions**: Explore the `examples/` directory for working code
 
-**Remember**: Most issues can be solved by trying `python3` instead of `python`, or creating a fresh creature after setting your API key!
+**Remember**: Most issues can be solved by ensuring you have AI model files and trying `python3` instead of `python`!
 
 ---
 
 ## 📋 Quick Start Checklist
 
-### Basic Setup (10 minutes)
+### Basic Setup (15 minutes)
 - [ ] Install Python 3.11+ 
 - [ ] Download CreatureMind and run `pip install -r requirements.txt`
+- [ ] Download at least one AI model to `localai/models/`
 - [ ] Start server with `python -m api.server` (or `python3 -m api.server`)
 - [ ] Visit `http://localhost:8000` 
-- [ ] Set API key via web interface (optional)
 - [ ] Create your first creature
 
 ### Test Everything Works (5 minutes)
 - [ ] Send a message to your creature
-- [ ] Try all activities (feed, pet, play, walk)
-- [ ] Check that stats update correctly
-- [ ] Verify creature shows species-appropriate behaviors
+- [ ] Verify creature shows species-appropriate behaviors  
+- [ ] Check translation works when creature is happy
+- [ ] Test different species respond differently
 
-### Advanced Features (20 minutes)
-- [ ] Create creature with complex personality (try Einstein archetype)
-- [ ] Monitor personality development and learning progress  
-- [ ] Create a custom creature template
-- [ ] Test different species and their unique behaviors
+### Developer Features (10 minutes)
+- [ ] Explore API documentation at `http://localhost:8000/docs`
+- [ ] Test stat modification endpoints
+- [ ] Test threshold adjustment endpoints
+- [ ] Try the debug_info in API responses
 
-**Welcome to the future of AI personalities. Welcome to CreatureMind.** 🧠🚀
+**Welcome to the future of AI companions. Welcome to CreatureMind.** 🧠🚀

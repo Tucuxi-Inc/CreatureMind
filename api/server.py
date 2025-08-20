@@ -41,9 +41,17 @@ class MessageRequest(BaseModel):
     context: Optional[Dict[str, Any]] = None
 
 
-class ActivityRequest(BaseModel):
-    activity: str
-    parameters: Optional[Dict[str, Any]] = None
+class StatAdjustmentRequest(BaseModel):
+    stats: Dict[str, float]  # stat_name -> new_value
+
+
+class ThresholdAdjustmentRequest(BaseModel):
+    thresholds: Dict[str, float]  # stat_name -> new_threshold
+
+
+class StatConfigRequest(BaseModel):
+    decay_rates: Optional[Dict[str, float]] = None  # stat_name -> decay_rate
+    thresholds: Optional[Dict[str, float]] = None   # stat_name -> threshold
 
 
 class CreateTemplateRequest(BaseModel):
@@ -113,7 +121,7 @@ class CreatureResponse(BaseModel):
     translation_hint: Optional[str] = None  # Helpful hint when translation isn't available
     emotional_state: str
     stats_delta: Dict[str, float]
-    debug_info: Optional[Dict[str, Any]] = None
+    debug_info: Dict[str, Any] = {}  # Always include debug info with decision agent output
 
 
 # Global storage (in production, use proper database)
@@ -199,6 +207,35 @@ async def shutdown_event():
     print("✅ CreatureMind API server shutdown complete")
 
 
+def ensure_standard_stats(template: CreatureTemplate) -> CreatureTemplate:
+    """Ensure template has standard happiness/energy/hunger stats with no decay"""
+    standard_stats = {
+        "happiness": {"min_value": 0, "max_value": 100, "decay_rate": 0, "default_start": 75},
+        "energy": {"min_value": 0, "max_value": 100, "decay_rate": 0, "default_start": 75},
+        "hunger": {"min_value": 0, "max_value": 100, "decay_rate": 0, "default_start": 75}
+    }
+    
+    # Add standard stats if they don't exist, preserve existing if they do
+    for stat_name, config in standard_stats.items():
+        if stat_name not in template.stat_configs:
+            template.stat_configs[stat_name] = config
+        else:
+            # Update decay rate to 0 and default_start to 75 for standard stats
+            template.stat_configs[stat_name]["decay_rate"] = 0
+            template.stat_configs[stat_name]["default_start"] = 75
+    
+    # Ensure translation conditions include standard stats at threshold 50
+    standard_conditions = {
+        "happiness": "> 50",
+        "energy": "> 50", 
+        "hunger": "> 50"
+    }
+    
+    for stat_name, condition in standard_conditions.items():
+        template.language.translation_conditions[stat_name] = condition
+    
+    return template
+
 async def load_templates():
     """Load creature templates from examples directory"""
     import glob
@@ -209,6 +246,7 @@ async def load_templates():
             with open(file_path, 'r') as f:
                 template_data = json.load(f)
                 template = CreatureTemplate(**template_data)
+                template = ensure_standard_stats(template)  # Add standard stats
                 templates[template.id] = template
                 print(f"Loaded template: {template.id}")
         except Exception as e:
@@ -312,28 +350,10 @@ async def send_message(creature_id: str, request: MessageRequest) -> CreatureRes
         translation_hint=response.translation_hint,
         emotional_state=response.emotional_state,
         stats_delta=response.stats_delta,
-        debug_info=response.debug_info
+        debug_info=response.debug_info or {}  # Always provide debug info
     )
 
 
-@app.post("/creatures/{creature_id}/activity")
-async def perform_activity(creature_id: str, request: ActivityRequest) -> CreatureResponse:
-    """Have a creature perform an activity"""
-    if creature_id not in creature_minds:
-        raise HTTPException(status_code=404, detail="Creature not found")
-    
-    mind = creature_minds[creature_id]
-    response = await mind.process_activity(request.activity, request.parameters)
-    
-    return CreatureResponse(
-        creature_language=response.creature_language,
-        human_translation=response.human_translation,
-        can_translate=response.can_translate,
-        translation_hint=response.translation_hint,
-        emotional_state=response.emotional_state,
-        stats_delta=response.stats_delta,
-        debug_info=response.debug_info
-    )
 
 
 @app.get("/creatures/{creature_id}/status")
@@ -344,6 +364,76 @@ async def get_creature_status(creature_id: str):
     
     mind = creature_minds[creature_id]
     return mind.get_creature_status()
+
+
+@app.post("/creatures/{creature_id}/stats")
+async def adjust_creature_stats(creature_id: str, request: StatAdjustmentRequest):
+    """Adjust creature stats (happiness, energy, hunger)"""
+    if creature_id not in creature_minds:
+        raise HTTPException(status_code=404, detail="Creature not found")
+    
+    mind = creature_minds[creature_id]
+    
+    # Apply stat changes
+    for stat_name, new_value in request.stats.items():
+        # Clamp value between 0 and 100
+        clamped_value = max(0, min(100, new_value))
+        mind.creature.stats.set_stat(stat_name, clamped_value)
+    
+    return {
+        "message": "Stats updated successfully",
+        "stats": dict(mind.creature.stats.values),
+        "stats_delta": request.stats
+    }
+
+
+@app.post("/creatures/{creature_id}/thresholds")
+async def adjust_translation_thresholds(creature_id: str, request: ThresholdAdjustmentRequest):
+    """Adjust translation thresholds for stats"""
+    if creature_id not in creature_minds:
+        raise HTTPException(status_code=404, detail="Creature not found")
+    
+    mind = creature_minds[creature_id]
+    
+    # Update translation conditions in the template
+    for stat_name, threshold in request.thresholds.items():
+        condition = f"> {threshold}"
+        mind.template.language.translation_conditions[stat_name] = condition
+    
+    return {
+        "message": "Translation thresholds updated successfully",
+        "thresholds": request.thresholds,
+        "translation_conditions": mind.template.language.translation_conditions
+    }
+
+
+@app.post("/creatures/{creature_id}/config")
+async def adjust_stat_config(creature_id: str, request: StatConfigRequest):
+    """Adjust stat configuration (decay rates and thresholds)"""
+    if creature_id not in creature_minds:
+        raise HTTPException(status_code=404, detail="Creature not found")
+    
+    mind = creature_minds[creature_id]
+    
+    # Update decay rates if provided
+    if request.decay_rates:
+        for stat_name, decay_rate in request.decay_rates.items():
+            if stat_name in mind.template.stat_configs:
+                mind.template.stat_configs[stat_name]["decay_rate"] = decay_rate
+    
+    # Update translation thresholds if provided
+    if request.thresholds:
+        for stat_name, threshold in request.thresholds.items():
+            condition = f"> {threshold}"
+            mind.template.language.translation_conditions[stat_name] = condition
+    
+    return {
+        "message": "Stat configuration updated successfully",
+        "decay_rates": request.decay_rates,
+        "thresholds": request.thresholds,
+        "current_stat_configs": mind.template.stat_configs,
+        "current_translation_conditions": mind.template.language.translation_conditions
+    }
 
 
 @app.get("/creatures")

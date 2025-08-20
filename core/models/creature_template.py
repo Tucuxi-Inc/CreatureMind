@@ -113,9 +113,9 @@ BASE_TEMPLATES = {
         name="Base Mammal",
         species="mammal",
         stat_configs={
-            "happiness": {"min_value": 0, "max_value": 100, "decay_rate": 0.1, "default_start": 75},
-            "energy": {"min_value": 0, "max_value": 100, "decay_rate": 0.2, "default_start": 80},
-            "hunger": {"min_value": 0, "max_value": 100, "decay_rate": 0.3, "default_start": 40}
+            "happiness": {"min_value": 0, "max_value": 100, "decay_rate": 0, "default_start": 75},
+            "energy": {"min_value": 0, "max_value": 100, "decay_rate": 0, "default_start": 75},
+            "hunger": {"min_value": 0, "max_value": 100, "decay_rate": 0, "default_start": 75}
         },
         language=LanguageConfig(
             sounds={
@@ -126,8 +126,9 @@ BASE_TEMPLATES = {
                 "neutral": ["*quiet sound*"]
             },
             translation_conditions={
-                "happiness": "> 40",
-                "energy": "> 30"
+                "happiness": "> 50",
+                "energy": "> 50",
+                "hunger": "> 50"
             }
         )
     ),
@@ -137,9 +138,9 @@ BASE_TEMPLATES = {
         name="Base Reptile",
         species="reptile",
         stat_configs={
-            "happiness": {"min_value": 0, "max_value": 100, "decay_rate": 0.05, "default_start": 60},
-            "energy": {"min_value": 0, "max_value": 100, "decay_rate": 0.1, "default_start": 70},
-            "temperature": {"min_value": 0, "max_value": 100, "decay_rate": 0.15, "default_start": 75}
+            "happiness": {"min_value": 0, "max_value": 100, "decay_rate": 0, "default_start": 75},
+            "energy": {"min_value": 0, "max_value": 100, "decay_rate": 0, "default_start": 75},
+            "hunger": {"min_value": 0, "max_value": 100, "decay_rate": 0, "default_start": 75}
         },
         language=LanguageConfig(
             sounds={
@@ -149,8 +150,9 @@ BASE_TEMPLATES = {
                 "warm": ["*basking stretch*"]
             },
             translation_conditions={
-                "happiness": "> 30",
-                "temperature": "> 50"
+                "happiness": "> 50",
+                "energy": "> 50",
+                "hunger": "> 50"
             }
         )
     ),
@@ -160,9 +162,9 @@ BASE_TEMPLATES = {
         name="Base Mythical Creature", 
         species="mythical",
         stat_configs={
-            "happiness": {"min_value": 0, "max_value": 100, "decay_rate": 0.08, "default_start": 70},
-            "energy": {"min_value": 0, "max_value": 100, "decay_rate": 0.12, "default_start": 85},
-            "magical_power": {"min_value": 0, "max_value": 100, "decay_rate": 0.05, "default_start": 90}
+            "happiness": {"min_value": 0, "max_value": 100, "decay_rate": 0, "default_start": 75},
+            "energy": {"min_value": 0, "max_value": 100, "decay_rate": 0, "default_start": 75},
+            "hunger": {"min_value": 0, "max_value": 100, "decay_rate": 0, "default_start": 75}
         },
         language=LanguageConfig(
             sounds={
@@ -171,7 +173,9 @@ BASE_TEMPLATES = {
                 "weakened": ["*fading glow*", "*tired magic*"]
             },
             translation_conditions={
-                "magical_power": "> 40"
+                "happiness": "> 50",
+                "energy": "> 50",
+                "hunger": "> 50"
             }
         )
     )
